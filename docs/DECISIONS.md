@@ -95,6 +95,33 @@ These are **GDD-approved direction**, not new user approvals during this documen
 - Approved boundary: tecnología y frontera de aceptación/UX, incluida posible pérdida de trabajo provisional ante crash y pausa visible durante problemas de guardado. No pérdida de awards confirmados dentro del modelo de fallo documentado.
 - Scope: diseño M0, sin implementación, paquetes ni acceso DataStores. Los casos de fallo son aceptación futura, no tests ejecutados ni prueba de durabilidad operativa. M1 debe probarlos antes de habilitar descubrimientos/persistencia jugables.
 
+### D-018 — Alcance inicial Ground, dimensiones y capacidades
+
+- Date: 2026-10-18
+- Status: Accepted; resuelve Q-006 para lanzamiento inicial.
+- Producer approval: “Aprobar Ground y estas dimensiones/capacidades (recomendado).”
+- Rule: Ground solamente en M1 y lanzamiento; Upper/Basement quedan para expansión con decisión separada. Ocho parcelas con envolvente100×100 studs; grilla construible16×16 celdas de4 studs (64×64), sin confundirla con toda la envolvente.
+- Initial capacities: extractor1→10→30/s, procesador10→40/s y cinta10→50/s. Starter gratuito conectado a1/s, primer extractor sustituye manual D-013. Hasta dos líneas máximas y cap60/s D-012 intactos.
+- Limits: dimensiones sujetas a fit/cámara/touch con placeholders; no buffers, paquete de segunda línea o coste geométrico aprobado. Las capacidades intermedias antes propuestas quedan aceptadas; no hay caudal o suerte adicional por sectores.
+- Impact: GDD§5, BALANCE§2, ROADMAP y contratos de assets M1. Validar routing de dos líneas dentro de grilla; no integrar modelo offline al runtime en M0.
+
+### D-019 — Competición sin premios por clasificación al lanzamiento
+
+- Date: 2026-10-18
+- Status: Accepted; resuelve resto de Q-010.
+- Producer approval: “Aprobar reglas actuales y sin premios por clasificación al lanzamiento.”
+- Rule: mantener D-010 y GDD§8: títulos permanentes separados de standing por categoría/periodo, sin beneficio pagado. Sin premios materiales, pagos ni insignias de ganador por clasificación al lanzamiento. No inventar premios para recuperar texto del original.
+- Impact: globales siguen gate M3/M4; M1 solo counters/local UI. Sin tareas extra de premios, otra moneda o cambios en rango.
+
+### E-013 — Identidades diferidas y contenido desde cero
+
+- Date: 2026-10-18
+- Status: Accepted (scope and producer-reported facts).
+- Producer response: responsables “no importa”; titular/publicador Roblox “tampoco importa”; contenido previo “no hay escenas, vamos a hacer todo de cero y me vas a ayudar mas adelante”.
+- Impact: nombres/alias y titular Roblox no son requisitos del cierre M0 por decisión explícita. Responsabilidades funcionales ingeniería/arte se conservan en ASSET_PIPELINE. No inventar titular, grupo, cuenta ni permisos verificados.
+- Verified locally: no fuentes de arte ni entradas LFS; solo build/game.rbxlx generado. Reported by producer: no escenas previas y trabajo desde cero. No prueba de restauración Studio de contenido que todavía no existe.
+- Future gate: titular/destino/permisos deberán identificarse/verificarse antes de publicar/importar assets donde corresponda; publicación sigue requiriendo autorización específica. Fuentes reales y restauración de primera escena se validarán cuando existan, según ASSET_PIPELINE. No crear carpeta/manifiesto vacío ni encargar arte final ahora.
+
 ## Engineering baseline for M0 (from existing validated repo setup)
 
 | ID | Status | Decision / rationale |
@@ -186,23 +213,23 @@ These are **GDD-approved direction**, not new user approvals during this documen
 | Q-003 | **Resolved — D-012** | Total 60 eligible documents/s per player/factory, manual + automatic across all floors/sectors. | At most two maximum-capacity lines; visible global restriction |
 | Q-004 | **Resolved — D-016** | Accept/revise rank thresholds and names (0/1/5/15/40/100)? | UI and long-run status progression |
 | Q-005 | **M1 resolved — D-014** | First: 100k processed/50k Intel, grant100, total1.25. Second promotion remains unapproved/outside M1. | Economy, save resets and migrations |
-| Q-006 | Open — before sectors M3 | How many launch sectors, what machinery capacities and available building footprint? | Asset and load budgets |
+| Q-006 | **Resolved — D-018** | Initial launch Ground only; dimensions/capacities approved; Upper/Basement expansion separately. | Asset and load budgets |
 | Q-007 | **Resolved strategy — D-017; M1 tests pending** | Native UpdateAsync, serial queue/session fencing, bounded 5s checkpoint target, private natural plan, atomic cursor/grant/outbox and ack before reveal. | Preventing duplicate/lost rare awards |
 | Q-008 | Open — before broader content | Optional assignments, manual tools, value-added paper, splitter/merger routing? | New gameplay mechanics require explicit scope authorization |
-| Q-009 | Open — before asset production | Final art budgets, Roblox group ownership and publishing permissions? | Reproducibility and two-person work |
-| Q-010 | Open — before affected implementation | Starter resolved by D-013: replacement on the free 1/s connection. What additional competition presentation/reward restrictions were intended? | The prior review identifies omissions without preserving their full wording; do not invent prizes or additive throughput. |
+| Q-009 | **M0 resolved scope — E-013** | Functional responsibilities and source-preservation workflow; no existing scenes. Names/Roblox owner deferred by producer; verify before future publication. Final budgets after first placeholder handoff/measurements. | Reproducibility and two-person work |
+| Q-010 | **Resolved — D-013/D-019** | Starter replacement on free1/s lane; documented competition rules and no classification prizes at launch. | The prior review identifies omissions without preserving their full wording; do not invent prizes or additive throughput. |
 
-## Next producer discussion
+## Remaining scope gates
 
-D-014–D-016 resuelven las decisiones de economía inicial/pacing/rangos del paso 2.
-D-017 resuelve guardado como estrategia. Continuar con Q-006/Q-009/Q-010
-(alcance/assets), con fuentes/evidencia. No reabrir probabilidades ni pedir otra aprobación
-de las decisiones ya aceptadas. Playtests permanecen pendientes de M1.
+D-011–D-019/E-013 resolve the blocking M0 product/strategy choices. M1 still needs
+separate authorization and measured acceptance; later promotion/expansions/new
+mechanics remain unapproved. Roblox ownership/permissions and final art budgets are
+future asset/publication gates, explicitly deferred by E-013, not invented approvals.
 
 ## Decision entry template
 
 ```markdown
-### D-018 — <short title>
+### D-020 — <short title>
 - Date: YYYY-MM-DD
 - Status: Proposed | Accepted | Superseded
 - Context: ...

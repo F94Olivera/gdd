@@ -1,10 +1,10 @@
 # Balance and simulation specification
 
-**Version:** working specification from Master GDD v2.1, updated by producer decisions D-011–D-016 on 2026-10-18.
+**Version:** working specification from Master GDD v2.1, updated by producer decisions D-011–D-019 on 2026-10-18.
 **Approval state:** p/H/cap/reference capacities (D-011/D-012), starter substitution
 (D-013), original prices/first promotion (D-014), pacing targets (D-015) and permanent
-titles (D-016) are approved. Other rates/buffers/session/build assumptions remain
-experimental. Offline evidence in §§12–14 is not runtime or playtest verification.
+titles (D-016) are approved. D-018 approves intermediate machinery rates and Ground/dimensions. Buffers,
+session/delay, second-line bundle and geometry assumptions remain experimental. Offline evidence in §§12–14 is not runtime or playtest verification.
 
 ## 1. Approved discovery and analytical reference
 
@@ -46,7 +46,7 @@ rewards, hidden nerfs or additional archive rarity tiers may conceal slow pacing
 
 **Base ordinary income**: secure processing pays one Intel per original ordinary output unit before approved clearance multipliers. A genuine archive is additional and does not change this ordinary payment.
 
-| Upgrade / item | Approved incremental Intel cost | Proposed capacity/effect |
+| Upgrade / item | Approved incremental Intel cost | Capacity/effect (D-012/D-018) |
 | --- | ---: | --- |
 | Free starter lane | 0 | 1 manual cleared unit/sec with connected output |
 | Extractor | 30 | 1 automatically cleared unit/sec |
@@ -57,7 +57,7 @@ rewards, hidden nerfs or additional archive rarity tiers may conceal slow pacing
 | Belt segment | 5 | 10 transported units/sec |
 | Belt upgrade | 25 | Increases belt to 50 units/sec |
 
-Original prices are **approved as the initial M1 candidate by D-014**; ×2/×5 are experimental alternatives, not selected. D-012 approves the reference capacities: extractor Tier 3 30/s, upgraded conveyor 50/s and processor Tier 2 40/s; two such lines sustain 60/s total when unblocked. The global cap includes all manual/automatic clearing. Other rates remain proposals (starter baseline: GDD §4). Treat belt cost as per segment; machine upgrades as incremental prices. No off-by-one rounding exploits or extra archive-roll units from faster processors.
+Original prices are **approved as the initial M1 candidate by D-014**; ×2/×5 are experimental alternatives, not selected. D-012 approves the reference capacities: extractor Tier 3 30/s, upgraded conveyor 50/s and processor Tier 2 40/s; two such lines sustain 60/s total when unblocked. The global cap includes all manual/automatic clearing. Intermediate rates are approved by D-018 (starter baseline: GDD §4). Treat belt cost as per segment; machine upgrades as incremental prices. No off-by-one rounding exploits or extra archive-roll units from faster processors.
 
 ## 3. Initial M1 progression — D-014/D-016
 

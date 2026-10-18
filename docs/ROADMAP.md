@@ -35,27 +35,26 @@ seeded simulator below, not completion of that deliverable or a milestone gate.
 
 **Remaining:**
 
-- [x] Reconcile available reviewed starter details and competition rules in GDD §§4/8 (E-011). Starter connection resolved by D-013; additional competition presentation/reward wording remains unresolved in Q-010.
+- [x] Reconcile available reviewed starter details and competition rules in GDD §§4/8 (E-011). Starter connection resolved by D-013; competition presentation/rewards resolved by D-019.
 - [x] Prepare the reviewable simulator specification and proposed deterministic first slice in BALANCE §5; no implementation or balance approval.
 - [x] Resolve starter part of Q-010 via D-013 (replacement at 1/s).
-- [ ] Resolve remaining Q-010 competition presentation/rewards in step 4.
+- [x] Resolve remaining Q-010 competition presentation/rewards via D-019.
 - [x] Run initial pure simulator with reproducible seeds: clearing rates, bounded buffers, approved p=0.00001/H=200000 guarantee and labelled pure-random control; export median/p90/p99 first-find waits under realistic sessions.
 - [x] Resolve Q-001 and Q-003: producer decisions D-011/D-012 approve p=0.00001, mandatory H=200000, total 60/s cap and two maximum-capacity reference lines.
 - [x] Resolve Q-002 with measured simulations and D-015 reference targets; real playtests pending.
 - [x] Approve initial prices/first promotion D-014 and rank titles D-016; later promotion outside M1.
 - [x] Review rank titles/first promotion (D-014/D-016) and critical persistence strategy (D-017); M1 failure tests pending.
-- [ ] Close initial sector plan in step 4.
-- [ ] Map asset ownership, authorized Roblox group/experience ownership and Studio-only scene versioning strategy.
+- [x] Close initial sector plan/dimensions/capacities D-018: Ground-only launch.
+- [x] Functional asset responsibilities and Studio source-preservation strategy in ASSET_PIPELINE. E-013 confirms no existing scenes; producer defers names/Roblox owner from M0. Actual permissions/first restore trial remain gates before future asset publication/integration.
 
 **Exit gate:** signed-off blocking M0 rules, executable documented offline balance model, actually verified Rojo/Studio round trip, updated `DECISIONS.md` and M1 scoped tasks. No need to build gameplay to pass M0.
 
 **Trabajo autorizado (E-012):** paso 1 implementado; resultados, comandos,
-hipótesis y límites en BALANCE §13. D-013 resuelve el starter de Q-010; queda
-su parte de competición para paso 4. Paso 2 aprobado D-014–D-016 y repetido: E10 cumple objetivos; resultados en
+hipótesis y límites en BALANCE §13. D-013/D-019 resuelven starter y competición de Q-010. Paso 2 aprobado D-014–D-016 y repetido: E10 cumple objetivos; resultados en
 BALANCE §14. Commit `d98f601`, [CI exitoso](https://github.com/F94Olivera/gdd/actions/runs/39172893779).
 Paso 3: estrategia documentada en ARCHITECTURE y casos P-001–P-012 en TEST_PLAN;
 Q-007/D-017 aprobada como estrategia, pruebas reales pendientes de M1.
-Pasos 4–5 siguen pendientes. No agregar fixtures vecinos sin defecto. M0 continúa abierto.
+Paso 4 resuelto D-018/D-019/E-013, pendiente de commit/CI. Paso 5 pendiente. No agregar fixtures vecinos sin defecto. M0 continúa abierto.
 
 ## M1 — First playable vertical slice
 
@@ -86,7 +85,7 @@ Pasos 4–5 siguen pendientes. No agregar fixtures vecinos sin defecto. M0 conti
 
 ## M3 — Closed alpha and scale
 
-- [ ] Expand **up to** three sectors/floors only after explicit scope approval; validate all authored ports and transfers.
+- [ ] Ground-only initial launch D-018; Upper/Basement remain a separately approved expansion, not an alpha/launch dependency.
 - [ ] Eight-populated-plot production/load checks under named device/network test conditions.
 - [ ] Recovery, reconnect, data-budget, profile contention and progression stress scenarios.
 - [ ] Build Stats/Leaderboard global projections and UTC daily/weekly/monthly/all-time board verification: occurrence times, idempotency, throttling, absolute-score reconciliation, stale UI and no demo grants.

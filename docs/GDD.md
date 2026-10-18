@@ -71,7 +71,12 @@ Accessible presentation includes touch-friendly targets, high contrast, reduced 
 
 ## 5. Factory construction, upgrades and economy
 
-**Initial layout concept:** eight **100×100 stud** independent plot envelopes around a compact hub. Start with a **16×16 build grid**, **4 studs per cell**. Fixed production bays contain machines in designated slots; conveyors are player-routed between typed ports on the grid. M1 uses **Ground only**. Planned maximum for launch is Ground, Upper and Basement, initially **24 studs floor-to-floor**, pending asset/camera validation.
+**Initial launch layout (D-018):** eight independent **100×100 stud** plot envelopes
+around a compact hub; each has a **16×16 build grid**, **4 studs per cell** (64×64
+buildable area). Fixed bays and typed ports, player-routed conveyors. **Ground only**
+for M1 and initial launch. Upper/Basement and the former24-stud floor-spacing concept
+are expansion proposals, outside launch. Validate fit/camera/touch using placeholders;
+no additional sector or throughput is unlocked by the first promotion in M1.
 
 - M1 supports straight and corner belts with 90-degree rotation, valid footprint preview, and explicit connection status; no splitters/merges.
 - Reject graph cycles, invalid ports, occupied grid positions, outside-plot placement, blocked lanes and unsafe removals.
@@ -81,7 +86,7 @@ Accessible presentation includes touch-friendly targets, high contrast, reduced 
 
 **Intel** is the only gameplay currency. Securely processed ordinary material initially earns **1 Intel per unit**. Intel buys equipment, capacity upgrades, bays/floors and voluntary promotion fees. An archive find must never require buying another random roll. Ordinary work and production milestones must carry progression even during unlucky archive streaks.
 
-Original GDD proposed starter values (see [BALANCE.md](BALANCE.md) for review status): free manual lane at 1 unit/s; first extractor 30 Intel at 1 unit/s; basic processor 60 Intel at 10 units/s; extractor tier 2 upgrade 120 Intel at 10 units/s; extractor tier 3 upgrade 600 Intel at 30 units/s; processor tier 2 upgrade 350 Intel at 40 units/s; belt segment 5 Intel at 10 units/s with an upgrade costing 25 to 50 units/s. These original incremental prices are approved as the initial M1 candidate (D-014). D-012 approves the Tier 3 extractor 30/s, upgraded conveyor 50/s and Tier 2 processor 40/s as the launch reference capacities; other tuning remains provisional.
+Initial values approved by D-014/D-018 (see [BALANCE.md](BALANCE.md) for authority and experimental inputs): free manual lane at 1 unit/s; first extractor 30 Intel at 1 unit/s; basic processor 60 Intel at 10 units/s; extractor tier 2 upgrade 120 Intel at 10 units/s; extractor tier 3 upgrade 600 Intel at 30 units/s; processor tier 2 upgrade 350 Intel at 40 units/s; belt segment 5 Intel at 10 units/s with an upgrade costing 25 to 50 units/s. These original incremental prices are approved as the initial M1 candidate (D-014). D-018 also approves intermediate capacities 1→10→30 extractor, 10→40 processor and 10→50 belt. Buffers, timing, connected second-line bundle and geometry costs remain experimental.
 
 **Approved launch cap (D-012):** at most **60 eligible documents/s total per
 player/factory**, combining manual and automatic clearing across machines, floors
@@ -124,7 +129,12 @@ Permanent **archive title** remains lifetime-count-only. Independently display l
 | Documents processed | Each original secure processed unit once; no transformation recount | Secondary, after reliability gate |
 | Fastest first archive | Cumulative **online** time from first accepted manual/automated clearing to first genuine award | Secondary, all-time initially |
 
-Competition presentation must keep permanent archive titles separate from category/period standing. Demonstrations/admin grants cannot masquerade as genuine competitive finds; Intel scores exclude non-production grants as specified above. Launch commerce remains cosmetic-only (§9): no paid rank or competitive stat buffs. These restrictions follow the available rules; ROADMAP also records an omission concerning competition presentation/rewards whose **exact additional wording is unavailable**. No prize types, payout schedule, winner badges or extra presentation restrictions are approved by this reconciliation; producer clarification is tracked in DECISIONS Q-010.
+Competition presentation keeps permanent archive titles separate from category/period
+standing. Demonstration/admin grants cannot masquerade as genuine competitive finds;
+Intel scores exclude non-production grants. Cosmetic-only commerce, no paid rank or
+stat buffs. D-019 closes the missing wording: **no material prizes, payments or winner
+badges for classification at initial launch**. Categories/UTC periods of D-010 remain;
+no extra rewards or payout system. M1 continues to ship local counters only.
 
 Rank/title never changes because a daily leaderboard resets. Tie scores share standing; display order may be stable without implying superiority. Show category/period selectors, top scores, user's confirmed score, UTC reset countdown, last refresh and staleness. Do not invent exact position outside returned top list. Proposed refresh target **five minutes**, pending budget checks. Delayed grants count toward **server occurrence** windows, not processing/saving time; retain idempotent event identity.
 
@@ -143,7 +153,9 @@ Reference footage can motivate **readable feedback**, compact upgrades, producti
 See `DECISIONS.md`: D-011–D-016 resolve discovery, throughput, starter,
 initial prices/first promotion, reference pacing and titles. D-015 targets first
 archive mediana <=37 min and p90/p99 <=75 min online with ideal progression and one
-promotion; real construction/input playtests remain pending. Remaining M0 choices:
-sectors and asset/competition responsibilities. D-017 approves native storage,
+promotion; real construction/input playtests remain pending. D-018/D-019 close sectors/dimensions/capacities and competition; E-013 confirms
+content starts from zero and defers named/Roblox ownership until future asset work.
+D-017 approves native storage,
 bounded provisional batches and ack before reveal; details belong in ARCHITECTURE. Other
-proposals remain hypotheses; no gameplay or M0 closure follows from the approvals.
+proposals remain hypotheses. The ROADMAP exit-gate audit owns M0 closure;
+M1 gameplay requires separate authorization.
