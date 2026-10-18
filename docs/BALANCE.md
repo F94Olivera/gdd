@@ -1,7 +1,10 @@
 # Balance and simulation specification
 
-**Version:** working specification from Master GDD v2.1, updated by producer decisions D-011/D-012 on 2026-10-18.
-**Approval state:** p=0.00001, mandatory H=200000, total cap=60/s and the reference line capacities below are **approved design parameters**. Other tuning remains proposed. This document is not executable configuration or evidence of simulated pacing. Future runtime configuration must be reviewed and versioned.
+**Version:** working specification from Master GDD v2.1, updated by producer decisions D-011–D-016 on 2026-10-18.
+**Approval state:** p/H/cap/reference capacities (D-011/D-012), starter substitution
+(D-013), original prices/first promotion (D-014), pacing targets (D-015) and permanent
+titles (D-016) are approved. Other rates/buffers/session/build assumptions remain
+experimental. Offline evidence in §§12–14 is not runtime or playtest verification.
 
 ## 1. Approved discovery and analytical reference
 
@@ -39,11 +42,11 @@ secure processing. Startup, finite queues, building time, blockages and absence
 change actual rates/waits. The guarantee is not a maximum calendar wait. No fake
 rewards, hidden nerfs or additional archive rarity tiers may conceal slow pacing.
 
-## 2. Economy proposal
+## 2. Initial M1 economy — D-014
 
 **Base ordinary income**: secure processing pays one Intel per original ordinary output unit before approved clearance multipliers. A genuine archive is additional and does not change this ordinary payment.
 
-| Upgrade / item | Proposed incremental Intel cost | Proposed capacity/effect |
+| Upgrade / item | Approved incremental Intel cost | Proposed capacity/effect |
 | --- | ---: | --- |
 | Free starter lane | 0 | 1 manual cleared unit/sec with connected output |
 | Extractor | 30 | 1 automatically cleared unit/sec |
@@ -54,19 +57,19 @@ rewards, hidden nerfs or additional archive rarity tiers may conceal slow pacing
 | Belt segment | 5 | 10 transported units/sec |
 | Belt upgrade | 25 | Increases belt to 50 units/sec |
 
-All prices remain **unapproved tuning hypotheses**. D-012 approves the reference capacities: extractor Tier 3 30/s, upgraded conveyor 50/s and processor Tier 2 40/s; two such lines sustain 60/s total when unblocked. The global cap includes all manual/automatic clearing. Other rates remain proposals (starter baseline: GDD §4). Treat belt cost as per segment; machine upgrades as incremental prices. No off-by-one rounding exploits or extra archive-roll units from faster processors.
+Original prices are **approved as the initial M1 candidate by D-014**; ×2/×5 are experimental alternatives, not selected. D-012 approves the reference capacities: extractor Tier 3 30/s, upgraded conveyor 50/s and processor Tier 2 40/s; two such lines sustain 60/s total when unblocked. The global cap includes all manual/automatic clearing. Other rates remain proposals (starter baseline: GDD §4). Treat belt cost as per segment; machine upgrades as incremental prices. No off-by-one rounding exploits or extra archive-roll units from faster processors.
 
-## 3. Progression proposal
+## 3. Initial M1 progression — D-014/D-016
 
-| Clearance level | Proposed requirements | Ordinary Intel multiplier | Reset and retention |
+| Clearance level | Requirements/status | Ordinary Intel multiplier | Reset and retention |
 | --- | --- | --- | --- |
 | 0 | Starter | 1.00× | No reset |
-| 1 | 25,000 lifetime ordinary units processed, 10,000 spendable Intel, completed tutorial/equivalent | 1.25× | Reset spendable Intel to 100 and restore free lane; preserve archive total/counter |
-| 2 | 250,000 lifetime ordinary units processed, 100,000 spendable Intel | 1.50× total | Same voluntary reset policy |
+| 1 (approved D-014) | 100,000 lifetime ordinary units processed, 50,000 spendable Intel, completed tutorial/equivalent | 1.25× | Reset spendable Intel to 100 and restore free lane; preserve archive total/counter |
+| 2 (unapproved, outside M1) | 250,000 lifetime ordinary units processed, 100,000 spendable Intel | 1.50× total | Same voluntary reset policy |
 
-Multiplier formula proposed: `1 + 0.25 * clearanceIndex`. Do not add another currency or use lifetime archive count as an unlock requirement. Promotions are confirmed explicitly by the player and idempotent on server.
+Only the first total multiplier 1.25 is approved. Formula `1 + 0.25 * clearanceIndex` remains a later-promotion proposal. Do not add another currency or use lifetime archive count as an unlock requirement. Promotions are confirmed explicitly by the player and idempotent on server.
 
-| Lifetime archives | Proposed permanent title |
+| Lifetime archives | Approved permanent title (D-016) |
 | ---: | --- |
 | 0 | Trainee |
 | 1 | Archive Finder |
@@ -75,7 +78,7 @@ Multiplier formula proposed: `1 + 0.25 * clearanceIndex`. Do not add another cur
 | 40 | Archive Specialist |
 | 100 | Director of Archives |
 
-These are milestone titles, not archive count caps. **All rank thresholds and titles are open for producer confirmation.**
+These are milestone titles, not archive count caps. **Thresholds and titles approved by D-016.**
 
 ## 4. Load, tick and visual budgets
 
@@ -109,7 +112,7 @@ herramienta local, nunca producción del jugador mientras está desconectado.
   GDD §§2–8 y DECISIONS D-001–D-012.
 - **Hipótesis:** números no aprobados de §§2–4, duraciones/sesiones/buffers y políticas de
   compra de esta sección. Cada candidato debe identificarlas; no son defaults de gameplay.
-- **Productor pendiente:** Q-002, Q-004–Q-007 y Q-010. Pure-random solo como control contrafactual, no política candidata.
+- **Productor pendiente:** Q-006/Q-007, segunda promoción Q-005 y parte competición Q-010. Q-002/Q-004 y primera promoción Q-005 resueltas por D-014–D-016. Pure-random solo como control contrafactual, no política candidata.
   El primer slice propuesto abajo no necesita resolver rareza ni economía.
 
 ### Entradas y contrato del experimento
@@ -246,7 +249,7 @@ pacing de D-011/D-012, sin reabrir decisiones aprobadas por defecto.
 
 ## 7. Producer sign-off required
 
-Q-001 and Q-003 are resolved by D-011/D-012. Q-002 (experience targets), Q-004 (titles) and Q-005 (promotion economy) remain open; Q-007 must define the durable award protocol before persistence implementation. Prices and promotions must be reviewed against the approved 60/s cap, not implicitly accepted from the old table.
+Q-001 and Q-003 are resolved by D-011/D-012. D-014–D-016 resolve initial M1 prices/promotion, experience targets and titles explicitly. Later promotion remains outside M1; Q-006/Q-007 and remaining asset/competition choices still require resolution.
 
 ## 8. Verificación del paso temporal M0 (2026-10-18)
 
@@ -829,3 +832,65 @@ No se eligió tick de gameplay. No se validaron motor, Studio, red, touch, ocho 
 servicios reales, persistencia o durabilidad. Sin modificaciones a `src/` ni Production.
 Los resultados son candidatos para decidir el paso 2; M0 continúa abierto hasta
 aprobar pacing/economía y completar los pasos 3–5.
+
+
+## 14. Evaluación de alternativas — paso 2 (2026-10-18)
+
+Paso 1 publicado en commit `6e2802f3398c4cf00466b666c7540ce112b857be` a
+`origin/master`; [CI remoto exitoso](https://github.com/F94Olivera/gdd/actions/runs/39172535646).
+Se comparan combinaciones antes de pedir decisiones de producto. **Aprobación posterior registrada en D-014–D-016**. La repetición y el cierre
+del paso se registran abajo; las alternativas no seleccionadas siguen como evidencia.
+
+Se agregan E12/E13 a `economyScenarios.all`, manteniendo índices/semillas previos.
+Comandos: `lune run scripts/economyBalance.luau E12-prices-x2-early-promotion`
+y `lune run scripts/economyBalance.luau E13-prices-x2-later-promotion`.
+Cada escenario ejecutó 100000 corridas por política y exportó manifiesto/CSV propios.
+Pasaron check local, diff check y `lune run scripts/balanceSensitivity.luau`.
+En ambos, delta de A al usar h/2=9.15625 unidades/100h online y máximo adelanto
+transaccional .21875 s; conservación, secuencia de compras y caudal estable intactos.
+
+| Alternativa | Primera automatización | 60/s | Primera promoción | Mediana primer archivo | p90/p99 primer archivo |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Originales +25k/10k (E6) | 30.06 s | 5:44.81 | 12:01.84 | 27.09 min | 63.39 min |
+| Originales +100k/50k (E10) | 30.06 s | 5:44.81 | 32:51.84 | 24.32 min | 63.39 min |
+| Precios ×2 +25k/10k (E12) | 60.06 s | 11:28.03 | 17:05.38 | 36.18 min | 72.49 min |
+| Precios ×2 +100k/50k (E13) | 60.06 s | 11:28.03 | 37:55.38 | 29.38 min | 72.49 min |
+
+Tiempos online continuos ideales, según los supuestos de §13. En E13,
+medianas online por rango 5/15/40/100: 2.2573/6.2623/16.2647/40.2807 horas;
+p99 3.9565/9.1417/20.9223/47.5673 horas. No incluyen errores de construcción,
+tiempos de pensar distintos de la demora programada o coste geométrico de rutas.
+
+**Recomendación presentada, no elegida:** E13, precios ×2 y primera promoción 100k P/50k Intel;
+conservar rebuild grant 100/multiplicador total 1.25 como candidatos. Da un minuto
+hasta automatización y más uso de la fábrica completa antes del reset. E12 resetea
+antes y retrasa más la mediana del primer archivo. Precios ×5 no se recomiendan
+para el objetivo propuesto de automatizar antes de 2 minutos (mide 150.06 s).
+El requisito de producción domina a la fee en estos candidatos: además del fee,
+el reset desecha Intel sobrante; el futuro preview debe mostrar ambos conceptos.
+
+Se consulta explícitamente al productor economía, objetivos Q-002 (mediana ≤37 min,
+p90/p99 ≤75 min online en el control con progresión y una promoción; ver controles
+sostenidos/manuales de §13) y títulos/umbrales Q-004. Son propuestas para validar
+luego en playtests, no límites de espera calendario ni nuevas garantías.
+Después de su respuesta: registrar decisiones, repetir las simulaciones afectadas,
+verificar coherencia y recién entonces commit/push/CI del paso 2. Q-005 segunda
+promoción no se aprueba por inferencia; quedará fuera de M1 hasta decisión separada.
+
+
+### Decisión y repetición del paso 2
+
+El productor eligió **E10: precios originales +100k P/50k Intel**, grant100 y
+multiplicador1.25 (D-014); aceptó objetivos ≤37/75/75 min online (D-015) y
+umbrales/títulos de §3 (D-016). La aprobación no comprende buffers/demoras/paquete
+hipotético de segunda línea ni coste geométrico de rutas. Segunda promoción fuera de M1.
+Repetición completada: E10 100000 por política, control sostenido 100000 por
+política, sensibilidad E1–E13, `lune run scripts/check.luau` y `git diff --check`.
+E10: primera automatización30.0625s, 60/s344.8125s, promoción1971.84375s;
+primer archivo mediana1459.3260s, p90/p99 3803.3396s online. Cumple explícitamente
+D-015 (37min/75min/75min). Exactamente una promoción, sin pérdidas de elegibilidad.
+Rangos elegidos 5/15/40/100: medianas2.1032/6.1011/16.1200/40.1405h online;
+p99 3.8118/8.9985/20.7844/47.3733h. Son los resultados de precios originales,
+no los de la alternativa ×2. Pasó el check local; validación de motor/dispositivos
+no ejecutada. Paso 2 completo en evidencia local, listo para commit/push y CI.
+No se implementó gameplay, nuevas dependencias ni persistencia.

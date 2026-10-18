@@ -49,7 +49,7 @@ Server-owned consistent, idempotent persistence remains required (Q-007).
 This supersedes the former unapproved 300000 proposal and pure-random policy.
 See [BALANCE.md](BALANCE.md) for analytical calculations and simulation scope.
 
-**Proposed, unapproved permanent titles:** 0 Trainee; 1 Archive Finder; 5 Investigator; 15 Senior Investigator; 40 Archive Specialist; 100 Director of Archives. No terminal collectible count; players above the highest title continue accumulating archives. Do not sell permanent rank or archive credit.
+**Approved permanent titles (D-016):** 0 Trainee; 1 Archive Finder; 5 Investigator; 15 Senior Investigator; 40 Archive Specialist; 100 Director of Archives. No terminal collectible count; players above the highest title continue accumulating archives. Do not sell permanent rank or archive credit.
 
 ## 4. Interactive tutorial and reveal
 
@@ -58,9 +58,9 @@ Tutorial is contextual, short, skippable, resumable after disconnect and replaya
 Starter: a **free, already connected sorter/conveyor/processor lane at 1 unit/s**.
 D-013 approves the first extractor **replacing manual clearing** in this lane,
 using its included connection at 1/s, with later belt/processor upgrades. Manual
-and extractor do not add together on the starter line. The proposed 60-Intel basic
+and extractor do not add together on the starter line. The D-014 60-Intel basic
 processor is an upgrade, not a prerequisite for the free lane. Exact visual belt
-layout is an integration/asset contract; second-line equipment/prices remain proposals.
+layout is an integration/asset contract; second-line connected bundle and routing costs remain experiment assumptions.
 
 
 Proposed tutorial mechanism: after **30 valid starter units and the first extractor purchase**, grant **one** demonstration. Demonstration does **not** grant Intel, lifetime archives, leaderboard progress or a guarantee-counter reset/advance. Genuine finds during the tutorial are genuine and count normally. Input hold-to-repeat is free for everyone, constrained to the same server-approved manual rate.
@@ -81,7 +81,7 @@ Accessible presentation includes touch-friendly targets, high contrast, reduced 
 
 **Intel** is the only gameplay currency. Securely processed ordinary material initially earns **1 Intel per unit**. Intel buys equipment, capacity upgrades, bays/floors and voluntary promotion fees. An archive find must never require buying another random roll. Ordinary work and production milestones must carry progression even during unlucky archive streaks.
 
-Original GDD proposed starter values (see [BALANCE.md](BALANCE.md) for review status): free manual lane at 1 unit/s; first extractor 30 Intel at 1 unit/s; basic processor 60 Intel at 10 units/s; extractor tier 2 upgrade 120 Intel at 10 units/s; extractor tier 3 upgrade 600 Intel at 30 units/s; processor tier 2 upgrade 350 Intel at 40 units/s; belt segment 5 Intel at 10 units/s with an upgrade costing 25 to 50 units/s. Prices are incremental hypotheses. D-012 approves the Tier 3 extractor 30/s, upgraded conveyor 50/s and Tier 2 processor 40/s as the launch reference capacities; other tuning remains provisional.
+Original GDD proposed starter values (see [BALANCE.md](BALANCE.md) for review status): free manual lane at 1 unit/s; first extractor 30 Intel at 1 unit/s; basic processor 60 Intel at 10 units/s; extractor tier 2 upgrade 120 Intel at 10 units/s; extractor tier 3 upgrade 600 Intel at 30 units/s; processor tier 2 upgrade 350 Intel at 40 units/s; belt segment 5 Intel at 10 units/s with an upgrade costing 25 to 50 units/s. These original incremental prices are approved as the initial M1 candidate (D-014). D-012 approves the Tier 3 extractor 30/s, upgraded conveyor 50/s and Tier 2 processor 40/s as the launch reference capacities; other tuning remains provisional.
 
 **Approved launch cap (D-012):** at most **60 eligible documents/s total per
 player/factory**, combining manual and automatic clearing across machines, floors
@@ -90,13 +90,17 @@ lines, each extractor Tier 3 30/s → upgraded conveyor 50/s → processor Tier 
 for 30/s sustained per line when unblocked. Other configurations must obey the same
 global cap. Construction rules and UI must expose it; no hidden odds or production
 reductions. Bottlenecks and finite buffers determine measured flow. Configuration
-must be versioned; no buffer sizes, prices or additional floors are approved here.
+must be versioned; this cap decision itself does not approve buffer sizes or additional floors; prices are approved separately by D-014.
 
 ## 6. Voluntary clearance promotion
 
-Promotions unlock sector/equipment eligibility based on **production + spendable Intel**, never a required rare find. Original proposed eligibility: first promotion at **25,000 processed lifetime ordinary units + 10,000 Intel + tutorial-equivalent validated automation**; second at **250,000 lifetime units + 100,000 Intel**. These thresholds require simulations and playtests.
-
-Proposed multipliers: first clearance **+25% ordinary Intel per output**; second **+50% total**, formula `1 + 0.25 × clearanceIndex`. This is **not** an archive probability boost. Show explicit confirmation and full reset preview; no forced or automatic promotion.
+Promotions unlock approved sector/equipment eligibility based on **production +
+spendable Intel**, never a required rare find. D-014 approves the first promotion:
+**100,000 lifetime ordinary processed units +50,000 spendable Intel + completed
+tutorial/equivalent**, voluntarily confirmed, with **1.25× total ordinary income**.
+The original 25k/10k candidate is not selected. Second promotion thresholds and
+1.50× total remain unapproved, outside M1. No archive probability boost.
+Show explicit confirmation and full reset preview; no forced or automatic promotion.
 
 At promotion: consume the approved fee, set spendable Intel to **100 rebuild grant**, restore the free starter lane, reset purchased factory layout/bays/floors; clear in-flight ordinary output only after confirmation. Retain lifetime archives, permanent rank, discovery failure counter, pending genuine rewards, cumulative production, tutorial, sector eligibility/clearance and cosmetics/preferences. Recorded promotional operation IDs must prevent double charge or double advancement.
 
@@ -136,4 +140,9 @@ Reference footage can motivate **readable feedback**, compact upgrades, producti
 
 ## 10. Decisions requiring producer approval (M0)
 
-See `DECISIONS.md`; D-011/D-012 resolve discovery policy and launch throughput. Remaining key blockers are: target time-to-first/ongoing genuine discovery at each throughput tier; finalized permanent rank thresholds/titles; voluntary promotion fees and sectors; and a persistence strategy with auditable durable awards. Other numerical proposals remain hypotheses until explicitly accepted; approved parameters do not constitute measured pacing or authorization to close M0.
+See `DECISIONS.md`: D-011–D-016 resolve discovery, throughput, starter,
+initial prices/first promotion, reference pacing and titles. D-015 targets first
+archive mediana <=37 min and p90/p99 <=75 min online with ideal progression and one
+promotion; real construction/input playtests remain pending. Remaining M0 choices:
+sectors, durable award strategy and asset/competition responsibilities. Other
+proposals remain hypotheses; no gameplay or M0 closure follows from the approvals.

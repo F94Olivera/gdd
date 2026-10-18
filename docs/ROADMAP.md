@@ -41,7 +41,8 @@ seeded simulator below, not completion of that deliverable or a milestone gate.
 - [ ] Resolve remaining Q-010 competition presentation/rewards in step 4.
 - [x] Run initial pure simulator with reproducible seeds: clearing rates, bounded buffers, approved p=0.00001/H=200000 guarantee and labelled pure-random control; export median/p90/p99 first-find waits under realistic sessions.
 - [x] Resolve Q-001 and Q-003: producer decisions D-011/D-012 approve p=0.00001, mandatory H=200000, total 60/s cap and two maximum-capacity reference lines.
-- [ ] Resolve Q-002 from actual progression/session simulations; approved parameters do not certify player-facing waits.
+- [x] Resolve Q-002 with measured simulations and D-015 reference targets; real playtests pending.
+- [x] Approve initial prices/first promotion D-014 and rank titles D-016; later promotion outside M1.
 - [ ] Review rank titles, first promotion economy, sector plan and critical persistence strategy before building affected systems.
 - [ ] Map asset ownership, authorized Roblox group/experience ownership and Studio-only scene versioning strategy.
 
@@ -49,8 +50,8 @@ seeded simulator below, not completion of that deliverable or a milestone gate.
 
 **Trabajo autorizado (E-012):** paso 1 implementado; resultados, comandos,
 hipótesis y límites en BALANCE §13. D-013 resuelve el starter de Q-010; queda
-su parte de competición para paso 4. Paso 2 requiere respuestas explícitas sobre
-pacing/precios, rangos y promoción, y repetir los escenarios afectados. Los pasos
+su parte de competición para paso 4. Paso 2 aprobado D-014–D-016 y repetido: E10 cumple objetivos; resultados en
+BALANCE §14. Publicar commit/CI antes de iniciar el paso 3. Los pasos
 3–5 siguen pendientes. No agregar fixtures vecinos sin defecto. M0 continúa abierto.
 
 ## M1 — First playable vertical slice

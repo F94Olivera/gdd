@@ -56,6 +56,35 @@ These are **GDD-approved direction**, not new user approvals during this documen
 - Impact: escenario económico offline y futuro starter M1. No aprueba el precio propuesto de 30 Intel para runtime, los demás precios, paquetes de segunda línea, rangos ni economía de promoción. No resuelve las restricciones adicionales de presentación/premios de competición pendientes en Q-010.
 - Acceptance: antes/después de comprar el primer extractor el clearing nominal continúa a 1/s; coste solo con Intel disponible; el inventario conserva su elegibilidad y pago ordinario.
 
+### D-014 — Economía inicial M1 y primera promoción
+
+- Date: 2026-10-18
+- Status: Accepted; resuelve economía inicial y parte M1 de Q-005.
+- Producer approval: “Precios originales y promoción a 100.000 procesados +50.000 Intel”, en respuesta a las alternativas medidas del paso 2.
+- Rule: precios incrementales originales de BALANCE §2 como candidato inicial M1; primera promoción voluntaria con 100000 unidades ordinarias procesadas de por vida, 50000 Intel disponibles y tutorial/equivalente. Reset a starter gratuito +100 Intel, multiplicador total 1.25.
+- Alternatives: precios ×2/×5 y primera promoción 25k/10k no elegidos. E10 es el escenario de referencia aprobado; tasas/buffers/sesiones/demoras y paquete conectado de segunda línea conservan sus estados de autoridad propios.
+- Retention: archivos/rango/contador de fallos y fracciones de elegibilidad acumuladas, tutorial, estadísticas y premios pendientes sobreviven. Preview explicita fee, Intel sobrante reseteado e inventario descartado antes del consentimiento.
+- Impact: BALANCE §§2–3/14, GDD §§5–6, futura configuración M1 versionada. No autoriza gameplay ni segunda promoción (250k/100k y 1.50 permanecen fuera de M1).
+- Acceptance: repetir E10 con 100000 semillas por política, validar asequibilidad sin suerte, conservación/reset/retención y pacing D-015; playtests pendientes.
+
+### D-015 — Objetivos de pacing de referencia M0
+
+- Date: 2026-10-18
+- Status: Accepted; resuelve Q-002 para M0, sujeto a validar en playtests.
+- Producer approval: “Aprobar estos objetivos de referencia; confirmar después con playtests.”
+- Rule: primer archivo con progresión ideal y una promoción: mediana <=37 min y p90/p99 <=75 min **online** desde primera unidad elegible. Referencias sostenidas aceptadas: 60/s mediana ~19.3 min y p90/p99 ~55.6 min; 1/s manual mediana ~19.26 h y p90/p99 ~55.56 h.
+- Limits: ausencia aumenta calendario; no promesa de hallazgo genuino en tutorial. La única garantía sigue siendo H por trabajo (D-011), nunca tiempo calendario. Sesiones/demoras del harness son hipótesis, no un SLA ni validación de retención real.
+- Acceptance: volver a contrastar las cohortes afectadas contra estos objetivos, publicar censura/bandas y validar después construcción/input reales sin cambiar p/H por inferencia.
+
+### D-016 — Títulos permanentes M1
+
+- Date: 2026-10-18
+- Status: Accepted; resuelve Q-004.
+- Producer approval: “Aprobar umbrales y títulos propuestos.”
+- Rule: 0 Trainee, 1 Archive Finder, 5 Investigator, 15 Senior Investigator, 40 Archive Specialist, 100 Director of Archives. Solo lifetime genuino; sin límite de hallazgos posterior a 100, sin consumo ni efecto de rankings periódicos.
+- Impact: BALANCE §3 y GDD §3; futura configuración/UI M1. No premios de competición ni multiplicador de suerte.
+- Acceptance: mostrar pacing medido en el escenario elegido E10, no atribuirle las mediciones de precios ×2 presentadas como alternativa. Tests de fronteras de rango se implementarán con la configuración M1.
+
 ## Engineering baseline for M0 (from existing validated repo setup)
 
 | ID | Status | Decision / rationale |
@@ -143,24 +172,27 @@ These are **GDD-approved direction**, not new user approvals during this documen
 | ID | Status | Question / alternatives | Why it matters |
 | --- | --- | --- | --- |
 | Q-001 | **Resolved — D-011** | Fixed p=0.00001 with mandatory H=200000 work guarantee, identical first/subsequent rules. | Prior pure-random / H=300000 alternatives superseded |
-| Q-002 | **Open — M0 blocker** | Target median, p90 and p99 time-to-first archive; expected sustained waits at starter/mid/endgame; acceptable session length? | Early retention and avoiding trivial late-game rarity |
+| Q-002 | **Resolved — D-015** | Target median, p90 and p99 time-to-first archive; expected sustained waits at starter/mid/endgame; acceptable session length? | Early retention and avoiding trivial late-game rarity |
 | Q-003 | **Resolved — D-012** | Total 60 eligible documents/s per player/factory, manual + automatic across all floors/sectors. | At most two maximum-capacity lines; visible global restriction |
-| Q-004 | Open — before progression tuning | Accept/revise rank thresholds and names (0/1/5/15/40/100)? | UI and long-run status progression |
-| Q-005 | Open — before promotion M1 | Approve 25k/250k production requirements, 10k/100k Intel fees, 100 rebuild grant and 25% increments? | Economy, save resets and migrations |
+| Q-004 | **Resolved — D-016** | Accept/revise rank thresholds and names (0/1/5/15/40/100)? | UI and long-run status progression |
+| Q-005 | **M1 resolved — D-014** | First: 100k processed/50k Intel, grant100, total1.25. Second promotion remains unapproved/outside M1. | Economy, save resets and migrations |
 | Q-006 | Open — before sectors M3 | How many launch sectors, what machinery capacities and available building footprint? | Asset and load budgets |
 | Q-007 | Open — before persistence M1 | Which maintained data profile solution and durable grant protocol? | Preventing duplicate/lost rare awards |
 | Q-008 | Open — before broader content | Optional assignments, manual tools, value-added paper, splitter/merger routing? | New gameplay mechanics require explicit scope authorization |
 | Q-009 | Open — before asset production | Final art budgets, Roblox group ownership and publishing permissions? | Reproducibility and two-person work |
 | Q-010 | Open — before affected implementation | Starter resolved by D-013: replacement on the free 1/s connection. What additional competition presentation/reward restrictions were intended? | The prior review identifies omissions without preserving their full wording; do not invent prizes or additive throughput. |
 
-## Next producer discussion (focused round)
+## Next producer discussion
 
-The producer resolved Q-001 and Q-003 explicitly in D-011/D-012 before seeded results. Do not ask those choices again. Present actual seeded progression/session results to address Q-002 and validate pacing under the approved parameters. Do not imply that the GDD's illustrative table is a measured player-session result. Then address rank/promotion tuning; handle technology defaults without repetitive permission questions where possible.
+D-014–D-016 resuelven las decisiones de economía inicial/pacing/rangos del paso 2.
+Continuar con Q-007 (guardado) y luego Q-006/Q-009/Q-010 (alcance/assets), en ese
+orden y con fuentes/evidencia. No reabrir probabilidades ni pedir otra aprobación
+de las decisiones ya aceptadas. Playtests permanecen pendientes de M1.
 
 ## Decision entry template
 
 ```markdown
-### D-014 — <short title>
+### D-017 — <short title>
 - Date: YYYY-MM-DD
 - Status: Proposed | Accepted | Superseded
 - Context: ...

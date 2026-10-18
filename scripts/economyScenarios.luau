@@ -82,6 +82,19 @@ function Scenarios.all(): { Economy.Scenario }
 	insufficient.manualSeconds = 10
 	table.insert(all, insufficient)
 
+	local doubledEarly = Scenarios.base()
+	doubledEarly.id = "E12-prices-x2-early-promotion"
+	doubledEarly.priceScale = 2
+	doubledEarly.promote = true
+	table.insert(all, doubledEarly)
+	local doubledLate = Scenarios.base()
+	doubledLate.id = "E13-prices-x2-later-promotion"
+	doubledLate.priceScale = 2
+	doubledLate.promote = true
+	doubledLate.promotionUnits = 100000
+	doubledLate.promotionFee = 50000
+	table.insert(all, doubledLate)
+
 	return all
 end
 

@@ -158,7 +158,7 @@ end
 local artifact = {
 	schemaVersion = 1,
 	modelVersion = "economy-natural-stream-v1",
-	balanceVersion = "D011-D012-D013-experiments-v1",
+	balanceVersion = "D011-D016-experiments-v2",
 	revision = git({ "rev-parse", "HEAD" }),
 	dirty = git({ "status", "--porcelain" }) ~= "",
 	sourceHashes = sources,
@@ -175,7 +175,7 @@ local artifact = {
 	ranks = ranks,
 	trajectories = trajectories,
 	summaries = summaries,
-	method = "nearest-rank over whole cohort, censor as infinity; 99% DKW band conditional on ideal independent draws; fixed policy independent of RNG; all titles/prices/promotion inputs hypotheses; first and ranks since first whole unit; gap2 from first award (censored if <2); times interpolate accepted-rate step; manual is active manual clearing time, excludes automation; source hashes identify dirty model exactly",
+	method = "nearest-rank over whole cohort, censor as infinity; 99% DKW band conditional on ideal independent draws; fixed policy independent of RNG; E10 prices/first promotion and rank thresholds approved D014-D016; buffers/sessions/delays/connection bundle hypotheses; other economy candidates experimental; first and ranks since first whole unit; gap2 from first award (censored if <2); times interpolate accepted-rate step; manual is active manual clearing time, excludes automation; source hashes identify dirty model exactly",
 }
 fs.writeFile(
 	"build/balance/economy/"
