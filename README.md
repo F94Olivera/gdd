@@ -1,133 +1,133 @@
-# GDD — base Roblox / Luau
+# Find the Secret Archive
 
-Setup para dos desarrolladores, sin gameplay ni dependencias de ejecución.
-Git es la fuente de verdad del código; Studio ejecuta el motor y edita contenido visual.
+**Status:** M0 — specification and technical foundation. No gameplay is implemented yet.
 
-## Requisitos y versiones
+Find the Secret Archive is a Roblox factory tycoon set in a fictional industrial archive warehouse. Players manually clear paperwork, process ordinary documents for **Intel**, build production lines, and occasionally uncover a genuine **Confidential Archive**. Every genuine archive has the same collectible value and adds exactly **one** to the permanent archive count.
 
-macOS (validado en Apple Silicon), Git, Roblox Studio y VS Code instalados desde
-sus sitios oficiales. Rokit **1.2.0**; las seis herramientas están fijadas en
-`rokit.toml`: Rojo 7.7.1, Wally 0.3.2, Selene 0.32.0, StyLua 2.6.0,
-Luau Language Server 1.70.1 y Lune 0.11.0. Git LFS local: 3.8.0.
-Wally y algunas herramientas distribuyen binarios Intel: macOS puede requerir Rosetta.
-No ejecutar `rokit update` sin revisar y validar los cambios de versión.
+This repository is the **single monorepo** for the Roblox codebase, configurations, automated tests, documentation, and project-owned art sources. Roblox Studio is the runtime and visual editor; Git is the source of truth for code and managed configuration. There is no external Node.js backend, separate API, database server, or mandatory Roblox framework at this stage.
 
-## Instalación desde un clon
+## Current technical baseline
 
-1. Instalar Studio y VS Code manualmente si faltan. Instalar Git LFS con
-   `brew install git-lfs` (requiere Homebrew).
-2. Instalar Rokit con el instalador oficial, fijando su versión:
+The following versions were reported and locally validated during the initial setup on an Apple Silicon Mac on 2026-10-18. These are **project pins**, not claims that newer versions do not exist. The actual tool source of truth is `rokit.toml`.
 
-   ```sh
-   curl -fsSL https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh -o /tmp/rokit-install.sh
-   # Revisar el script antes de ejecutarlo.
-   (cd /tmp && bash rokit-install.sh 1.2.0)
-   export PATH="$HOME/.rokit/bin:$PATH"
-   ```
+| Tool | Version | Purpose |
+| --- | --- | --- |
+| Rokit | 1.2.0 | Toolchain manager |
+| Rojo | 7.7.1 | File-to-Studio synchronization and builds |
+| Wally | 0.3.2 | Optional package manager; no gameplay packages yet |
+| Selene | 0.32.0 | Luau linting |
+| StyLua | 2.6.0 | Luau formatting |
+| Luau Language Server | 1.70.1 | Editor analysis |
+| Lune | 0.11.0 | Local tooling and offline tests |
+| Git LFS | 3.8.0 | Large binary art sources |
 
-   Agregar ese `export` a `~/.zshrc` una sola vez. Abrir una terminal nueva y
-   reiniciar VS Code si estaba abierto antes de configurar PATH.
-3. Dentro del clon:
+Also required: Roblox Studio, Git, and VS Code. Blender and Adobe Substance are art-pipeline tools, not game runtime dependencies. Keep the existing working setup; do **not** reinstall merely because this README changed.
 
-   ```sh
-   git lfs install --local
-   git lfs pull
-   rokit install
-   wally install
-   rojo plugin install
-   code --install-extension JohnnyMorganz.luau-lsp
-   code --install-extension JohnnyMorganz.stylua
-   lune run scripts/check.luau
-   code .
-   ```
+## Start working (already installed)
 
-   Revisar/aceptar los repositorios oficiales que Rokit solicite confiar.
-   No usar `--no-trust-check` habitualmente; se reserva para CI.
-   Si Studio estaba abierto al instalar el plugin, reiniciarlo si no aparece.
-   Luau LSP usa el ejecutable de Rokit y genera `sourcemap.json` automáticamente;
-   la extensión descarga las definiciones Roblox actuales. Studio sigue siendo
-   la verificación final de tipos/APIs del motor; no hay un typecheck Roblox en CI todavía.
-
-## Comandos
+From the repository root:
 
 ```sh
-rojo serve --address 127.0.0.1                 # servidor de sincronización, puerto 34872
-rojo build default.project.json -o build/game.rbxlx # crear build/ antes si no existe
-rojo sourcemap default.project.json -o sourcemap.json
-stylua src scripts tests                     # aplicar formato
-stylua --check src scripts tests             # comprobar formato
-selene src                                  # lint Roblox
-lune run scripts/check.luau                  # formato + lint + build + smoke tests
+rokit install
+wally install
+lune run scripts/check.luau
+rojo serve --address 127.0.0.1
 ```
 
-El check crea `build/`. Las tareas de VS Code también exponen Check, Format y Rojo serve.
-Selene se ejecuta por CLI/CI, sin extensión adicional. No se incluyen paquetes de gameplay;
-`wally.lock` está versionado. Cuando haya una dependencia justificada, agregar su realm
-correcto y mapear `Packages`/`ServerPackages` en Rojo. Actualmente no son parte del árbol.
+Then open the project in Roblox Studio and connect the **Rojo** plugin to `localhost:34872`. Verify the intended target before accepting a sync. Use `Play` and inspect Output. Rojo sync and Studio Play must be verified manually: a successful CLI check is not an engine test.
 
-## Primera conexión y prueba de sincronización
+Useful commands:
 
-1. Ejecutar el check y abrir `build/game.rbxlx` desde File → Open en Studio.
-2. Ejecutar `rojo serve --address 127.0.0.1` desde el repositorio.
-3. En Studio, usar Connect en el aviso de Rojo o abrir Plugins → Rojo → Connect,
-   host `localhost`, puerto `34872`. Revisar los cambios antes de aceptar la sincronización.
-4. Abrir `src/server/Bootstrap.server.luau` en VS Code, agregar un comentario temporal y guardar.
-   Confirmar ese comentario en ServerScriptService → Server → Bootstrap en Studio; retirarlo
-   y confirmar también su desaparición. Esto prueba el recorrido editor → disco → Rojo → Studio.
-5. Usar Play y revisar Output: `[Server] Bootstrap ready` y `[Client] Bootstrap ready`.
-   El place está vacío a propósito; no contiene mapa, piso ni spawn de gameplay.
-6. Detener Play antes de continuar editando. Detener el servidor Rojo con Ctrl+C.
+```sh
+rojo build default.project.json --output build/game.rbxlx
+rojo sourcemap default.project.json --output sourcemap.json
+stylua --check src scripts tests
+stylua src scripts tests
+selene src
+lune run scripts/check.luau
+```
 
-Rojo sincroniza los archivos al árbol administrado: no usar scripts de Studio como fuente
-paralela. Antes de conectar a un place con contenido valioso, hacer una copia y revisar el diff.
+The build directory must exist before invoking Rojo directly if the command does not create it; the project check is expected to prepare it. `build/`, downloaded packages, and generated sourcemaps are not committed. If an individual tool command differs from the checked-in scripts or project configuration, use the repository configuration and update this README in the same change.
 
-## Arquitectura
+### First clone on another developer's computer
 
-- `src/server` → ServerScriptService.Server: bootstrap y futuros sistemas de autoridad.
-- `src/client` → StarterPlayer.StarterPlayerScripts.Client: bootstrap, entrada y presentación.
-- `src/shared` → ReplicatedStorage.Shared: módulos públicos, tipos y constantes.
-- `scripts` y `tests`: tooling Lune fuera del place. Ver `tests/README.md`.
+Install Roblox Studio, VS Code, Git, Git LFS and **Rokit 1.2.0** first, from their official sources; if using Homebrew on macOS, Git LFS can be installed with `brew install git-lfs`. Once, add `export PATH="$HOME/.rokit/bin:$PATH"` to the shell profile (`~/.zshrc` for default zsh), then restart the terminal/VS Code. Some Intel-only tool binaries may require Rosetta on Apple Silicon.
 
-No se introducen servicios, contenedores DI, eventos remotos ni frameworks vacíos.
-Al agregar remotos, el servidor valida tipo, rango, permisos, frecuencia y contexto;
-recalcula los resultados sensibles. Nunca confiar en economía, inventario o daño del cliente.
-Todo lo replicado es visible para el cliente. Secretos y credenciales fuera de Git y Shared.
+```sh
+git clone https://github.com/F94Olivera/gdd.git
+cd gdd
+git lfs install --local
+git lfs pull
+rokit install
+wally install
+rojo plugin install
+code --install-extension JohnnyMorganz.luau-lsp
+code --install-extension JohnnyMorganz.stylua
+lune run scripts/check.luau
+code .
+```
 
-## Workflow de equipo
+The integration branch is `master`. Review/accept normal Rokit source trust requests. Do not bypass Rokit's trust checks in normal local use. Restart Studio if the Rojo plugin is not visible. Complete the live Rojo sync/Play tests on **each** machine, not only CLI checks.
 
-Una rama por cambio, PR pequeño y revisión por la otra persona. Antes de integrar:
-`lune run scripts/check.luau`, prueba local en Studio y, cuando exista interacción,
-servidor con dos clientes. Coordinar cambios del mismo asset binario para evitar conflictos.
-No publicar ni hacer push automáticamente. El repositorio se inicializa en `main`, sin remoto.
-Al autorizar GitHub: crear repositorio privado, primer commit/push y proteger `main`
-con revisión y check `check` obligatorio. La ejecución remota de Actions requiere ese push.
-CI fija acciones por SHA, Rokit y herramientas; usa permisos mínimos y no publica.
+## Repository layout
 
-## Qué se guarda dónde
+```text
+.
+├── README.md
+├── AGENTS.md
+├── default.project.json       # existing Rojo mapping (do not replace blindly)
+├── rokit.toml                 # pinned development tools
+├── wally.toml / wally.lock    # package manifest and resolved versions
+├── src/
+│   ├── server/               # authoritative runtime and bootstrap
+│   ├── client/               # UI, input, visual feedback and bootstrap
+│   └── shared/               # public types, configuration and pure logic
+├── scripts/                  # Lune/check tooling (not part of the place)
+├── tests/                    # offline tests and simulation fixtures
+├── assets/                   # introduced only as the pipeline is established
+└── docs/
+    ├── GDD.md
+    ├── ARCHITECTURE.md
+    ├── DECISIONS.md
+    ├── ROADMAP.md
+    ├── BALANCE.md
+    ├── TEST_PLAN.md
+    ├── ASSET_PIPELINE.md
+    └── history/               # dated setup audits and historical notes
+```
 
-| Elemento | Fuente de verdad / almacenamiento |
+Paths listed for future systems are **planned**, not a claim they already exist. Preserve the existing `src/server/Bootstrap.server.luau`, `src/client/Bootstrap.client.luau`, `src/shared/`, and Rojo mappings until a reviewed implementation changes them.
+
+## Documentation and decision authority
+
+| Document | Read it for |
 | --- | --- |
-| Luau, árbol Rojo, configs, lockfile, CI, documentación | Git |
-| FBX, Blender, GLB y modelos RBXM propios | Git LFS; reglas en `.gitattributes` |
-| Modelos textuales RBXMX / JSON / OBJ | Git normal; mapearlos explícitamente cuando se incorporen |
-| Build RBXLX, sourcemap y paquetes descargados | Generados e ignorados |
-| Mapas, Terrain y escenas editadas solo en Studio | Todavía no tienen pipeline; exportar/versionar e incorporar al proyecto antes de depender de ellos |
-| Meshes, imágenes, audio, animaciones publicados | Roblox, con IDs y permisos; conservar originales autorizados en Git/LFS |
-| Experiencia/place publicado, permisos del grupo, monetización, secretos, DataStores | Roblox; configuración externa, no reconstruida por este repo |
+| [GDD](docs/GDD.md) | Game identity, approved rules, scope and player experience |
+| [Decisions](docs/DECISIONS.md) | Later producer decisions, open questions and superseded assumptions |
+| [Architecture](docs/ARCHITECTURE.md) | System boundaries, contracts, persistence, security and source layout |
+| [Roadmap](docs/ROADMAP.md) | M0–M4 deliverables, sequencing and acceptance gates |
+| [Balance](docs/BALANCE.md) | Proposed numeric tuning, models and metrics; not yet locked |
+| [Test plan](docs/TEST_PLAN.md) | What must be tested in Lune, Studio, multiplayer and devices |
+| [Asset pipeline](docs/ASSET_PIPELINE.md) | Two-person art handoff, licensing, LFS, Studio publication |
+| [AGENTS](AGENTS.md) | Non-negotiable instructions for Codex and other coding agents |
 
-Guardar un binario en LFS no lo publica en Roblox ni lo incorpora automáticamente al build.
-No versionar builds completos como sustituto del código. Al sumar assets, definir primero
-su ruta en Rojo, ownership, licencia y proceso de publicación. El proyecto actual reconstruye
-solo la base de código; no se creó ni publicó una experiencia comercial.
+**Authority order:** later explicitly approved producer decisions in `docs/DECISIONS.md` > original *Master GDD v2.1* (2026-10-15) > this repository's working `docs/GDD.md` summary > implementation details and proposals. The original GDD and the companion *Claude Master Prompt v2.1* were supplied separately: preserve access to those originals and reconcile `docs/GDD.md` before claiming it is a full verbatim conversion. `AGENTS.md` governs implementation process and does not override product rules.
 
-## Fuentes oficiales
+## Team and release rules
 
-- [Rokit](https://github.com/rojo-rbx/rokit)
-- [Rojo: instalación y plugin](https://rojo.space/docs/v7/getting-started/installation/)
-- [Wally](https://github.com/UpliftGames/wally)
-- [Selene](https://github.com/Kampfkarren/selene)
-- [StyLua](https://github.com/JohnnyMorganz/StyLua)
-- [Luau LSP](https://github.com/JohnnyMorganz/luau-lsp)
-- [Lune](https://github.com/lune-org/lune)
-- [Git LFS](https://git-lfs.com/)
-- [setup-rokit para Actions](https://github.com/paradoxum-games/setup-rokit)
+- Two contributors: small focused branches, pull requests, review by the other contributor, and checks before merge.
+- One owner per asset or serialized Studio scene during an edit; coordinate binary work to avoid impossible merges.
+- Use `lune run scripts/check.luau` plus a relevant Studio Play check before a PR. Include multiplayer/touch checks when affected.
+- Do not publish an experience, upload an asset, create a remote, push code, or change live DataStores without explicit approval.
+- A GitHub Actions definition may exist, but its remote execution remains unverified until a remote is set up and the workflow runs.
+- Use original assets and copy; protect customer/player data; keep credentials outside Git and `ReplicatedStorage`.
+
+See [the initial setup audit](docs/history/setup-validation-2026-10-18.md) for what was actually validated and what remains manual. Source-controlled code is not the same as a fully reconstructible Roblox experience: Studio-only Terrain/places, uploaded asset IDs and permissions, and published experience settings need a separate documented pipeline.
+
+## Official technical references
+
+- [Roblox external tools](https://create.roblox.com/docs/projects/external-tools), [client/server security](https://create.roblox.com/docs/scripting/security/client-server-boundary), and [DataStores](https://create.roblox.com/docs/cloud-services/data-stores)
+- [Rokit](https://github.com/rojo-rbx/rokit), [Rojo](https://rojo.space/docs/v7/getting-started/installation/), [Wally](https://github.com/UpliftGames/wally), [Lune](https://github.com/lune-org/lune)
+- [Selene](https://github.com/Kampfkarren/selene), [StyLua](https://github.com/JohnnyMorganz/StyLua), [Luau LSP](https://github.com/JohnnyMorganz/luau-lsp), [Git LFS](https://git-lfs.com/)
+
+References are documentation links, not proof that a particular integration was tested on the second developer's machine.
