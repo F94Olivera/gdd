@@ -346,4 +346,201 @@ do
 	end)
 end
 
+-- Transport fixtures use the same two-buffer line, capacities and 20 s horizon.
+-- Independent fluid derivation: c=4, b=2, p=4>b, hence Q=0, T=P=2*active.
+-- O grows at c-b=2 until full; during a stop it grows at c=4.
+-- Stop at 11/8 (O=11/4), fill at 31/16, resume at 37/8.
+local transportTimes: { number } = { 0 }
+for index = 1, 160 do
+	table.insert(transportTimes, index / 8)
+end
+for _, time in
+	{
+		21 / 16,
+		11 / 8,
+		23 / 16,
+		30 / 16,
+		31 / 16,
+		32 / 16,
+		39 / 16,
+		40 / 16,
+		41 / 16,
+		73 / 16,
+		37 / 8,
+		75 / 16,
+		76 / 16,
+		77 / 16,
+	}
+do
+	if not table.find(transportTimes, time) then
+		table.insert(transportTimes, time)
+	end
+end
+table.sort(transportTimes)
+
+local function transportOracle(time: number, stopped: boolean): Sample
+	local pause = if stopped then math.clamp(time - 11 / 8, 0, 26 / 8) else 0
+	local transported = 2 * (time - pause)
+	local output = math.min(2 * time + 2 * pause, 5)
+	return {
+		output = output,
+		processing = 0,
+		accepted = transported + output,
+		transported = transported,
+		processed = transported,
+	}
+end
+
+local function transportTrajectory(step: number, stopped: boolean): { Sample }
+	local config = fixture()
+	config.transportRate, config.processingRate, config.maxStepSeconds = 2, 4, step
+	local state = Production.empty()
+	local time, accepted, transported, processed = 0, 0, 0, 0
+	local samples: { Sample } = {}
+	for _, target in transportTimes do
+		while time < target do
+			config.transportRate = if stopped and time >= 11 / 8 and time < 37 / 8 then 0 else 2
+			local dt = math.min(step, target - time)
+			local previous = state
+			local result = Production.step(config, state, dt)
+			state = result.state
+			accepted += result.accepted
+			transported += result.transported
+			processed += result.processed
+			near(result.simulatedSeconds, dt)
+			near(result.discardedSeconds, 0)
+			assert(state.output >= 0 and state.output <= config.outputCapacity)
+			assert(state.processing >= 0 and state.processing <= config.processingCapacity)
+			assert(result.accepted >= 0 and result.accepted <= config.clearingRate * dt)
+			assert(result.transported >= 0 and result.transported <= config.transportRate * dt)
+			assert(result.processed >= 0 and result.processed <= config.processingRate * dt)
+			near(previous.output + result.accepted, state.output + result.transported)
+			near(previous.processing + result.transported, state.processing + result.processed)
+			near(accepted - transported, state.output)
+			near(transported - processed, state.processing)
+			near(accepted, processed + state.output + state.processing)
+			time += dt
+		end
+		table.insert(samples, {
+			output = state.output,
+			processing = state.processing,
+			accepted = accepted,
+			transported = transported,
+			processed = processed,
+		})
+	end
+	near(time, 20)
+	return samples
+end
+
+-- Separate each component and transition; cumulative startup offsets cannot mask
+-- transition errors because we ALSO compare increments from each window's start.
+local transportWindows = {
+	{ name = "startup", first = 0, last = 1.3125 },
+	{ name = "stop", first = 1.375, last = 2.125 },
+	{ name = "saturation", first = 2.4375, last = 2.625 },
+	{ name = "blocked", first = 3, last = 4.5625 },
+	{ name = "restart", first = 4.625, last = 5.125 },
+	{ name = "late", first = 6, last = 20 },
+}
+local function transportErrors(samples: { Sample }, stopped: boolean): { number }
+	local errors: { number } = {}
+	for _, window in transportWindows do
+		local anchor = table.find(transportTimes, window.first)
+		assert(anchor)
+		local origin = transportOracle(window.first, stopped)
+		for _, field in fields do
+			local absolute, increment = 0, 0
+			for index, time in transportTimes do
+				if time >= window.first and time <= window.last then
+					local expected = transportOracle(time, stopped)
+					absolute = math.max(absolute, math.abs(samples[index][field] - expected[field]))
+					increment = math.max(
+						increment,
+						math.abs(
+							(samples[index][field] - samples[anchor][field])
+								- (expected[field] - origin[field])
+						)
+					)
+				end
+			end
+			table.insert(errors, absolute)
+			table.insert(errors, increment)
+		end
+	end
+	return errors
+end
+
+for _, stopped in { false, true } do
+	test("transport refinement: " .. (if stopped then "stop/recovery" else "bottleneck"), function()
+		local previous: { number }? = nil
+		for _, step in { 1 / 16, 1 / 32, 1 / 64, 1 / 128, 1 / 256, 1 / 1024, 1 / 2048 } do
+			local samples = transportTrajectory(step, stopped)
+			local errors = transportErrors(samples, stopped)
+			-- Fixture envelope: <= two stages * max rate * h absolute;
+			-- anchored increments may subtract two such errors, hence 16*h.
+			for index, error in errors do
+				local bound = if index % 2 == 1 then 8 * step else 16 * step
+				assert(error <= bound + 1e-8, "transport oracle envelope exceeded")
+				if previous then
+					local ratio = step / (if step == 1 / 1024 then 1 / 256 else step * 2)
+					assert(
+						error <= previous[index] * ratio * 1.2 + 1e-8,
+						"transport component/window did not refine: " .. tostring(index)
+					)
+				end
+			end
+			local maxima = { 0, 0, 0, 0, 0 }
+			for index, time in transportTimes do
+				local expected = transportOracle(time, stopped)
+				for fieldIndex, field in fields do
+					maxima[fieldIndex] = math.max(
+						maxima[fieldIndex],
+						math.abs(samples[index][field] - expected[field])
+					)
+				end
+			end
+			print(
+				string.format(
+					"TRANSPORT stop=%s h=%.9f O=%.9f Q=%.9f A=%.9f T=%.9f P=%.9f",
+					tostring(stopped),
+					step,
+					maxima[1],
+					maxima[2],
+					maxima[3],
+					maxima[4],
+					maxima[5]
+				)
+			)
+			for windowIndex, window in transportWindows do
+				local parts = {}
+				for fieldIndex, field in fields do
+					local offset = (windowIndex - 1) * 10 + (fieldIndex - 1) * 2
+					table.insert(
+						parts,
+						string.format("%s=%.9f/%.9f", field, errors[offset + 1], errors[offset + 2])
+					)
+				end
+				print("WINDOW " .. window.name .. " abs/delta " .. table.concat(parts, " "))
+			end
+			if stopped then
+				local function at(t: number): Sample
+					local index = table.find(transportTimes, t)
+					assert(index)
+					return samples[index]
+				end
+				near(at(4.625).transported, at(1.375).transported)
+				near(at(4.625).processed - at(1.375).processed, 2 * step)
+				near(at(4.5625).processing, 0)
+				near(at(4.5625).output, 5)
+				near(at(4.625).accepted, at(3).accepted)
+				near(at(5.125).transported - at(4.625).transported, 1)
+				near(at(5.125).accepted - at(4.625).accepted, 1)
+				near(at(5.125).processed - at(4.625).processed, 1 - 2 * step)
+			end
+			previous = errors
+		end
+	end)
+end
+
 print(tostring(cases) .. " production model tests passed")

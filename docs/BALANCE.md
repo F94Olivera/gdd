@@ -179,3 +179,87 @@ muestreo también cambia la partición y puede cambiar el error. No se seleccion
 un paso de producción ni se valida el 5 Hz propuesto. El siguiente incremento seguro
 es contrastar otros regímenes de esta misma línea (por ejemplo transporte limitante)
 con oráculos independientes antes de ampliar topología o integrar gameplay.
+
+## 9. Transporte limitante y detenido — M0 (2026-10-18)
+
+**Fixtures experimentales; no balance aprobado.** Misma línea de dos buffers,
+capacidades `(5,3)`, inicio vacío y horizonte 20 s. Tasas `(c,b,p)=(4,2,4)`.
+Segundo escenario: transporte cero en `[11/8,37/8)` s, luego vuelve a 2/s;
+el procesador sigue funcionando durante la detención.
+
+**Oráculo independiente**, obtenido por balance de flujo continuo con residencia
+cero: como `p>b`, el procesamiento absorbe todo el transporte, `Q=0`.
+Definir `d=0` para transporte constante y `d=clamp(t-11/8,0,26/8)`
+para transporte detenido. Entonces `T=P=2*(t-d)`,
+`O=min(4*t-T,5)=min(2*t+2*d,5)` y `A=T+O`.
+Antes de llenar salida, entran 4/s; después solo se repone lo transportado.
+Sin detención, O se llena en 2.5 s. Con detención, O(11/8)=11/4;
+las 9/4 unidades libres se llenan a 4/s en 9/16 s: saturación en 31/16 s.
+Al reanudar, O sigue lleno porque c>b. El oráculo no llama al modelo ni usa
+una ejecución fina como verdad.
+
+**Muestreo y aceptación:** tiempos comunes cada 1/8 s desde 0 hasta 20,
+más vecinos a 1/16 s de detención, ambas saturaciones y recuperación
+(ver `transportTimes` en el test). Eventos incluidos explícitamente, tasa nueva
+aplicada desde el evento. Pasos máximos `1/16,1/32,1/64,1/128,1/256,1/1024,1/2048` s;
+todos dividen el menor intervalo observado. Se descartó durante el desarrollo
+usar pasos mayores: los cortes de observación los igualaban artificialmente.
+El horizonte, eventos y observaciones son idénticos en todas las ejecuciones;
+no se descarta tiempo ni se añade un scheduler al módulo.
+
+Para cada componente O,Q,A,T,P se verifica su error absoluto máximo por ventana
+Y el error de su incremento respecto al comienzo de esa ventana. Ventanas:
+arranque `[0,1.3125]`, detención `[1.375,2.125]`, saturación constante
+`[2.4375,2.625]`, bloqueo `[3,4.5625]`, recuperación `[4.625,5.125]`,
+régimen posterior `[6,20]`. Se usan todas en ambos escenarios; el nombre indica
+el evento del escenario correspondiente. Los incrementos cancelan el desfase
+acumulado anterior: un error de recuperación no puede quedar oculto por el
+arranque o por el estado terminal. `WINDOW` imprime los 60 errores por ejecución
+(cinco componentes × seis ventanas × absoluto/incremento).
+
+Máximos absolutos sobre todas las observaciones, **en ambos escenarios**:
+
+| h (s) | O | Q | A | T | P |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 0.0625 | 0.125 | 0.125 | 0.125 | 0.125 | 0.25 |
+| 0.03125 | 0.0625 | 0.0625 | 0.0625 | 0.0625 | 0.125 |
+| 0.015625 | 0.03125 | 0.03125 | 0.03125 | 0.03125 | 0.0625 |
+| 0.0078125 | 0.015625 | 0.015625 | 0.015625 | 0.015625 | 0.03125 |
+| 0.00390625 | 0.0078125 | 0.0078125 | 0.0078125 | 0.0078125 | 0.015625 |
+| 0.0009765625 | 0.001953125 | 0.001953125 | 0.001953125 | 0.001953125 | 0.00390625 |
+| 0.00048828125 | 0.0009765625 | 0.0009765625 | 0.0009765625 | 0.0009765625 | 0.001953125 |
+
+Resultados de transición, expresados como múltiplos de h, orden `(O,Q,A,T,P)`:
+
+| Escenario/ventana | Error absoluto | Error de incremento |
+| --- | --- | --- |
+| Constante / saturación | `(2,2,2,2,4)` | `(2,0,2,0,0)` |
+| Detenido / detención y llenado | `(2,2,2,2,4)` | `(2,2,2,0,2)` |
+| Detenido / recuperación | `(0,2,2,2,4)` | `(0,2,0,0,2)` |
+| Detenido / bloqueo | `(0,0,2,2,2)` | `(0,0,0,0,0)` |
+
+Los errores no nulos se redujeron exactamente con h; los ceros permanecieron cero.
+Cada componente y ventana exige `E_n <= 1.2*(h_n/h_anterior)*E_anterior+1e-8`,
+incluidos los pasos finos (salto de factor 4 a 1/1024). No basta que baje el máximo
+global. Además se exige envolvente absoluta `8*h+1e-8` y de incrementos
+`16*h+1e-8`: margen conservador de dos etapas a tasa máxima 4/s y resta de dos
+errores para incrementos; son criterios de estos fixtures, no cotas universales.
+La comprobación de reducción es más estricta que esa envolvente. La tolerancia
+algebraica `1e-8` cubre redondeo, sin autorizar pérdidas sistemáticas.
+
+Todas las transiciones, en las 14 ejecuciones, verifican conservación por buffer
+y acumulada, tasas no negativas y acotadas, capacidades y tiempo simulado.
+También se verifica transporte nulo durante toda la detención, admisión nula
+una vez llena salida, drenaje de Q y ausencia de trabajo bancado: entre 4.625 y
+5.125 se transporta y acepta exactamente 1 unidad, procesándose `1-2*h`;
+durante la detención se procesa el remanente `2*h` del buffer Q.
+
+**Conclusión limitada:** convergencia observada de primer orden en estas cantidades
+y puntos. Sin defecto encontrado que requiera modificar `Production.luau`.
+El retardo downstream-first produce Q residual y desfases de arranque/reinicio;
+no representa latencia física. No se prueban tasas arbitrarias, capacidades pequeñas
+comparadas con h, estados iniciales no vacíos, eventos sin alinear, errores entre
+observaciones ni un teorema de convergencia. Las invariantes sí se comprueban en
+cada paso. No hay Roblox runtime involucrado ni aprobación del tick de gameplay.
+Siguiente incremento seguro: estados iniciales no vacíos y capacidad downstream
+pequeña en esta misma línea, con oráculos independientes, antes de grafos.

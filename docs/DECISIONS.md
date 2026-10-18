@@ -61,6 +61,14 @@ These are **GDD-approved direction**, not new user approvals during this documen
 - Implementation: compare step halvings with independent fluid solutions and two fine numerical references; retain the existing downstream-first model. Results and limits are in `BALANCE.md` section 8.
 - Deferred: RNG, discoveries, economy, graphs and gameplay integration. No balance, gameplay tick or open product choice is approved. No M0/M1 gate changes.
 
+### E-008 — Transport bottleneck verification
+
+- Date: 2026-10-18
+- Status: Accepted (scope only)
+- Producer request: "verificar el modelo cuando el transporte es el cuello de botella, antes de ampliar topología o integrar gameplay."
+- Impact: two deterministic Lune scenarios on the existing two-buffer line, independent analytic oracles, per-component and per-window refinement including transition increments. Results in `BALANCE.md` section 9.
+- All numbers remain experimental fixtures. No gameplay, balance, RNG, economy, graph or milestone gate approval. Existing model semantics retained after verification.
+
 ## Open producer choices — do not silently implement
 
 | ID | Status | Question / alternatives | Why it matters |

@@ -56,3 +56,14 @@ por factor <= 0.6 en cada refinamiento. `1e-8` cubre redondeo en estos fixtures;
 no admite pérdida sistemática de material. Los controles analíticos terminales y
 las comprobaciones de bloqueo/recuperación usan esa misma tolerancia absoluta.
 No se infiere convergencia universal ni se aprueba el tick propuesto de gameplay.
+
+## Transporte limitante (2026-10-18)
+
+Dos casos adicionales (12 en total) prueban transporte a 2/s con entrada y
+procesamiento a 4/s, constante o detenido/reanudado. Misma línea, sin gameplay.
+Ver [BALANCE, sección 9](../docs/BALANCE.md#9-transporte-limitante-y-detenido--m0-2026-10-18)
+para derivación del oráculo, pasos, ventanas, tolerancias, mediciones y limitaciones.
+`TRANSPORT` imprime errores por cantidad; `WINDOW` imprime errores absolutos y
+de incrementos por ventana para que arranque y estado final no oculten transiciones.
+No requieren Studio: el módulo está fuera del árbol Rojo. Lune prueba toda la
+aritmética involucrada; estos resultados no verifican motor, red, touch ni carga.
