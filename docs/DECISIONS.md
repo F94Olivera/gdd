@@ -85,6 +85,16 @@ These are **GDD-approved direction**, not new user approvals during this documen
 - Impact: BALANCE §3 y GDD §3; futura configuración/UI M1. No premios de competición ni multiplicador de suerte.
 - Acceptance: mostrar pacing medido en el escenario elegido E10, no atribuirle las mediciones de precios ×2 presentadas como alternativa. Tests de fronteras de rango se implementarán con la configuración M1.
 
+### D-017 — Estrategia de guardado y frontera de confirmación
+
+- Date: 2026-10-18
+- Status: Accepted; resuelve Q-007 como estrategia M0.
+- Producer approval: respuestas explícitas “Aprobar adaptador nativo acotado (recomendado).” y “Aprobar frontera y protocolo propuestos (recomendado).”
+- Recommendation: DataStore estándar nativo, un perfil/key, cola serial, UpdateAsync/CAS y fencing de sesión; sin dependencia externa. ProfileStore revisado en SHA45c9847: requiere endurecer reconstrucción de datos corruptos y confirmar snapshot guardado. ProfileService sin soporte para proyectos nuevos.
+- Contract: ARCHITECTURE sección Persistence and durable awards; TEST_PLAN P-001–P-012. Checkpoint objetivo5s, datos provisionales acotados/etiquetados; hallazgo/compra/promoción fuerzan commit. Resultado natural privado preplanificado/persistido antes de aceptar unidades; grant/cursor/counter/ordinario/outbox en un commit, reveal solo tras ack. Pérdida de respuesta se reconcilia sin repetir +1.
+- Approved boundary: tecnología y frontera de aceptación/UX, incluida posible pérdida de trabajo provisional ante crash y pausa visible durante problemas de guardado. No pérdida de awards confirmados dentro del modelo de fallo documentado.
+- Scope: diseño M0, sin implementación, paquetes ni acceso DataStores. Los casos de fallo son aceptación futura, no tests ejecutados ni prueba de durabilidad operativa. M1 debe probarlos antes de habilitar descubrimientos/persistencia jugables.
+
 ## Engineering baseline for M0 (from existing validated repo setup)
 
 | ID | Status | Decision / rationale |
@@ -177,7 +187,7 @@ These are **GDD-approved direction**, not new user approvals during this documen
 | Q-004 | **Resolved — D-016** | Accept/revise rank thresholds and names (0/1/5/15/40/100)? | UI and long-run status progression |
 | Q-005 | **M1 resolved — D-014** | First: 100k processed/50k Intel, grant100, total1.25. Second promotion remains unapproved/outside M1. | Economy, save resets and migrations |
 | Q-006 | Open — before sectors M3 | How many launch sectors, what machinery capacities and available building footprint? | Asset and load budgets |
-| Q-007 | Open — before persistence M1 | Which maintained data profile solution and durable grant protocol? | Preventing duplicate/lost rare awards |
+| Q-007 | **Resolved strategy — D-017; M1 tests pending** | Native UpdateAsync, serial queue/session fencing, bounded 5s checkpoint target, private natural plan, atomic cursor/grant/outbox and ack before reveal. | Preventing duplicate/lost rare awards |
 | Q-008 | Open — before broader content | Optional assignments, manual tools, value-added paper, splitter/merger routing? | New gameplay mechanics require explicit scope authorization |
 | Q-009 | Open — before asset production | Final art budgets, Roblox group ownership and publishing permissions? | Reproducibility and two-person work |
 | Q-010 | Open — before affected implementation | Starter resolved by D-013: replacement on the free 1/s connection. What additional competition presentation/reward restrictions were intended? | The prior review identifies omissions without preserving their full wording; do not invent prizes or additive throughput. |
@@ -185,14 +195,14 @@ These are **GDD-approved direction**, not new user approvals during this documen
 ## Next producer discussion
 
 D-014–D-016 resuelven las decisiones de economía inicial/pacing/rangos del paso 2.
-Continuar con Q-007 (guardado) y luego Q-006/Q-009/Q-010 (alcance/assets), en ese
-orden y con fuentes/evidencia. No reabrir probabilidades ni pedir otra aprobación
+D-017 resuelve guardado como estrategia. Continuar con Q-006/Q-009/Q-010
+(alcance/assets), con fuentes/evidencia. No reabrir probabilidades ni pedir otra aprobación
 de las decisiones ya aceptadas. Playtests permanecen pendientes de M1.
 
 ## Decision entry template
 
 ```markdown
-### D-017 — <short title>
+### D-018 — <short title>
 - Date: YYYY-MM-DD
 - Status: Proposed | Accepted | Superseded
 - Context: ...

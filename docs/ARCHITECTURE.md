@@ -108,11 +108,139 @@ For each message document the schema, caller permissions, idempotency key, rate 
 
 ## Persistence and durable awards
 
-Suggested profile domains: `schemaVersion`, `balanceVersion`, `intel`, `lifetimeArchives`, `discoveryFailureCounter`, bounded pending/committed award identity, sector/clearance state, machines/layout/queues/fractions, cumulative production/stats, first-search timing, tutorial flags, cosmetics/preferences and bounded operation records.
+### Estrategia aprobada M0 — D-017 (paso 3)
 
-**Critical invariant:** never claim a genuine reward permanently saved only because a Lua table was incremented. M1 must approve a documented durable protocol for grant -> persistent commit/ack -> presentation/recovery, including duplicate requests, disconnects, retries, session contention and partial failures. Need separate test/staging stores and fail-closed profile loading (retry, not a blank writable replacement).
+Revisión de fuentes realizada 2026-10-18. D-017 aprueba **DataStore estándar
+nativo + adaptador acotado de PlayerData**, con un perfil/key por jugador,
+`UpdateAsync`, cola serial y sesión con fencing (época monotónica). No backend
+externo, paquetes, implementación de persistencia ni llamadas a servicios en M0.
 
-Session locking, bounded backoff, save budgets, release/shutdown handling, idempotent purchases/promotions and migrations are required. If retaining operation IDs in bounded history, define how long-term idempotency and receipt reconciliation remain safe after eviction. Promotion keeps archives, rank, genuine discovery counter, stats, tutorial and cosmetics; resets factory layout and Intel according to the approved rules.
+| Alternativa | Evidencia actual | Evaluación para este proyecto |
+| --- | --- | --- |
+| Nativo Roblox | API y guía oficial de perfiles/colas/bloqueos vigente | Recomendado: control explícito de validación, CAS y no sobrescritura; exige implementar y probar locks/retries en M1. No copiar sin revisar todo el ejemplo oficial. |
+| ProfileStore | Repo no archivado, Apache-2.0; HEAD `45c9847cbcf1fc260369c50eb335aba7c35aecdd`, último commit 2025-07-31 | Sucesor disponible, sin evidencia de actividad reciente posterior. `Save()` es asíncrono; ack requiere comprobar snapshot. Corrupción puede reconstruirse dentro del wrapper antes de `OnOverwrite`; no cumple nuestra política tal cual. Alternativa solo con copia fijada/endurecida y revisión del diff. |
+| ProfileService | README del autor declara fin de soporte y deriva proyectos nuevos a ProfileStore; último push 2024-10-13 | Descartado para proyecto nuevo; no elegir por costumbre. |
+
+ProfileStore: la API GitHub mostró cero avisos públicos de seguridad; no equivale
+a auditoría ni ausencia de vulnerabilidades. No hay SECURITY.md. PR #22 propone
+corregir copia de buffers por referencia; usar solo datos JSON no resuelve el
+comportamiento de reconstrucción de perfiles corruptos. No se ejecutó código ajeno.
+La fuente se inspeccionó localmente solo bajo `build/research/` ignorado, sin instalarla.
+
+Fuentes primarias:
+
+- [Roblox: perfiles, atomicidad de tabla, cola por key y session lock](https://create.roblox.com/docs/cloud-services/data-stores/player-data-purchasing).
+- [Roblox: UpdateAsync y restricciones del callback](https://create.roblox.com/docs/cloud-services/data-stores), [errores/límites](https://create.roblox.com/docs/cloud-services/data-stores/error-codes-and-limits), [caché/versiones](https://create.roblox.com/docs/cloud-services/data-stores/versioning-listing-and-caching).
+- [ProfileStore fuente fijada](https://github.com/MadStudioRoblox/ProfileStore/blob/45c9847cbcf1fc260369c50eb335aba7c35aecdd/ProfileStore.luau): `UpdateAsync` interno ~517–595 reconstruye datos malformados; `RegisterOverwrite` ~430 notifica; `Save` ~1172 inicia otra tarea. `LastSavedData`/`OnAfterSave` ~877/924 identifican snapshot observado, no basta recibir una señal genérica.
+- [ProfileStore API fijada](https://github.com/MadStudioRoblox/ProfileStore/blob/45c9847cbcf1fc260369c50eb335aba7c35aecdd/docs/api.md), [historial](https://github.com/MadStudioRoblox/ProfileStore/commits/main/), [seguridad](https://github.com/MadStudioRoblox/ProfileStore/security), [PR #22](https://github.com/MadStudioRoblox/ProfileStore/pull/22).
+- [ProfileService: declaración del autor](https://github.com/MadStudioRoblox/ProfileService#readme).
+
+### Frontera de durabilidad aprobada (D-017)
+
+Una mutación es **confirmada** solo al verificar el registro que la contiene en
+backend, por retorno exitoso de `UpdateAsync` con el ID esperado, o reconciliación
+posterior sin caché. Una tabla local, animación, timeout o señal de guardado no
+prueban persistencia. Un error de escritura puede haber ocurrido después del commit.
+
+Se aprueba confirmación en lotes con objetivo de **5 segundos online**; 300 unidades
+máximas provisionales por perfil a 60/s, un lote sellado en vuelo y otro de trabajo
+acotado, máximo 600 provisionales totales. El pipeline puede calcular/previsualizar
+trabajo mientras guarda; unidades/Intel/contador se reconocen como aceptados y
+confirmados al commit. UI distingue progreso provisional de guardado. Un crash puede
+descartar provisional, nunca un archivo confirmado. Hallazgo, compra y promoción
+fuerzan flush; no mostrar revelación o éxito final antes del ack.
+
+Si un lote no se confirma al siguiente intervalo de 5s, o se llena el límite,
+pausar nueva producción/mutaciones con estado visible de guardado pendiente,
+conservar candidato inmutable y reintentar. No bancar tiempo ni producir offline.
+Los 5s son objetivo/umbral de pausa, **no garantía de respuesta del servicio**.
+Backoff propuesto1/2/4/8/15s con jitter y límite60s por intento de reconciliación;
+si sigue incierto, mantener no jugable y ofrecer reintentar carga/reingreso, sin
+inventar éxito ni liberar prematuramente una escritura en vuelo. Nunca seguir
+mutando después de perder lease; los retries viejos conservan su fence original.
+Un hallazgo pendiente congela simulación y mutaciones del perfil hasta reconciliar;
+procesamiento posterior se retoma desde el snapshot correcto, sin pago duplicado.
+Se debe volver a medir pacing en M1 por esta latencia, ausente del simulador actual.
+
+A 5s se presupuestan hasta12 checkpoints/min/jugador activo: 8 jugadores ->96/min,
+antes de cargas, flushes y retries. Esto es cálculo, no prueba de servicio. Aplicar
+presupuestos reales de lectura/escritura y tamaño serializado; escalonar perfiles,
+no aumentar límites de plataforma ni guardar por documento. Colas/reintentos acotados
+con backoff/jitter y sin adelantar operaciones. No fiarse solo de presupuesto por
+servidor: también existe límite global de experiencia. Outbox/backpressure debe
+seguir funcionando ante throttling prolongado.
+
+### Perfil y protocolo idempotente aprobados para implementación M1
+
+Estado privado servidor, versionado y serializable JSON: `schemaVersion`,
+`balanceVersion`, `profileGeneration` inmutable, `sessionEpoch`, `sessionToken`,
+`leaseUntil`, `commitSeq`, `lastMutationId`, `eligibleCursor`, fracción pendiente,
+`discoveryFailureCounter`, `nextNaturalEligibleId`, `lifetimeArchives`, Intel,
+layout/colas, producción/stats, tutorial/promoción, outbox y ack de presentación.
+No publicar futuros resultados/RNG en ReplicatedStorage. Rank se deriva del total.
+
+1. **Cargar y poseer.** `UpdateAsync` valida estructura completa/versión y adquiere
+   token/época de sesión atómicamente. Perfil nuevo solo si backend devuelve **nil
+   confirmado**, jamás por excepción, corrupción o versión desconocida. Registro
+   inválido se deja intacto y sin perfil jugable. Lease propuesta120s, renovación
+   objetivo30s (checkpoints pueden renovar); stop antes de perder autoridad. Una
+   nueva época se adquiere únicamente al liberar o expirar lease en backend; cada
+   escritura exige token/época vigentes. Probar relojes sesgados y servidor viejo:
+   un fence anterior nunca puede confirmar otra operación.
+2. **Preparar azar sin rerolls.** No intentar serializar `Random` ni guardar el RNG
+   de Lune como runtime. Propuesta: persistir una distancia geométrica privada hasta
+   la próxima oportunidad natural (`nextNaturalEligibleId`), equivalente a p fijo
+   por unidad. La garantía H se evalúa aparte y no consume otra distancia natural.
+   Inicializar ese plan en el perfil antes de permitir clearing; no otorga nada ni
+   avanza contador offline. Se revisará/muestreará con RNG servidor en M1, validando
+   extremos numéricos y misma distribución del harness. No hay coordenadas de mundo.
+3. **Candidato.** IDs de unidades son `(generation, eligibleCursor+n)`; orden estable
+   entre fuentes. Fracciones no se redondean por lote. Todo material previo al
+   cursor ya fue evaluado. Preparar snapshot completo e inmutable con IDs/resultado
+   y estado ordinario asociado. Callback de UpdateAsync no genera RNG, no emite
+   eventos ni hace yield; solo comprueba precondiciones y devuelve ese candidato.
+4. **Commit.** Mutación `(generation, epoch, commitSeq+1)` exige `commitSeq` anterior
+   exacto y lease/token vigentes. Para un hallazgo, una única escritura incluye
+   aceptación de la unidad, +1 lifetime, reset de fallos, **salida ordinaria todavía
+   pagable**, stats de ocurrencia y entrada outbox con `awardId=generation:unitId`.
+   Si se consumió el próximo natural, elegir y guardar su sucesor en este mismo
+   snapshot **antes de permitir nuevas unidades**. Si fue garantía previa al natural,
+   conservar su posición. No continuar clearing atravesando un hallazgo sin ese commit.
+5. **Ack o estado desconocido.** Verificar generación, mutationId/seq y contenido
+   esperado en el retorno. Si error/timeout, leer con `UseCache=false` o reintentar
+   CAS inmutable de forma serial. Si ya está el mismo commit, confirmar sin sumar;
+   si sigue el anterior, reintentar; si hay versión/época incompatible, parar y
+   recargar con autoridad. No revertir por un timeout ni reemplazar snapshot nuevo
+   por retry viejo. Una lectura de reconciliación jamás habilita escribir sin lock.
+6. **Recuperar y revelar.** Crash antes de commit: no hubo aceptación/grant confirmado;
+   restaurar checkpoint. El próximo hallazgo ya estaba planificado durablemente:
+   al recorrer de nuevo esos IDs el resultado no se sortea otra vez. Si el natural
+   siguiente fue solo propuesto en memoria y se perdió, ninguna unidad posterior
+   pudo aceptarse con él; puede muestrearse al rehacer el candidato. Crash después
+   de commit: cargar cursor/contador/count/outbox y reenviar la revelación del mismo
+   awardId, sin +1 adicional. Presentar/repetir animación nunca concede propiedad.
+7. **Bounded outbox y promociones.** Propuesta32 entradas sin presentar; no borrar
+   para hacer espacio: pausar antes de un hallazgo sin cupo y avisar. Ack cliente
+   validado solo retira presentación mediante otro commit; lifetime no cambia. IDs
+   antiguos con unitId<=cursor nunca vuelven a concederse aunque la outbox ya no
+   los recuerde: el cursor durable es la prueba permanente del prefijo procesado.
+   Compras/promoción se serializan con nonce/época y secuencia de comando, resultado
+   y high-water mark durables: replays viejos se rechazan sin gastar ni resetear.
+   No usar solo historial circular con expiración. Demo se excluye del protocolo de
+   awards genuinos; promoción preserva cursor/fracción/plan/fallos/count/outbox.
+8. **Salida y recuperación operativa.** Intentar flush final antes de liberar; shutdown
+   best-effort no es prueba de commit. Límite de espera/retries deja estado recuperable,
+   no inventa éxito ni perfil blanco. Migraciones verifican invariantes antes de
+   escribir; rollback de código no puede resetear IDs/contadores. Restaurar un backup
+   viejo no es operación rutinaria: reconciliar premios confirmados posteriores antes
+   de hacerlo; versionado de Roblox no reemplaza protocolo ni backup explícito.
+
+Este protocolo es diseño, **no implementación ni garantía operativa ya probada**.
+M0 acepta estrategia/fallos/criterios; M1 debe demostrar todas las fronteras en un
+fake store con fallo y en experiencia/stores de prueba separados. Producción no
+se toca, Studio API access no se habilita. Casos de aceptación: TEST_PLAN P-001–P-012.
+D-017 aprueba solución nativa y frontera/UX/protocolo; no concede una certificación
+de durabilidad ya implementada. Q-007 queda resuelta para M0; verificación M1 pendiente.
 
 ## Global boards / statistics
 
@@ -124,8 +252,8 @@ Use stable IDs and explicit schema/balance versioning for machine specs, tiers, 
 
 ## Open architecture decisions
 
-- Select and verify a maintained profile/session persistence solution and define its real commit semantics.
-- Define pending-award data encoding and durable commit protocol under approved D-011 (p=0.00001, H=200000); policy choice is resolved.
+- Implement and verify D-017 in M1; strategy Q-007 is approved, service evidence still pending.
+- Verify proposed cursor/plan/outbox/lease protocol under D-011 in M1; no durable-reward success claimed yet.
 - Define bounded queue recovery and exact event identity for throughput accounting.
 - Confirm when a leaderboard projection can be reconciled without trusting stale writes.
 - Validate Studio-only scene/asset workflows before considering the experience reproducible.

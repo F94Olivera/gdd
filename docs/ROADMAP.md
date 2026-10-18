@@ -43,7 +43,8 @@ seeded simulator below, not completion of that deliverable or a milestone gate.
 - [x] Resolve Q-001 and Q-003: producer decisions D-011/D-012 approve p=0.00001, mandatory H=200000, total 60/s cap and two maximum-capacity reference lines.
 - [x] Resolve Q-002 with measured simulations and D-015 reference targets; real playtests pending.
 - [x] Approve initial prices/first promotion D-014 and rank titles D-016; later promotion outside M1.
-- [ ] Review rank titles, first promotion economy, sector plan and critical persistence strategy before building affected systems.
+- [x] Review rank titles/first promotion (D-014/D-016) and critical persistence strategy (D-017); M1 failure tests pending.
+- [ ] Close initial sector plan in step 4.
 - [ ] Map asset ownership, authorized Roblox group/experience ownership and Studio-only scene versioning strategy.
 
 **Exit gate:** signed-off blocking M0 rules, executable documented offline balance model, actually verified Rojo/Studio round trip, updated `DECISIONS.md` and M1 scoped tasks. No need to build gameplay to pass M0.
@@ -51,8 +52,10 @@ seeded simulator below, not completion of that deliverable or a milestone gate.
 **Trabajo autorizado (E-012):** paso 1 implementado; resultados, comandos,
 hipótesis y límites en BALANCE §13. D-013 resuelve el starter de Q-010; queda
 su parte de competición para paso 4. Paso 2 aprobado D-014–D-016 y repetido: E10 cumple objetivos; resultados en
-BALANCE §14. Publicar commit/CI antes de iniciar el paso 3. Los pasos
-3–5 siguen pendientes. No agregar fixtures vecinos sin defecto. M0 continúa abierto.
+BALANCE §14. Commit `d98f601`, [CI exitoso](https://github.com/F94Olivera/gdd/actions/runs/39172893779).
+Paso 3: estrategia documentada en ARCHITECTURE y casos P-001–P-012 en TEST_PLAN;
+Q-007/D-017 aprobada como estrategia, pruebas reales pendientes de M1.
+Pasos 4–5 siguen pendientes. No agregar fixtures vecinos sin defecto. M0 continúa abierto.
 
 ## M1 — First playable vertical slice
 

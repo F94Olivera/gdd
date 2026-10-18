@@ -45,7 +45,7 @@ sectors, archive total or throughput. The counter survives disconnects, sessions
 sectors, promotions and layout edits. Demonstrations neither advance nor reset it.
 No clearing while blocked means no opportunity; no offline production or counter
 progress. Explain the guarantee publicly as work-based, never elapsed-time-based.
-Server-owned consistent, idempotent persistence remains required (Q-007).
+Server-owned consistent, idempotent persistence follows D-017 (strategy approved; implementation/verification pending).
 This supersedes the former unapproved 300000 proposal and pure-random policy.
 See [BALANCE.md](BALANCE.md) for analytical calculations and simulation scope.
 
@@ -144,5 +144,6 @@ See `DECISIONS.md`: D-011–D-016 resolve discovery, throughput, starter,
 initial prices/first promotion, reference pacing and titles. D-015 targets first
 archive mediana <=37 min and p90/p99 <=75 min online with ideal progression and one
 promotion; real construction/input playtests remain pending. Remaining M0 choices:
-sectors, durable award strategy and asset/competition responsibilities. Other
+sectors and asset/competition responsibilities. D-017 approves native storage,
+bounded provisional batches and ack before reveal; details belong in ARCHITECTURE. Other
 proposals remain hypotheses; no gameplay or M0 closure follows from the approvals.

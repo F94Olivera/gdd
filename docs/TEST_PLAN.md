@@ -74,6 +74,35 @@ not the fast CI check. Product sign-off remains required.
 6. **Bad requests:** fuzz finite numbers, IDs, unexpected Instances, wrong ownership, rate bursts and repeated nonce/operation IDs. Assert no mutation on rejected request.
 7. **Leaderboard:** delayed committed find just before midnight UTC still belongs to the original day. Publishing it twice cannot increment a period score twice. Equal scores tie. Test Monday/month-end/year-end rollover.
 
+## Guardado: aceptación verificable para M1 (diseño M0 paso 3)
+
+Contrato único en [ARCHITECTURE: Persistence and durable awards](ARCHITECTURE.md#persistence-and-durable-awards).
+**Todos pendientes de ejecutar**; estos casos no afirman uso de DataStores ni pruebas
+pasadas. Primero fake store determinista con fallo por frontera, después experiencia
+Roblox/stores de prueba separados. No producción ni Studio API access en este paso.
+
+| ID | Fallo/ejercicio | Aceptación |
+| --- | --- | --- |
+| P-001 | Lectura falla, perfil malformado o esquema futuro | 0 perfiles blancos jugables, 0 sobrescrituras; nil genuino crea perfil una vez |
+| P-002 | Dos cargas simultáneas y lease expirado | Un owner; fence viejo no escribe aunque continúe corriendo; clock skew produce stop seguro |
+| P-003 | Callback invocado repetidamente/conflicto CAS | Mismo candidato/resultado, sin RNG/efectos dentro; seq anterior exacta o rechazo seguro |
+| P-004 | Crash antes/durante/después de commit de hallazgo | Count durable base o base+1 según commit; jamás +2; salida ordinaria incluida y pagable una vez |
+| P-005 | Backend guarda y respuesta se pierde | Read sin caché/retry CAS reconoce mismo mutationId/awardId; mismo contador y +1 único |
+| P-006 | Crash antes de guardar plan natural siguiente | Reencuentra mismo hallazgo/ID desde plan anterior; ninguna unidad posterior fue aceptada sin plan durable; misma distribución p/H |
+| P-007 | Rejoin, promoción, edición y fracciones de lote | Cursor/fallos/plan/fracción/count retenidos; no nuevo roll para IDs antiguos; ausencia 0 producción |
+| P-008 | Commit sin reveal; reveal sin ack; ack se pierde | Outbox reenvía ID, replay visual no suma; cursor sigue evitando duplicados tras retirar entrada |
+| P-009 | Outbox32 llena, buffers llenos y servicio caído | Límites respetados; pausa visible antes de overflow; no drop silencioso ni tiempo bancado |
+| P-010 | Compra/promoción concurrente y replay tras mucho tiempo | Una fee/reset/avance; high-water durable rechaza antiguas aunque evictó historial detallado; preview correcto |
+| P-011 | Throttling, 8 perfiles activos y cierre abrupto | Orden serial, budgets/tamaño medidos, backoff sin cola ilimitada, ningún “guardado” falso; rejoin reconcilia |
+| P-012 | Migrations/rollback/corrupt backup y aislamiento | Archivos/IDs/counter no disminuyen por migración; restore controlado preserva awards; test jamás escribe namespace/universo prod |
+
+Para cada frontera registrar checkpoint anterior/candidato/backend tras crash,
+awardId/mutationId/epoch/seq y cantidades esperadas/observadas. Repetir ambas
+políticas de evento: natural y garantía H; incluir demo sin entrada genuina.
+Gates: no M1 discovery jugable hasta P-001–P-010; no despliegue con persistencia hasta
+P-011/P-012 en servicios de prueba. UI debe distinguir provisional/confirmado y
+pacing debe medirse con latencia real de la estrategia, ausente del simulador M0.
+
 ## Reporting requirements
 
 Test reports should record **date, commit, tool/version, test/seed, inputs, expected output, actual result, pass/fail, logs, and unresolved manual tasks**. For device reports also record model, graphics, FPS method, online mode, scene contents and network. For a performance number include sample size and percentile method.
