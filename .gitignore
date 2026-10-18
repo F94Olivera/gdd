@@ -1,0 +1,20 @@
+# Generated files
+/build/
+/Packages/
+/ServerPackages/
+/sourcemap.json
+/roblox.yml
+/roblox.toml
+# Studio local places, autosaves and locks
+*.rbxl
+*.rbxlx
+*.rbxl.lock
+*.rbxlx.lock
+*.rbxl.autosave
+*.rbxlx.autosave
+# Local settings / secrets
+.DS_Store
+.env
+.env.*
+!.env.example
+*.log

@@ -1,0 +1,21 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: paradoxum-games/setup-rokit@29e6ee09651a3711e3a287a1037671d7b74db6d0 # v3
+        with:
+          version: 1.2.0
+          cache: true
+      - run: wally install
+      - run: lune run scripts/check.luau

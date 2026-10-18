@@ -1,0 +1,8 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "Check", "type": "shell", "command": "lune run scripts/check.luau", "group": "test", "problemMatcher": [] },
+    { "label": "Rojo serve", "type": "shell", "command": "rojo serve --address 127.0.0.1", "problemMatcher": [] },
+    { "label": "Format", "type": "shell", "command": "stylua src scripts tests", "problemMatcher": [] }
+  ]
+}

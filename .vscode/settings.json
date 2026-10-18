@@ -1,0 +1,16 @@
+{
+  "files.eol": "\n",
+  "files.associations": {
+    "*.luau": "luau"
+  },
+  "[luau]": {
+    "editor.defaultFormatter": "JohnnyMorganz.stylua",
+    "editor.formatOnSave": true
+  },
+  "luau-lsp.server.path": "~/.rokit/bin/luau-lsp",
+  "luau-lsp.platform.type": "roblox",
+  "luau-lsp.sourcemap.enabled": true,
+  "luau-lsp.sourcemap.autogenerate": true,
+  "luau-lsp.sourcemap.rojoProjectFile": "default.project.json",
+  "stylua.styluaPath": "stylua"
+}

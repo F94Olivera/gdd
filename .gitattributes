@@ -1,0 +1,8 @@
+* text=auto
+*.luau text eol=lf
+*.lua text eol=lf
+*.sh text eol=lf
+*.fbx filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+*.glb filter=lfs diff=lfs merge=lfs -text
+*.rbxm filter=lfs diff=lfs merge=lfs -text
