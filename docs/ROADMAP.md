@@ -1,6 +1,6 @@
 # Implementation roadmap — M0 to M4
 
-**Planning status:** initialized 2026-10-18. Milestones are **acceptance gates**, not fixed delivery dates or evidence that features already exist. The Master GDD v2.1 controls gameplay scope. Assign owners and realistic sprint estimates only after M0 blockers and the actual repo have been reviewed.
+**Status:** M0 completed on 2026-10-18; M1 planned, not started or authorized. Milestones are **acceptance gates**, not fixed delivery dates or evidence that features already exist. The Master GDD v2.1 controls gameplay scope. Assign owners and realistic sprint estimates only after M0 blockers and the actual repo have been reviewed.
 
 ## Definition of Done (all gameplay slices)
 
@@ -13,7 +13,7 @@
 - Report changed files, test results **actually observed**, known limitations, unresolved decisions and safe next increment.
 - Schema/balance compatibility and rollback impact addressed when persistent state changes.
 
-## M0 — Specification + foundation (current)
+## M0 — Specification + foundation (complete)
 
 **Technical foundation:** local repo initialization, pinned toolchain, Rojo build/serve, Luau format/lint checks, Wally resolution, offline smoke checks, local clone test, and Studio opening the built place were reported in the [initial setup audit](history/setup-validation-2026-10-18.md). No gameplay is implemented.
 
@@ -33,7 +33,7 @@ backpressure and capped steps; seven Lune tests included in the project check.
 No gameplay integration or approved balance. This is a foundation for the full
 seeded simulator below, not completion of that deliverable or a milestone gate.
 
-**Remaining:**
+**M0 acceptance record:**
 
 - [x] Reconcile available reviewed starter details and competition rules in GDD §§4/8 (E-011). Starter connection resolved by D-013; competition presentation/rewards resolved by D-019.
 - [x] Prepare the reviewable simulator specification and proposed deterministic first slice in BALANCE §5; no implementation or balance approval.
@@ -49,27 +49,68 @@ seeded simulator below, not completion of that deliverable or a milestone gate.
 
 **Exit gate:** signed-off blocking M0 rules, executable documented offline balance model, actually verified Rojo/Studio round trip, updated `DECISIONS.md` and M1 scoped tasks. No need to build gameplay to pass M0.
 
-**Trabajo autorizado (E-012):** paso 1 implementado; resultados, comandos,
-hipótesis y límites en BALANCE §13. D-013/D-019 resuelven starter y competición de Q-010. Paso 2 aprobado D-014–D-016 y repetido: E10 cumple objetivos; resultados en
-BALANCE §14. Commit `d98f601`, [CI exitoso](https://github.com/F94Olivera/gdd/actions/runs/39172893779).
-Paso 3: estrategia documentada en ARCHITECTURE y casos P-001–P-012 en TEST_PLAN;
-Q-007/D-017 aprobada como estrategia, pruebas reales pendientes de M1.
-Paso 4 resuelto D-018/D-019/E-013, pendiente de commit/CI. Paso 5 pendiente. No agregar fixtures vecinos sin defecto. M0 continúa abierto.
+### Exit-gate audit — 2026-10-18
+
+| Exit requirement | Evidence and actual boundary | Result |
+| --- | --- | --- |
+| Blocking product rules signed off | D-011–D-019: p/H/cap, starter, initial prices/promotion, pacing, rank titles, Ground/dimensions/capacities and competition. E-013 defers identities/Roblox owner explicitly from M0, not publishing permissions. | Pass |
+| Executable documented offline model | BALANCE §§5/12–14; Production unchanged; runner, purchases, sessions, bounded queues, stalls/reconnect, promotion and natural/guaranteed streams. >=100000 per scenario/policy; source hashes/seeds/commands/censoring exported. Check + replay + sensitivity observed. | Pass |
+| Actually verified Rojo/Studio round trip | Developer-confirmed edit/removal sync and server/client Play Output in history/setup-follow-up-2026-10-18.md. Existing bootstrap unchanged. No new assistant engine run, multiplayer or device claim. | Pass (prior user evidence) |
+| Updated decision log and technical strategy | DECISIONS D-011–D-019/E-013; ARCHITECTURE D-017; TEST_PLAN P-001–P-012. Protocol is approved design; actual durability must pass M1 tests. | Pass for M0 |
+| Asset/Studio responsibilities reconciled | ASSET_PIPELINE: functional responsibilities, source/restore workflow and future publication gate. Producer confirms no previous scenes; there is no authored scene to restore now. | Pass within E-013 scope |
+| Concrete M1 plan, dependencies and acceptance | M1-01–M1-12 below; first slice isolated and explicit, no gameplay implemented in M0. | Pass |
+
+**Disposition: M0 complete.** This closes specification/foundation, not gameplay,
+persistence implementation, production readiness or authorization to start M1.
+M0 has no remaining blocker under the producer's E-013 scope clarification.
+Future asset permissions/restore, service failure tests, engine/device evidence,
+real construction pacing and eight-plot load remain their named milestone gates.
+
+### Sequential delivery evidence
+
+| Step | Result | Commit / remote check |
+| --- | --- | --- |
+| 1 offline simulator | Runner before economy/discovery; reproducible outputs and checks, existing conversation documents included | `6e2802f`; [CI success](https://github.com/F94Olivera/gdd/actions/runs/39172535646) |
+| 2 pacing/economy | D-014–D-016 and affected E10/control/sensitivity rerun; targets met | `d98f601`; [CI success](https://github.com/F94Olivera/gdd/actions/runs/39172893779) |
+| 3 safe-save strategy | D-017 approved; official/source review and idempotent protocol; no service access | `fa541cb`; [CI success](https://github.com/F94Olivera/gdd/actions/runs/39173514986) |
+| 4 scope/assets | D-018/D-019/E-013; original scene absence reported, source preservation plan, no upload | `a72f46b`; [CI success](https://github.com/F94Olivera/gdd/actions/runs/39173852158) |
+| 5 closure/M1 | This exit-gate audit and dependency/acceptance plan; final commit/push/CI reported at handoff | Final handoff records actual commit/run; not inferred from local checks |
 
 ## M1 — First playable vertical slice
 
 **Scope:** one Ground plot/floor and replenishing pile; free connected starter manual lane; an extractor, basic routable conveyor and processor; ordinary production + Intel; one genuine archive class; permanent count/title; interactive tutorial and demonstration; one voluntary promotion; robust persistence with recovery. Placeholder art is sufficient.
 
-**Recommended implementation order:**
+**Order and dependencies:** each row is a separate reviewable task, not permission
+to implement all at once. Engineering owns code/integration; art owns editable
+sources/exports; identities remain deferred per E-013. Preserve Git as code source.
 
-1. Define versioned shared machine/price/progression configuration + typed domain contracts; config validation tests.
-2. Pure server-production model: source extraction, one-time unit identity/eligibility, bounded queues, graph checks, fractional rates, backpressure and edit conservation; seeded Lune tests.
-3. Server plot/build ownership, safe topology mutations and explicit input validation; local single-player Studio checks.
-4. Discovery under D-011/D-012, after remaining M0 gates including Q-002 and durable protocol Q-007; server RNG, mandatory 200000-unit guarantee, clean award identity and durable/pending state tests.
-5. Profile solution with session ownership, migrations, retry/reconnect/shutdown handling and separate test stores; verify the persistence commit boundary.
-6. Ordinary Intel processing and serialized purchases/upgrade/promotion operations.
-7. Client input, minimal status/bottleneck UI, representative pile/tray visuals and skippable/resumable server-confirmed tutorial.
-8. Local lifetime title/counter and stats events + first-search timing; two-client interaction and touch rotate/cancel checks.
+| ID | Small deliverable | Depends on | Acceptance / verification |
+| --- | --- | --- | --- |
+| M1-01 | Minimal versioned definition catalog + explicit domain types for one line, rank and first promotion | New producer authorization to begin M1 | Stable IDs, approved D-011–D-019 values traced, no second sector/promotion; validate invalid prices/rates/IDs and rank boundaries in Lune. Define candidate buffers/tick as engineering experiments; no remotes, services or dependencies. |
+| M1-02 | Pure authoritative accepted-unit accounting and bounded production budget | M1-01 | Separate provisional/confirmed work; fresh global unit cursor/fractions; combined manual+auto <=60/s, max2 maximum lines, stable ordering, no banking; conservation and variable-step/stall tests. Confirm gameplay step/buffers preserve desired throughput; do not copy h from the offline harness by habit. |
+| M1-03 | Pure Ground graph and transactional edits | M1-02 | Straight/corner typed ports, 90deg rotation, bounds/overlap/cycle rejection; preserve old inventory and eligibility or reject atomically when bounded recovery cannot fit it. Lune invalid/edit/replay cases. |
+| M1-04 | Pure D-017 transaction/cursor/lease/outbox state machine with fake store | M1-01/M1-02 | Immutable CAS candidates, no RNG in callback, permanent idempotence despite history eviction; inject failures P-001–P-010. No Roblox DataStore access in this task. |
+| M1-05 | Native storage adapter in isolated test experience/store | M1-04; actual test owner/destination/permissions confirmed | Fail-closed loads, session fencing, bounded budgets/retries, exact commit ack and recovery. Execute service P-001–P-012, including lost responses and two servers. No production stores; any Studio API enablement needs its explicit test-only authorization. |
+| M1-06 | Server natural-plan/discovery + atomic ordinary output/award/outbox | M1-02/M1-05 | Plan persisted before accepting units, p/H endpoints and distribution validated, one genuine +1, ordinary payment retained; no reveal before ack. Natural/guarantee crash/rejoin tests and demo exclusion. Do not declare durable grants from fake-store evidence alone. |
+| M1-07 | Ground plot ownership + validated server build/manual intents | M1-03/M1-05 | One owner per plot, read-only visitors, finite/type/shape/ID/state/distance/rate/operation validation and serialized edits. Studio Play then >=2-client rejection/isolation checks. No client grants or luck. |
+| M1-08 | Serialized Intel purchases/upgrades and one voluntary promotion | M1-06/M1-07 | Original incremental prices, physical belt segment count priced correctly; second-line bundle remains a harness shortcut. Full reset preview, first promotion D-014, one charge/advance on replay, permanent cursor/counter/count retained. Re-measure purchase/promotion pacing with actual routing and save latency. |
+| M1-09 | First placeholder handoff + canonical Studio-source restore | M1-01/M1-03; a real scene exists | Engineer specifies footprint/pivots/ports; artist retains originals/exports/provenance. ASSET_PIPELINE restore trial passes from clean workspace; source place versioned with narrow ignore/LFS changes only when needed. No polished art pack or upload by default. |
+| M1-10 | Minimal PC/touch input, placement/status and confirmed/pending UI | M1-07/M1-08/M1-09 | Free hold-to-clear, rotate/cancel, readable invalid/blocked/saving states, bounded representative papers, reduced motion; Studio PC and touch emulator checks recorded honestly, named physical device checks before launch. |
+| M1-11 | Skippable/resumable tutorial, demo and genuine reveal inbox | M1-06/M1-10 | Server-confirmed steps; proposed demo timing is evaluated explicitly before locking it, demo never affects Intel/rank/counter/stats; genuine tutorial find counts normally. Reveal/replay/ack never grants again. |
+| M1-12 | End-to-end vertical-slice acceptance and recovery handoff | M1-05–M1-11 | New player clears/earns/automates/routes/finds/rejoins/promotes safely. T-001–T-015 and P-001–P-012 evidence as applicable; report exact engine/device/service runs and failures. Eight populated-plot performance remains M3, not claimed from M1. |
+
+**First next slice:** M1-01 only, after explicit authorization. Add the smallest
+catalog/types needed to represent the existing starter and upgrade definitions,
+plus meaningful validation/rank-boundary tests. Do not scaffold services, choose a
+framework, change Production/its contract or wire Roblox gameplay as part of that
+first slice. Experimental tick/buffer choices must be verified before M1-02 accepts
+them; test IDs above link to TEST_PLAN rather than duplicate its specifications.
+
+**Before enabling real services or content:** confirm intended test universe/store,
+Roblox owner/permissions and restoreability when a real asset/scene exists. These
+are future prerequisites, not facts inferred from the GitHub repository owner.
+M1's native adapter has a higher implementation/testing cost than using a wrapper;
+its fail-closed and fencing contract must pass service failure injection before use.
 
 **Exit gate:** a new player can clear material, earn Intel, buy automation, route processing, legitimately uncover one archive, safely leave/rejoin, see correct permanent count/title and complete a voluntary promotion. All critical exploit/duplicate/lost-reward tests in `TEST_PLAN.md` pass. No Robux, advanced sector/floor, global boards or polished final art required.
 

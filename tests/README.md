@@ -104,4 +104,6 @@ Ambos están incluidos en `scripts/check.luau`. No agregan fixtures al modelo
 Production ni prueban persistencia. Comandos/resultados y límites en BALANCE §12;
 `tests/economyExperiment.luau` cubre economía condicionada, fracciones, reset,
 reconexión, censura y aceleración de estado fijo. También se ejecuta en el check.
-Resultados del simulador completo en BALANCE §13; pacing pendiente de aprobación.
+Resultados del simulador completo en BALANCE §§13–14; pacing aprobado D-015
+y escenario E10 repetido. Tests offline pasan; la aceptación de motor/servicios no
+se deduce de esos resultados. P-001–P-012 siguen pendientes de M1.

@@ -1,7 +1,7 @@
 # Find the Secret Archive — Game Design Document (working Markdown)
 
 **Source:** *Find the Secret Archive — Master Game Design Document v2.1*, dated 2026-10-15.
-**Status:** M0 working repository transcription/summary of the main product rules. This is **not** represented as a word-for-word replacement for the original 12-page GDD. Keep the original available and review this summary against it before declaring it the sole canonical source.
+**Status:** M0 working repository transcription/summary of the main product rules. This is **not** represented as a word-for-word replacement for the original 12-page GDD. E-005 removes original-file retention as a requirement; later decisions resolve the identified starter/competition gaps. This remains a working summary.
 **Authority:** a later explicit, recorded producer decision supersedes the original GDD only in the area it names. Proposed numeric values are not automatically approved.
 
 ## 1. High concept and player promise
@@ -148,7 +148,7 @@ Launch monetization direction: optional previewable **cosmetics** (machine skins
 
 Reference footage can motivate **readable feedback**, compact upgrades, production metrics and placement previews. It does not authorize copying a competitor's assets, exact layout, graphics, scripting, economy or supposedly hidden rules. Defer power/water networks, complex recipes, huge tech trees, splitters, new manual tools, assignment quests and value-added paper product until specifically approved.
 
-## 10. Decisions requiring producer approval (M0)
+## 10. Decision state and milestone boundary
 
 See `DECISIONS.md`: D-011–D-016 resolve discovery, throughput, starter,
 initial prices/first promotion, reference pacing and titles. D-015 targets first
@@ -159,3 +159,7 @@ D-017 approves native storage,
 bounded provisional batches and ack before reveal; details belong in ARCHITECTURE. Other
 proposals remain hypotheses. The ROADMAP exit-gate audit owns M0 closure;
 M1 gameplay requires separate authorization.
+
+M0 is complete under the ROADMAP exit-gate audit. M1 has not started; no new
+production/gameplay implementation follows automatically. Real engine/persistence/
+device/first-asset evidence remains required at its assigned gate.

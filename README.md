@@ -1,6 +1,6 @@
 # Find the Secret Archive
 
-**Status:** M0 — specification and technical foundation. No gameplay is implemented yet.
+**Status:** M0 complete — specification, technical foundation and offline balance. M1 is planned and awaits separate authorization; no gameplay is implemented.
 
 Find the Secret Archive is a Roblox factory tycoon set in a fictional industrial archive warehouse. Players manually clear paperwork, process ordinary documents for **Intel**, build production lines, and occasionally uncover a genuine **Confidential Archive**. Every genuine archive has the same collectible value and adds exactly **one** to the permanent archive count.
 
@@ -61,7 +61,9 @@ Salidas ignoradas bajo `build/balance/`; supuestos, resultados y pendientes en
 `lune run scripts/economyBalance.luau` modela compras/sesiones/promoción y
 `lune run scripts/steadyBalance.luau` contrasta caudales sostenidos.
 Resultados, parámetros y límites en [BALANCE §13](docs/BALANCE.md#13-simulador-m0-completo-offline--paso-1-2026-10-18).
-La economía y el pacing siguen pendientes de aprobación del productor.
+Economía/pacing iniciales aprobados D-014–D-016; E10 repetido y validado.
+La estrategia de guardado D-017 y alcance Ground D-018/D-019 están definidos;
+ver [cierre M0 y primer slice M1](docs/ROADMAP.md). No son implementación de gameplay.
 
 ### First clone on another developer's computer
 
@@ -120,12 +122,12 @@ Paths listed for future systems are **planned**, not a claim they already exist.
 | [Decisions](docs/DECISIONS.md) | Later producer decisions, open questions and superseded assumptions |
 | [Architecture](docs/ARCHITECTURE.md) | System boundaries, contracts, persistence, security and source layout |
 | [Roadmap](docs/ROADMAP.md) | M0–M4 deliverables, sequencing and acceptance gates |
-| [Balance](docs/BALANCE.md) | Proposed numeric tuning, models and metrics; not yet locked |
+| [Balance](docs/BALANCE.md) | Approved initial tuning, experimental assumptions, reproducible models and measured results |
 | [Test plan](docs/TEST_PLAN.md) | What must be tested in Lune, Studio, multiplayer and devices |
 | [Asset pipeline](docs/ASSET_PIPELINE.md) | Two-person art handoff, licensing, LFS, Studio publication |
 | [AGENTS](AGENTS.md) | Non-negotiable instructions for Codex and other coding agents |
 
-**Authority order:** later explicitly approved producer decisions in `docs/DECISIONS.md` > original *Master GDD v2.1* (2026-10-15) > this repository's working `docs/GDD.md` summary > implementation details and proposals. The original GDD and the companion *Claude Master Prompt v2.1* were supplied separately: preserve access to those originals and reconcile `docs/GDD.md` before claiming it is a full verbatim conversion. `AGENTS.md` governs implementation process and does not override product rules.
+**Authority order:** later explicitly approved producer decisions in `docs/DECISIONS.md` > original *Master GDD v2.1* (2026-10-15) > this repository's working `docs/GDD.md` summary > implementation details and proposals. The original GDD and companion prompt were reviewed previously; E-005 removes the requirement to retain their files. D-013/D-019 resolve the identified starter/competition omissions. The working GDD remains a summary, not a claim of verbatim conversion. `AGENTS.md` governs implementation process and does not override product rules.
 
 ## Team and release rules
 
@@ -133,10 +135,10 @@ Paths listed for future systems are **planned**, not a claim they already exist.
 - One owner per asset or serialized Studio scene during an edit; coordinate binary work to avoid impossible merges.
 - Use `lune run scripts/check.luau` plus a relevant Studio Play check before a PR. Include multiplayer/touch checks when affected.
 - Do not publish an experience, upload an asset, create a remote, push code, or change live DataStores without explicit approval.
-- A GitHub Actions definition may exist, but its remote execution remains unverified until a remote is set up and the workflow runs.
+- GitHub Actions runs the fast `lune run scripts/check.luau` suite; successful remote M0 runs are linked in ROADMAP. Long seeded simulations/sensitivity are separate local commands, not implied by a green CI check.
 - Use original assets and copy; protect customer/player data; keep credentials outside Git and `ReplicatedStorage`.
 
-See [the initial setup audit](docs/history/setup-validation-2026-10-18.md) for what was actually validated and what remains manual. Source-controlled code is not the same as a fully reconstructible Roblox experience: Studio-only Terrain/places, uploaded asset IDs and permissions, and published experience settings need a separate documented pipeline.
+See [the initial setup audit](docs/history/setup-validation-2026-10-18.md) for what was actually validated and what remains manual. Source-controlled code is not the same as a fully reconstructible Roblox experience: Studio-only Terrain/places, uploaded asset IDs and permissions, and published experience settings follow [the source-preservation plan](docs/ASSET_PIPELINE.md). E-013 confirms no existing scenes; the first real-content restore test is a future M1 gate.
 
 ## Official technical references
 

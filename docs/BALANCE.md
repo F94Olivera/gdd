@@ -6,6 +6,10 @@
 titles (D-016) are approved. D-018 approves intermediate machinery rates and Ground/dimensions. Buffers,
 session/delay, second-line bundle and geometry assumptions remain experimental. Offline evidence in §§12–14 is not runtime or playtest verification.
 
+**Milestone:** M0 complete; see ROADMAP exit-gate evidence. Historical sections
+retain the status at their increment (including former “M0 open” statements), not
+new blockers or approval reversals. M1 runtime/real services are not implemented.
+
 ## 1. Approved discovery and analytical reference
 
 | Parameter | Approved rule | Source |
@@ -112,7 +116,7 @@ herramienta local, nunca producción del jugador mientras está desconectado.
   GDD §§2–8 y DECISIONS D-001–D-012.
 - **Hipótesis:** números no aprobados de §§2–4, duraciones/sesiones/buffers y políticas de
   compra de esta sección. Cada candidato debe identificarlas; no son defaults de gameplay.
-- **Productor pendiente:** Q-006/Q-007, segunda promoción Q-005 y parte competición Q-010. Q-002/Q-004 y primera promoción Q-005 resueltas por D-014–D-016. Pure-random solo como control contrafactual, no política candidata.
+- **Estado actual:** Q-001–Q-007 de alcance M0 y Q-010 resueltas por D-011–D-019; E-013 difiere identidades/propiedad Roblox. Segunda promoción Q-005 y expansiones fuera del alcance aprobado. Pure-random solo como control contrafactual, no política candidata.
   El primer slice propuesto abajo no necesita resolver rareza ni economía.
 
 ### Entradas y contrato del experimento
@@ -247,9 +251,9 @@ pacing de D-011/D-012, sin reabrir decisiones aprobadas por defecto.
 | `GDD-2.1-proposal` | 2026-10-15 | Original Master GDD v2.1 | Hypotheses transcribed; no simulation conducted as part of this documentation task |
 | `producer-2026-10-18-D011-D012` | 2026-10-18 | Explicit producer attachment, recorded in DECISIONS | Approved p/H and launch cap/reference capacities; analytical checks only, no seeded simulation |
 
-## 7. Producer sign-off required
+## 7. Producer sign-off state
 
-Q-001 and Q-003 are resolved by D-011/D-012. D-014–D-016 resolve initial M1 prices/promotion, experience targets and titles explicitly. Later promotion remains outside M1; Q-006/Q-007 and remaining asset/competition choices still require resolution.
+Q-001 and Q-003 are resolved by D-011/D-012. D-014–D-016 resolve initial M1 prices/promotion, experience targets and titles explicitly. D-017–D-019 resolve safe-save strategy, Ground/capacities and competition. E-013 confirms zero prior scenes and defers identities/Roblox owner from M0. Later promotion remains outside M1.
 
 ## 8. Verificación del paso temporal M0 (2026-10-18)
 
@@ -892,5 +896,5 @@ D-015 (37min/75min/75min). Exactamente una promoción, sin pérdidas de elegibil
 Rangos elegidos 5/15/40/100: medianas2.1032/6.1011/16.1200/40.1405h online;
 p99 3.8118/8.9985/20.7844/47.3733h. Son los resultados de precios originales,
 no los de la alternativa ×2. Pasó el check local; validación de motor/dispositivos
-no ejecutada. Paso 2 completo en evidencia local, listo para commit/push y CI.
+no ejecutada. Paso 2 publicado en `d98f601`, con CI remoto exitoso (enlace en ROADMAP).
 No se implementó gameplay, nuevas dependencias ni persistencia.

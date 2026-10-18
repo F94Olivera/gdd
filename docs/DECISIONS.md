@@ -221,7 +221,8 @@ These are **GDD-approved direction**, not new user approvals during this documen
 
 ## Remaining scope gates
 
-D-011–D-019/E-013 resolve the blocking M0 product/strategy choices. M1 still needs
+D-011–D-019/E-013 resolve the blocking M0 product/strategy choices. The completed
+exit-gate audit and ordered M1 tasks are in ROADMAP; M1 has not been authorized. M1 still needs
 separate authorization and measured acceptance; later promotion/expansions/new
 mechanics remain unapproved. Roblox ownership/permissions and final art budgets are
 future asset/publication gates, explicitly deferred by E-013, not invented approvals.
