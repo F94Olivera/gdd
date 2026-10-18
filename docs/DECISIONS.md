@@ -77,6 +77,14 @@ These are **GDD-approved direction**, not new user approvals during this documen
 - Impact: two deterministic Lune fixtures, independent discrete/fluid oracles, component/window errors and conservation including initial inventory. Results and limitations in `BALANCE.md` section 10.
 - Existing downstream-first contract retained; no defect found within this scope. Values are experimental, not approved balance. No RNG, discovery, economy, topology, dependencies or gameplay added; M0 remains open and product decisions remain pending.
 
+### E-010 — Complete partial-buffer line verification
+
+- Date: 2026-10-18
+- Status: Accepted (scope only)
+- Producer request: "Completá en una sola entrega la verificación pendiente de esta línea de dos buffers: estados inicialmente parciales, tasas de transporte y procesamiento distintas, llenado/vaciado interior y detención/recuperación."
+- Impact: two grouped offline fixtures with independent analytic discrete/fluid oracles, component/window errors and conservation at every transition; results in `BALANCE.md` section 11. Existing model contract retained.
+- All numbers remain experimental. No RNG, discoveries, economy, graphs, dependencies or gameplay authorized. M0 remains open; no milestone gate or pending product decision changes.
+
 ## Open producer choices — do not silently implement
 
 | ID | Status | Question / alternatives | Why it matters |

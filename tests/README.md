@@ -79,3 +79,15 @@ analítico de errores, sin asumir reducción estricta: el caudal discreto es
 min(2,K/h), y coincide con el fluido desde h=1/32 solo para estos fixtures.
 Cada transición verifica además oráculo discreto, conservación con inventario
 inicial, tasas, capacidades y tiempo. No cambia el contrato ni el alcance M0.
+
+## Parciales y tasas distintas (2026-10-18)
+
+Dos casos agrupados más (16 en total) completan la verificación pendiente de la
+línea: llenado/parada/recuperación/drenaje y vaciado interior con b distinto de p.
+`PARTIAL` muestra errores abs/delta O,Q,A,T,P por seis ventanas y el número de
+transiciones. Se reutilizan `near`, `test` y `fields`; no se refactoriza la suite.
+Ver [BALANCE §11](../docs/BALANCE.md#11-buffers-parciales-y-tasas-distintas--m0-2026-10-18)
+para fixtures, derivación analítica discreta/fluida, particiones distintas,
+resultados, tolerancias y evaluación de suficiencia. El contrato no cambia.
+Todas las transiciones verifican inventario inicial, conservación, capacidades,
+tasas y tiempo. Studio/multiplayer/touch no ejecutados: aritmética fuera de Rojo.

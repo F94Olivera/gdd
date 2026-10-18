@@ -355,3 +355,90 @@ requieren para esta aritmética offline ni fueron ejecutados. M0 sigue abierto.
 Siguiente incremento seguro: Q inicialmente parcial con b distinto de p y
 transiciones de llenado/vaciado interiores, todavía en esta línea y con oráculo
 independiente antes de ampliar topología.
+
+## 11. Buffers parciales y tasas distintas — M0 (2026-10-18)
+
+**Fixtures experimentales, sin aprobación de balance.** Se agregan dos casos
+agrupados; los 14 anteriores se conservan. No cambió `Production.luau` ni su
+contrato downstream-first. Reproducción: `lune run tests/production.luau`, Lune
+0.11.0; `PARTIAL` imprime cada componente/ventana y número de transiciones.
+
+| Fixture | O,Q iniciales | Capacidades O,Q | c,b,p | Evento |
+| --- | --- | --- | --- | --- |
+| Llenado/parada/recuperación/drenaje | 2,.5 | 3,1 | 0,3,1 | p=0 en [.4,.9) |
+| Vaciado interior y cola | .8,1 | 3,2 | 0,1,3 | sin evento externo |
+
+Horizonte común 4 s, pasos máximos .07,.035,.0175,.00875 s. Las 21
+observaciones explícitas incluyen vecinos de llenado (.24,.26), vaciado
+(.48,.5,.52), fin de suministro (.8,.82), parada y recuperación (.4,.9).
+Los cortes en observaciones/eventos son comunes; el resto de cada intervalo
+usa h y un remanente, sin igualar las particiones. Se verificaron respectivamente
+67,121,238,467 transiciones por fixture. La tasa nueva rige desde el evento.
+No se descarta tiempo ni se agrega scheduler al modelo.
+
+### Oráculos independientes
+
+En ambos A=0, O=O0-T, Q=Q0+T-P. Para llenado definir
+u=t-clamp(t-.4,0,.5). Entonces P=min(u,2.5),
+T=min(2,3t,.5+P). Q inicial cubre servicio desde el primer paso;
+el transporte llena Q en t=.25, después repone lo procesado. La parada
+encuentra Q lleno: T=.9, P=.4 y O=1.1 permanecen constantes.
+Al recuperar no hay trabajo bancado: P vuelve a 1/s y T lo repone hasta agotar
+O en t=2; Q termina de drenar en t=3. Estas fórmulas valen también en las
+fronteras discretas usadas: h<=.07 y Q inicial suficiente para el servicio.
+No se extrapolan a pasos grandes o cualquier configuración.
+
+Para vaciado, T=min(t,.8). En fluido P=min(3t,1+T); Q llega a cero
+en t=.5 con O=.3 todavía disponible y permanece vacío hasta agotar O en .8.
+En discreto, para fronteras t_0=0,...,t_n, el oráculo cerrado es:
+
+`P_n = min(3*t_n, min_{1<=j<=n}(1+min(t_{j-1},.8)+3*(t_n-t_j)))`.
+
+Es la envolvente de servicio acumulado y suministro disponible antes de cada
+paso; no llama al módulo ni usa una ejecución fina como verdad. El test mantiene
+el mínimo de interceptos para evaluar esa expresión sin almacenar toda la grilla.
+Un corte corto puede dejar backlog: usar solo el suministro del paso anterior
+como fórmula de P sería incorrecto. O y T coinciden con el fluido; Q residual
+y P retrasado distinguen el orden discreto de residencia fluida cero.
+
+### Aceptación y resultados
+
+En **cada transición** se verifican oráculo discreto para O,Q,T,P, A=0,
+capacidades, cantidades y tasas no negativas/acotadas por tiempo simulado,
+simulado=dt, descartado=0 y suma de ambos=dt solicitado. Conservación local:
+O_anterior=O_nuevo+T_paso, Q_anterior+T_paso=Q_nuevo+P_paso;
+acumulada O=O0-T, Q=Q0+T-P, O+Q+P=O0+Q0.
+El test anterior de catch-up conserva cobertura de descarte positivo.
+
+Ventanas comunes [0,.4], [.4,.9], [.9,1.2], [1.2,2.1], [2.1,3.1],
+[3.1,4]. Sus nombres describen eventos de uno u otro fixture. Para O,Q,A,T,P
+se exige el error absoluto máximo y el de incrementos respecto al inicio de
+cada ventana predicho por los oráculos discretos/fluidos, tolerancia absoluta
+<1e-8 unidades. Además se exige envolvente absoluta 3h+1e-8 y de incrementos
+6h+1e-8 (tasa máxima y resta de dos errores); es aceptación de estos fixtures,
+no una cota universal. No se exige un cociente monótono por componente con
+particiones recortadas: el perfil analítico es el criterio más preciso.
+
+| h | Máximo absoluto Q y P, vaciado | Máximo incremento Q y P, vaciado |
+| ---: | ---: | ---: |
+| .07 | .06 | .06 |
+| .035 | .025 | .025 |
+| .0175 | .0125 | .0125 |
+| .00875 | .0075 | .0075 |
+
+En llenado todos los errores observados fueron cero a nueve decimales; en
+vaciado O,A,T también. Los errores Q/P están en [.4,.9]; desde .9 todos son
+cero. La comparación por incremento impide atribuir un desfase anterior a la
+recuperación. El oráculo discreto coincide en todas las transiciones a <1e-8.
+La tolerancia cubre redondeo en 4 s y cantidades <=2.5, no pérdidas sistemáticas.
+
+**Suficiencia y límites:** junto a §§8–10 queda cubierta la verificación pendiente
+de esta línea: arranque vacío/parcial/lleno, ambas relaciones b/p, saturación,
+vaciado interior, bloqueo, recuperación, capacidad pequeña y particiones distintas.
+No se encontró defecto del módulo. Más fixtures vecinos no justifican postergar
+el siguiente entregable M0: reconciliar los detalles pendientes del GDD indicados
+en ROADMAP y acordar entradas/escenarios del simulador de balance antes de
+implementarlo. No se autoriza aquí RNG, economía, grafos ni gameplay. No hay
+prueba universal, error fluido entre observaciones, tasas continuas variables,
+validación del tick de gameplay ni cobertura de motor/red/dispositivos.
+M0 sigue abierto; sus decisiones de producto pendientes no cambian.

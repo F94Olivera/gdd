@@ -721,4 +721,221 @@ for _, drain in { true, false } do
 	)
 end
 
+-- Partial inventories: closed cumulative envelopes, independent of step implementation.
+local partialTimes = {
+	0,
+	0.2,
+	0.24,
+	0.26,
+	0.4,
+	0.48,
+	0.5,
+	0.52,
+	0.6,
+	0.8,
+	0.82,
+	0.9,
+	1,
+	1.2,
+	1.9,
+	2,
+	2.1,
+	2.9,
+	3,
+	3.1,
+	4,
+}
+local partialWindows = {
+	{ first = 0, last = 0.4, name = "interior-fill/drain" },
+	{ first = 0.4, last = 0.9, name = "stop/supply-tail" },
+	{ first = 0.9, last = 1.2, name = "recovery" },
+	{ first = 1.2, last = 2.1, name = "output-empty" },
+	{ first = 2.1, last = 3.1, name = "processing-empty" },
+	{ first = 3.1, last = 4, name = "empty" },
+}
+
+local function partialOracle(t: number, filling: boolean): Sample
+	local transported, processed, initialOutput, initialProcessing
+	if filling then
+		initialOutput, initialProcessing = 2, 0.5
+		local active = t - math.clamp(t - 0.4, 0, 0.5)
+		-- Initial Q covers service until transport starts; thereafter Q fills.
+		processed = math.min(active, 2.5)
+		transported = math.min(2, 3 * t, 0.5 + processed)
+	else
+		initialOutput, initialProcessing = 0.8, 1
+		transported = math.min(t, 0.8)
+		-- Fluid service is bounded by cumulative supply.
+		processed = math.min(3 * t, 1 + math.min(t, 0.8))
+	end
+	return {
+		output = initialOutput - transported,
+		processing = initialProcessing + transported - processed,
+		accepted = 0,
+		transported = transported,
+		processed = processed,
+	}
+end
+
+for _, filling in { true, false } do
+	test(
+		"partial unequal rates: "
+			.. (if filling then "fill/stop/recover/drain" else "interior depletion"),
+		function()
+			for _, h in { 0.07, 0.035, 0.0175, 0.00875 } do
+				local config: Production.Config = {
+					clearingRate = 0,
+					transportRate = if filling then 3 else 1,
+					processingRate = if filling then 1 else 3,
+					outputCapacity = 3,
+					processingCapacity = if filling then 1 else 2,
+					maxStepSeconds = h,
+				}
+				local initial = partialOracle(0, filling)
+				local state = { output = initial.output, processing = initial.processing }
+				local time, transported, processed, transitions = 0, 0, 0, 0
+				local serviceEnvelope = math.huge
+				local samples: { Sample } = {}
+				local predictions: { Sample } = {}
+				local prediction = initial
+				for _, target in partialTimes do
+					while target - time > 1e-12 do
+						config.processingRate = if filling
+								and time >= 0.4
+								and time < 0.9
+							then 0
+							else (if filling then 1 else 3)
+						local dt = math.min(h, target - time)
+						local before = state
+						local result = Production.step(config, state, dt)
+						state = result.state
+						transported += result.transported
+						processed += result.processed
+						near(result.simulatedSeconds, dt)
+						near(result.discardedSeconds, 0)
+						near(result.simulatedSeconds + result.discardedSeconds, dt)
+						near(result.accepted, 0)
+						assert(
+							result.transported >= 0
+								and result.transported <= config.transportRate * dt + 1e-8
+						)
+						assert(
+							result.processed >= 0
+								and result.processed <= config.processingRate * dt + 1e-8
+						)
+						assert(state.output >= 0 and state.output <= config.outputCapacity)
+						assert(
+							state.processing >= 0 and state.processing <= config.processingCapacity
+						)
+						near(before.output, state.output + result.transported)
+						near(
+							before.processing + result.transported,
+							state.processing + result.processed
+						)
+						near(initial.output - transported, state.output)
+						near(initial.processing + transported - processed, state.processing)
+						near(
+							initial.output + initial.processing,
+							state.output + state.processing + processed
+						)
+						local expected = partialOracle(time + dt, filling)
+						if not filling then
+							-- Closed min-plus envelope over earlier arrival/service boundaries.
+							-- A short observation step can leave backlog for later steps.
+							serviceEnvelope =
+								math.min(serviceEnvelope, 1 + math.min(time, 0.8) - 3 * (time + dt))
+							expected.processed =
+								math.min(3 * (time + dt), 3 * (time + dt) + serviceEnvelope)
+							expected.processing = 1 + expected.transported - expected.processed
+						end
+						prediction = expected
+						near(state.output, expected.output)
+						near(state.processing, expected.processing)
+						near(transported, expected.transported)
+						near(processed, expected.processed)
+						time += dt
+						transitions += 1
+					end
+					table.insert(predictions, prediction)
+					time = target -- Remove floating-point clock drift only at shared boundaries.
+					table.insert(samples, {
+						output = state.output,
+						processing = state.processing,
+						accepted = 0,
+						transported = transported,
+						processed = processed,
+					})
+				end
+				near(time, 4)
+				for _, window in partialWindows do
+					local anchor = table.find(partialTimes, window.first)
+					assert(anchor)
+					local origin = partialOracle(window.first, filling)
+					local parts = {}
+					for _, field in fields do
+						local absolute, increment = 0, 0
+						local predictedAbsolute, predictedIncrement = 0, 0
+						for index, t in partialTimes do
+							if t >= window.first and t <= window.last then
+								local fluid = partialOracle(t, filling)
+								predictedAbsolute = math.max(
+									predictedAbsolute,
+									math.abs(predictions[index][field] - fluid[field])
+								)
+								predictedIncrement = math.max(
+									predictedIncrement,
+									math.abs(
+										predictions[index][field]
+											- predictions[anchor][field]
+											- fluid[field]
+											+ origin[field]
+									)
+								)
+								absolute = math.max(
+									absolute,
+									math.abs(samples[index][field] - fluid[field])
+								)
+								increment = math.max(
+									increment,
+									math.abs(
+										samples[index][field]
+											- samples[anchor][field]
+											- fluid[field]
+											+ origin[field]
+									)
+								)
+							end
+						end
+						near(absolute, predictedAbsolute)
+						near(increment, predictedIncrement)
+						assert(absolute <= 3 * h + 1e-8)
+						assert(increment <= 6 * h + 1e-8)
+						table.insert(
+							parts,
+							string.format("%s=%.9f/%.9f", field, absolute, increment)
+						)
+					end
+					print(
+						string.format(
+							"PARTIAL fill=%s h=%.5f %s abs/delta %s",
+							tostring(filling),
+							h,
+							window.name,
+							table.concat(parts, " ")
+						)
+					)
+				end
+				print(
+					string.format(
+						"PARTIAL transitions fill=%s h=%.5f n=%d",
+						tostring(filling),
+						h,
+						transitions
+					)
+				)
+			end
+		end
+	)
+end
+
 print(tostring(cases) .. " production model tests passed")
