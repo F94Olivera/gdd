@@ -21,4 +21,7 @@ end
 run("rojo", { "build", "default.project.json", "--output", "build/game.rbxlx" })
 run("lune", { "run", "tests/smoke.luau" })
 run("lune", { "run", "tests/production.luau" })
+run("lune", { "run", "tests/balanceRunner.luau" })
+run("lune", { "run", "tests/discoveryExperiment.luau" })
+run("lune", { "run", "tests/economyExperiment.luau" })
 print("All checks passed")

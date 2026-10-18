@@ -33,9 +33,21 @@ upgrade extractor / processor / belt / bay -> clear more fresh paperwork
 
 ## 3. Rarity, guarantees and permanent rank
 
-The original GDD proposes a fixed probability **p = 0.00001 = 0.001% per eligible unit** regardless of manual/automated clearing or sector. The alternative proposed protection is a **work-based guarantee at H = 300,000** consecutive failed eligible units: if chosen, the 300,000th gets an archive. These are **M0 tuning proposals, not an approved choice between pure random and guarantee**. No implementation should silently pick one.
+**Approved by the producer on 2026-10-18 (D-011):** fixed probability
+**p=0.00001 = 0.001% per newly accepted eligible clearing unit**, plus a mandatory
+**H=200000 work guarantee**. After 199999 consecutive failures, the next eligible
+unit awards exactly one genuine archive; otherwise apply the fixed probability.
+Any genuine find, random or guaranteed, resets failures to zero. First and later
+finds follow identical rules; repeated unlucky streaks never reduce H.
 
-If the guarantee is approved, the failure counter survives disconnects, sectors, promotions and layout edits. It resets on a genuine find and is unaffected by tutorial demonstrations. Guarantee-triggered genuine finds count the same as random ones. The public UI must accurately explain enabled odds/protection. See [BALANCE.md](BALANCE.md) for simulations and assumptions.
+Probability does not change with manual/automatic source, upgrades, promotions,
+sectors, archive total or throughput. The counter survives disconnects, sessions,
+sectors, promotions and layout edits. Demonstrations neither advance nor reset it.
+No clearing while blocked means no opportunity; no offline production or counter
+progress. Explain the guarantee publicly as work-based, never elapsed-time-based.
+Server-owned consistent, idempotent persistence remains required (Q-007).
+This supersedes the former unapproved 300000 proposal and pure-random policy.
+See [BALANCE.md](BALANCE.md) for analytical calculations and simulation scope.
 
 **Proposed, unapproved permanent titles:** 0 Trainee; 1 Archive Finder; 5 Investigator; 15 Senior Investigator; 40 Archive Specialist; 100 Director of Archives. No terminal collectible count; players above the highest title continue accumulating archives. Do not sell permanent rank or archive credit.
 
@@ -43,7 +55,15 @@ If the guarantee is approved, the failure counter survives disconnects, sectors,
 
 Tutorial is contextual, short, skippable, resumable after disconnect and replayable from Help. Server-confirmed steps: (1) clear starter pile, (2) process documents and earn Intel, (3) purchase first extractor, (4) inspect clearly labeled **Demonstration Archive**, (5) understand true archive count and next rank, (6) choose a useful throughput upgrade and connect it.
 
-Proposed tutorial mechanism: free connected starter lane; after **30 valid starter units and the first extractor purchase**, grant **one** demonstration. Demonstration does **not** grant Intel, lifetime archives, leaderboard progress or a guarantee-counter reset/advance. Genuine finds during the tutorial are genuine and count normally. Input hold-to-repeat is free for everyone, constrained to the same server-approved manual rate.
+Starter: a **free, already connected sorter/conveyor/processor lane at 1 unit/s**.
+D-013 approves the first extractor **replacing manual clearing** in this lane,
+using its included connection at 1/s, with later belt/processor upgrades. Manual
+and extractor do not add together on the starter line. The proposed 60-Intel basic
+processor is an upgrade, not a prerequisite for the free lane. Exact visual belt
+layout is an integration/asset contract; second-line equipment/prices remain proposals.
+
+
+Proposed tutorial mechanism: after **30 valid starter units and the first extractor purchase**, grant **one** demonstration. Demonstration does **not** grant Intel, lifetime archives, leaderboard progress or a guarantee-counter reset/advance. Genuine finds during the tutorial are genuine and count normally. Input hold-to-repeat is free for everyone, constrained to the same server-approved manual rate.
 
 Proposed UX targets: first interaction within 20 seconds; first automation within two minutes; demonstration within five minutes (must be measured). Show the genuine reveal **after the durability protocol confirms it**. It may have a skippable three-second inspection; ending or replaying animation never changes ownership. Retry pending commits without falsely promising a completed save. A discovery inbox batches reveals so the UI never blocks production.
 
@@ -61,7 +81,16 @@ Accessible presentation includes touch-friendly targets, high contrast, reduced 
 
 **Intel** is the only gameplay currency. Securely processed ordinary material initially earns **1 Intel per unit**. Intel buys equipment, capacity upgrades, bays/floors and voluntary promotion fees. An archive find must never require buying another random roll. Ordinary work and production milestones must carry progression even during unlucky archive streaks.
 
-Original GDD proposed starter values (see [BALANCE.md](BALANCE.md) for review status): free manual lane at 1 unit/s; first extractor 30 Intel at 1 unit/s; basic processor 60 Intel at 10 units/s; extractor tier 2 upgrade 120 Intel at 10 units/s; extractor tier 3 upgrade 600 Intel at 30 units/s; processor tier 2 upgrade 350 Intel at 40 units/s; belt segment 5 Intel at 10 units/s with an upgrade costing 25 to 50 units/s. Treat these as incremental prices and hypotheses, not approved balance.
+Original GDD proposed starter values (see [BALANCE.md](BALANCE.md) for review status): free manual lane at 1 unit/s; first extractor 30 Intel at 1 unit/s; basic processor 60 Intel at 10 units/s; extractor tier 2 upgrade 120 Intel at 10 units/s; extractor tier 3 upgrade 600 Intel at 30 units/s; processor tier 2 upgrade 350 Intel at 40 units/s; belt segment 5 Intel at 10 units/s with an upgrade costing 25 to 50 units/s. Prices are incremental hypotheses. D-012 approves the Tier 3 extractor 30/s, upgraded conveyor 50/s and Tier 2 processor 40/s as the launch reference capacities; other tuning remains provisional.
+
+**Approved launch cap (D-012):** at most **60 eligible documents/s total per
+player/factory**, combining manual and automatic clearing across machines, floors
+and sectors. At most two maximum-capacity extractor lines. Reference: two independent
+lines, each extractor Tier 3 30/s → upgraded conveyor 50/s → processor Tier 2 40/s,
+for 30/s sustained per line when unblocked. Other configurations must obey the same
+global cap. Construction rules and UI must expose it; no hidden odds or production
+reductions. Bottlenecks and finite buffers determine measured flow. Configuration
+must be versioned; no buffer sizes, prices or additional floors are approved here.
 
 ## 6. Voluntary clearance promotion
 
@@ -91,6 +120,8 @@ Permanent **archive title** remains lifetime-count-only. Independently display l
 | Documents processed | Each original secure processed unit once; no transformation recount | Secondary, after reliability gate |
 | Fastest first archive | Cumulative **online** time from first accepted manual/automated clearing to first genuine award | Secondary, all-time initially |
 
+Competition presentation must keep permanent archive titles separate from category/period standing. Demonstrations/admin grants cannot masquerade as genuine competitive finds; Intel scores exclude non-production grants as specified above. Launch commerce remains cosmetic-only (§9): no paid rank or competitive stat buffs. These restrictions follow the available rules; ROADMAP also records an omission concerning competition presentation/rewards whose **exact additional wording is unavailable**. No prize types, payout schedule, winner badges or extra presentation restrictions are approved by this reconciliation; producer clarification is tracked in DECISIONS Q-010.
+
 Rank/title never changes because a daily leaderboard resets. Tie scores share standing; display order may be stable without implying superiority. Show category/period selectors, top scores, user's confirmed score, UTC reset countdown, last refresh and staleness. Do not invent exact position outside returned top list. Proposed refresh target **five minutes**, pending budget checks. Delayed grants count toward **server occurrence** windows, not processing/saving time; retain idempotent event identity.
 
 M1 records authoritative local stats and event metadata; global periodic core boards are gated on M3 reliability and must work before M4 public launch. Absolute-score publication, reconciliation and throttling are required. A leaderboard outage must not stall factories or saving. Fastest-first is a luck-influenced record, not a pure skill measure; demonstrate exclusion and no restart after promotion.
@@ -105,4 +136,4 @@ Reference footage can motivate **readable feedback**, compact upgrades, producti
 
 ## 10. Decisions requiring producer approval (M0)
 
-See `DECISIONS.md`; key blockers are: pure randomness versus disclosed hard guarantee; target time-to-first/ongoing genuine discovery at each throughput tier; maximum launch throughput; finalized permanent rank thresholds/titles; voluntary promotion fees and sectors; and a persistence strategy with auditable durable awards. All numerical proposals in this working GDD remain hypotheses until explicitly accepted.
+See `DECISIONS.md`; D-011/D-012 resolve discovery policy and launch throughput. Remaining key blockers are: target time-to-first/ongoing genuine discovery at each throughput tier; finalized permanent rank thresholds/titles; voluntary promotion fees and sectors; and a persistence strategy with auditable durable awards. Other numerical proposals remain hypotheses until explicitly accepted; approved parameters do not constitute measured pacing or authorization to close M0.

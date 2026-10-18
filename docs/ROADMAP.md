@@ -35,15 +35,23 @@ seeded simulator below, not completion of that deliverable or a milestone gate.
 
 **Remaining:**
 
-- [ ] Incorporate reviewed GDD details into the working summary: free connected starter sorter/conveyor/processor at 1 unit/s, included connection capacity for the first extractor, and competition presentation/reward constraints. No new product choices are implied.
-- [ ] Run initial pure simulator with reproducible seeds: clearing rates, bounded buffers, random and proposed guarantee; export median/p90/p99 first-find waits under realistic sessions.
-- [ ] Resolve Q-001–Q-003 in `DECISIONS.md` (random/guarantee, target waits, late-capacity bounds).
+- [x] Reconcile available reviewed starter details and competition rules in GDD §§4/8 (E-011). Starter connection resolved by D-013; additional competition presentation/reward wording remains unresolved in Q-010.
+- [x] Prepare the reviewable simulator specification and proposed deterministic first slice in BALANCE §5; no implementation or balance approval.
+- [x] Resolve starter part of Q-010 via D-013 (replacement at 1/s).
+- [ ] Resolve remaining Q-010 competition presentation/rewards in step 4.
+- [x] Run initial pure simulator with reproducible seeds: clearing rates, bounded buffers, approved p=0.00001/H=200000 guarantee and labelled pure-random control; export median/p90/p99 first-find waits under realistic sessions.
+- [x] Resolve Q-001 and Q-003: producer decisions D-011/D-012 approve p=0.00001, mandatory H=200000, total 60/s cap and two maximum-capacity reference lines.
+- [ ] Resolve Q-002 from actual progression/session simulations; approved parameters do not certify player-facing waits.
 - [ ] Review rank titles, first promotion economy, sector plan and critical persistence strategy before building affected systems.
 - [ ] Map asset ownership, authorized Roblox group/experience ownership and Studio-only scene versioning strategy.
 
 **Exit gate:** signed-off blocking M0 rules, executable documented offline balance model, actually verified Rojo/Studio round trip, updated `DECISIONS.md` and M1 scoped tasks. No need to build gameplay to pass M0.
 
-**Next slice:** reconcile the working GDD details above, then agree simulation scenarios with the producer before implementing the offline model. Session lengths, upgrade choices, queue capacities and stall schedules must be explicit inputs; do not silently turn assumptions into approved balance. Discuss Q-001–Q-003 together after presenting seeded results, as required by `DECISIONS.md`.
+**Trabajo autorizado (E-012):** paso 1 implementado; resultados, comandos,
+hipótesis y límites en BALANCE §13. D-013 resuelve el starter de Q-010; queda
+su parte de competición para paso 4. Paso 2 requiere respuestas explícitas sobre
+pacing/precios, rangos y promoción, y repetir los escenarios afectados. Los pasos
+3–5 siguen pendientes. No agregar fixtures vecinos sin defecto. M0 continúa abierto.
 
 ## M1 — First playable vertical slice
 
@@ -54,7 +62,7 @@ seeded simulator below, not completion of that deliverable or a milestone gate.
 1. Define versioned shared machine/price/progression configuration + typed domain contracts; config validation tests.
 2. Pure server-production model: source extraction, one-time unit identity/eligibility, bounded queues, graph checks, fractional rates, backpressure and edit conservation; seeded Lune tests.
 3. Server plot/build ownership, safe topology mutations and explicit input validation; local single-player Studio checks.
-4. Discovery policy **only after Q-001–Q-003**; server RNG, guarantee if approved, clean award identity and durable/pending state tests.
+4. Discovery under D-011/D-012, after remaining M0 gates including Q-002 and durable protocol Q-007; server RNG, mandatory 200000-unit guarantee, clean award identity and durable/pending state tests.
 5. Profile solution with session ownership, migrations, retry/reconnect/shutdown handling and separate test stores; verify the persistence commit boundary.
 6. Ordinary Intel processing and serialized purchases/upgrade/promotion operations.
 7. Client input, minimal status/bottleneck UI, representative pile/tray visuals and skippable/resumable server-confirmed tutorial.

@@ -53,6 +53,16 @@ The check also runs the isolated M0 production-model tests. Run them alone with
 `lune run tests/production.luau`; see [the model contract](tests/README.md). Its
 fixture values are not approved balance, and it is not connected to gameplay.
 
+El harness experimental autorizado funciona fuera del runtime:
+`lune run scripts/balance.luau` exporta S1–S6 deterministas y
+`lune run scripts/seededBalance.luau` ejecuta 100000 corridas por escenario/política.
+Salidas ignoradas bajo `build/balance/`; supuestos, resultados y pendientes en
+[BALANCE §12](docs/BALANCE.md#12-avance-del-simulador-autorizado--2026-10-18).
+`lune run scripts/economyBalance.luau` modela compras/sesiones/promoción y
+`lune run scripts/steadyBalance.luau` contrasta caudales sostenidos.
+Resultados, parámetros y límites en [BALANCE §13](docs/BALANCE.md#13-simulador-m0-completo-offline--paso-1-2026-10-18).
+La economía y el pacing siguen pendientes de aprobación del productor.
+
 ### First clone on another developer's computer
 
 Install Roblox Studio, VS Code, Git, Git LFS and **Rokit 1.2.0** first, from their official sources; if using Homebrew on macOS, Git LFS can be installed with `brew install git-lfs`. Once, add `export PATH="$HOME/.rokit/bin:$PATH"` to the shell profile (`~/.zshrc` for default zsh), then restart the terminal/VS Code. Some Intel-only tool binaries may require Rosetta on Apple Silicon.

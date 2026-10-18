@@ -1,36 +1,43 @@
 # Balance and simulation specification
 
-**Version:** working proposal from Master GDD v2.1 (2026-10-15).
-**Approval state:** numeric values are **NOT locked**. This file is a design input and measurement log, **not executable configuration**. When gameplay is implemented, a reviewed versioned Luau config in `src/shared/config/` should become the runtime source for approved numbers; keep this document synchronized.
+**Version:** working specification from Master GDD v2.1, updated by producer decisions D-011/D-012 on 2026-10-18.
+**Approval state:** p=0.00001, mandatory H=200000, total cap=60/s and the reference line capacities below are **approved design parameters**. Other tuning remains proposed. This document is not executable configuration or evidence of simulated pacing. Future runtime configuration must be reviewed and versioned.
 
-## 1. Discovery proposal and alternative
+## 1. Approved discovery and analytical reference
 
-| Parameter | GDD proposed value | Status |
+| Parameter | Approved rule | Source |
 | --- | --- | --- |
-| Probability per eligible **fresh clearing** unit | `p = 0.00001` (0.001%, one in 100,000 on average without protection) | **Proposed** |
-| Manual vs machine vs sectors | Same `p` | Product invariant (exact `p` proposed) |
-| Guaranteed find after continuous misses | `H = 300000` consecutive failed eligible units | **Open**: guarantee policy not yet approved |
-| Scope of guarantee counter if enabled | Survives disconnects, sector changes, edit and promotion | Product invariant **if enabled** |
-| Counter behavior | A genuine find resets; demonstration has no effect | Product invariant **if enabled** |
-| Success when downstream full | No eligible clearing, hence no new roll | Product invariant |
-| Ranked reward | Exactly +1 genuine archive, regardless of random or approved guarantee | Product invariant |
+| Probability per fresh eligible clearing | p=0.00001 (0.001%) | D-011 |
+| Work guarantee | After 199999 consecutive failures, next eligible unit guarantees one genuine archive (H=200000) | D-011 |
+| First/subsequent finds | Same p/H; no decreasing H after unlucky streaks | D-011 |
+| Probability modifiers | None for source, upgrades, promotions, sector, archive count or throughput | D-011 |
+| Counter | Genuine find resets to zero; persists through sessions/disconnects/layout edits/promotions; demo has no effect | D-011 |
+| Blocked/offline | No accepted clearing means no opportunity; no offline production/counter progress | D-011 |
+| Ranked reward | Exactly +1 per genuine find, with ordinary output/payment additional | D-001/D-002 |
 
-For **pure random**, expected clearing units between finds = `1 / p` = **100,000**. For a hard cap at H successful eligible units, the expectation is:
+Pure random is a **counterfactual control only**, with E[N]=1/p=100000.
+For the approved guarantee, N=min(geometric(p),H):
 
 ```text
-E[units to next find] = (1 - (1 - p)^H) / p
+E[N] = (1 - (1 - p)^H) / p
 ```
 
-For p=1e-5 and H=300000, **E ≈ 95,021** clearing units. If the cap is enabled, the **maximum** gap in eligible units is 300,000; this is a work-based guarantee, **not** a promise about wall-clock time when lines stall or players log off.
+At p=1e-5, H=200000: **E[N]=86466.607012**, maximum **200000**
+eligible units from zero failures. The prior H=300000 proposal is superseded.
+These are analytical calculations, not simulator/player-session measurements.
 
-| Sustained eligible throughput | Mean time with proposed guarantee | Hard cap from zero failures |
+| Sustained eligible throughput | Mean time | Work cap expressed as time at that constant rate |
 | --- | --- | --- |
-| 1 unit/sec | ~26.4 hours | ~83.3 hours |
-| 10 units/sec | ~2.64 hours | ~8.33 hours |
-| 30 units/sec | ~52.8 minutes | ~2.78 hours |
-| 100 units/sec | ~15.8 minutes | ~50 minutes |
+| 1/s | ~24.02 hours | ~55.56 hours |
+| 10/s | ~2.402 hours | ~5.556 hours |
+| 30/s | ~48.04 minutes | ~1 h 51 min 7 s |
+| 60/s (approved total launch cap) | ~24 min 1 s | ~55 min 33 s |
 
-These are mathematical steady-rate examples from the GDD, **not player-session observations**. Early throughput is expected to increase rapidly. Do not conceal slow pacing with fake rarity rewards, hidden throughput nerfs, or an additional archive rarity tier.
+At 60/s, steady output is 3600/min or 216000/hour. At 1 Intel per processed
+unit, this is 216000 Intel/hour before multipliers, assuming equal sustained
+secure processing. Startup, finite queues, building time, blockages and absence
+change actual rates/waits. The guarantee is not a maximum calendar wait. No fake
+rewards, hidden nerfs or additional archive rarity tiers may conceal slow pacing.
 
 ## 2. Economy proposal
 
@@ -47,7 +54,7 @@ These are mathematical steady-rate examples from the GDD, **not player-session o
 | Belt segment | 5 | 10 transported units/sec |
 | Belt upgrade | 25 | Increases belt to 50 units/sec |
 
-Prices and rates are **unapproved tuning hypotheses**. Treat belt cost as per segment; machine upgrades as incremental prices. No off-by-one rounding exploits or extra archive-roll units from faster processors.
+All prices remain **unapproved tuning hypotheses**. D-012 approves the reference capacities: extractor Tier 3 30/s, upgraded conveyor 50/s and processor Tier 2 40/s; two such lines sustain 60/s total when unblocked. The global cap includes all manual/automatic clearing. Other rates remain proposals (starter baseline: GDD §4). Treat belt cost as per segment; machine upgrades as incremental prices. No off-by-one rounding exploits or extra archive-roll units from faster processors.
 
 ## 3. Progression proposal
 
@@ -85,27 +92,161 @@ These are milestone titles, not archive count caps. **All rank thresholds and ti
 
 ## 5. Simulation harness required during M0
 
-Build a deterministic seeded Lune simulation that accepts at least: `p`, optional `H`, clearing rates over time, queue capacities, machine graph topology, upgrade timeline, player session windows, stalls/reconnects, promotion events and planned endgame throughput. Tests must model real **eligible units**; do not simply assume full peak rate without backpressure.
+**Especificación de referencia — 2026-10-18.** El pedido posterior del productor
+autoriza el simulador completo offline, incluida economía y descubrimiento.
+El avance ejecutado y sus límites están en §12; los límites del «primer slice»
+siguientes describen la secuencia original, no restringen esa autorización posterior.
+Esta sección es la única especificación del harness; §§8–11 conservan evidencia
+histórica del modelo, no nuevos requisitos de fixtures. “Offline” significa una
+herramienta local, nunca producción del jugador mientras está desconectado.
 
-For **each** candidate balance version, report >= **100,000 synthetic player runs** (GDD target), random seeds/model version and:
+### Alcance y estados de autoridad
 
-- Median / p90 / p99 wall-clock and **active** time to first genuine find; later gaps and permanent rank progress.
-- Tail distributions for pure random vs capped-guarantee; worst-case eligible units and real-time exposure.
-- First automation and ability to afford the next useful purchase without luck.
-- Short-session, disconnected line, blocked output, reconnect, promotion and late-capacity scenarios.
-- Honest scarcity at the maximum proposed launch throughput, without fabricated server nerfs.
+- **Reglas aprobadas:** clearing fresco como única elegibilidad, buffers limitados,
+  backpressure, pago ordinario independiente de un hallazgo, sin producción durante
+  ausencia, promociones sin requisito aleatorio y garantía obligatoria con contador
+  persistente. p=0.00001, H=200000 y cap global=60/s están aprobados. Fuentes:
+  GDD §§2–8 y DECISIONS D-001–D-012.
+- **Hipótesis:** números no aprobados de §§2–4, duraciones/sesiones/buffers y políticas de
+  compra de esta sección. Cada candidato debe identificarlas; no son defaults de gameplay.
+- **Productor pendiente:** Q-002, Q-004–Q-007 y Q-010. Pure-random solo como control contrafactual, no política candidata.
+  El primer slice propuesto abajo no necesita resolver rareza ni economía.
 
-Store outputs/parameters in a reproducible, non-secret artifact and summarize accepted changes here. Don't mark numerical values as verified until those tests have run.
+### Entradas y contrato del experimento
+
+Cada manifiesto versionado debe incluir `scenarioId`, `modelVersion`,
+`balanceVersion`, revisión Git y estado dirty, versión de Lune, unidades,
+horizonte calendario, paso máximo h, límite de catch-up, observaciones y eventos.
+Tasas en unidades/s y capacidades/ocupaciones en unidades; tiempos en segundos.
+Todos los valores finitos, tasas/capacidades no negativas, h y cap positivos;
+ocupaciones iniciales dentro de capacidad. Rechazar IDs duplicados, ventanas
+solapadas, eventos fuera de horizonte y cambios que dejen inventario sin capacidad.
+
+| Entrada | Definición requerida |
+| --- | --- |
+| Línea y tasas | Primera versión: solo salida → transporte → procesamiento, usando el contrato actual de Production; c,b,p constantes por tramo, estado inicial O,Q y capacidades explícitas. Topologías arbitrarias quedan para otro alcance. |
+| Sesiones | Intervalos online [inicio,fin), actividad manual dentro de ellos y calendario completo. Fuera de sesión no ejecutar pasos ni producir; conservar O,Q al regresar, sin catch-up de la ausencia. No equivale a persistencia real. |
+| Bloqueos | Intervalos con transporte o procesamiento en cero; distinguirlos de ausencia, falta de actividad y catch-up descartado. No recuperar trabajo perdido ni acumular capacidad de servicio. |
+| Upgrades | Lista de eventos programados con tasas/capacidades antes/después, sin reducción destructiva. En primer slice son cambios exógenos, nunca compras simuladas. |
+| Economía futura | Precios incrementales de §2, Intel inicial, pago por unidad procesada y política ordenada de compras/ahorro, prerrequisitos, demora de decisión y coste de conexión explícitos. Reportar compra imposible; no inyectar Intel para desbloquearla. Fuera del primer slice. |
+| Descubrimiento futuro | p=0.00001, garantía H=200000 (control pure-random etiquetado aparte), contador inicial, regla de unidades enteras y tratamiento de fracciones. Ningún roll por transporte/procesamiento o inventario inicial. Fuera del primer slice. |
+| Promoción futura | Evento voluntario condicionado a producción/Intel, fee, grant y reset propuestos de §3; registrar descarte confirmado de inventario y retención del contador. Fuera del primer slice. |
+
+Orden propuesto del harness: cerrar el tramo anterior, aplicar límites de sesión,
+aplicar eventos de configuración en orden estable por ID y observar el estado.
+Los eventos coincidentes deben tener orden registrado y no contradecirse. Cortar
+pasos en eventos, observaciones y fin de sesión; tasa nueva desde el evento. El
+harness conserva downstream-first, cantidades fraccionarias y tiempo descartado
+del contrato actual. No modificar Production ni interpretar accepted como un
+hallazgo o una identidad de unidad. En una fase futura, documentar conversión de
+accepted acumulado a elegibilidad entera sin redondeos por paso antes de usar RNG.
+
+### Escenarios representativos propuestos
+
+Valores siguientes: **fixtures de exploración**, no objetivos aprobados. Usar
+O=Q=0, capacidades (5,3), h=1/32 s y cap=2 s salvo variante declarada. El h es
+experimental, no el tick de gameplay. No añadir estos casos a la suite existente
+hasta implementar el harness autorizado; no hacen falta más pruebas vecinas de la línea.
+
+| ID | Sesión/horizonte y eventos | Pregunta que debe responder |
+| --- | --- | --- |
+| S1 starter | 600 s online, c=b=p=1 | Caudal efectivo frente al starter nominal, retardo de arranque y backlog; no presume compra ni capacidad adicional del extractor. |
+| S2 progresión exógena | 1200 s online; (c,b,p)=(1,10,10), c=10 en 120 s, c=30 en 300 s, p=40 en 600 s, b=50 en 900 s | Separar demanda nominal, cuello de transporte/procesamiento y efecto marginal de cada cambio. Tiempos de upgrade arbitrarios, no asequibilidad medida. |
+| S3 interrupción | S2 con b=0 en [200,260), p=0 en [400,460) | Tiempo bloqueado, inventario retenido y recuperación sin trabajo acumulado. |
+| S4 sesiones cortas | Horizonte 86400 s; online [0,300), [3600,3900), [82800,83100); c=b=p=1 | Comparar 900 s online con S1 extendido a 900 s; ninguna producción en las ausencias. |
+| S5 sensibilidad | S2 con capacidades (1,1), (5,3), (50,30); repetir h/2 | Efecto de buffers y discretización; no confundir K/h con balance real (§10). |
+| S6 techo aprobado, posterior | 3600 s online; dos líneas independientes con (c,b,p)=(30,50,40) cada una; buffers experimentales (50,30) por línea | Verificar 60/s agregados sin bloqueo y backpressure por línea. Dos instancias de la línea, no grafo nuevo; presupuesto compartido manual/automático requiere contrato aparte. |
+
+La fase posterior compara S1–S6 con compras condicionadas (en vez de upgrades
+exógenos), ausencia, bloqueo, reconexión y promoción explícita. Incluir pruebas del
+cap agregado: demanda manual + automática >60/s y configuraciones alternativas;
+rechazar una tercera línea máxima sin cambiar p. El reparto entre fuentes y
+contabilidad del presupuesto requieren contrato explícito antes de implementar. No sumar manual y
+extractor ni fijar conexión del primer extractor hasta resolver Q-010. Añadir al
+manifiesto un horizonte suficientemente largo para medir colas de rareza; no
+extrapolar percentiles a partir de 600 s ni asumir caudal pico permanente.
+
+### Métricas y resultados reproducibles
+
+Primer slice: A,T,P acumulados; O,Q; conservación; tiempo solicitado/simulado/
+descartado y calendario/online/manual activo separados. Caudal nominal y medido
+por sesión/tramo: A/segundos online y P/segundos online; publicar denominadores.
+Registrar déficit c*dt−accepted, tiempo con aceptación inferior a demanda (c>0),
+ocupación media ponderada por tiempo, máxima y fracción de tiempo lleno por buffer.
+Etiquetar paradas programadas separadamente; no llamar “bloqueo” a c=0 ni ausencia.
+Comparar escenario base y variante por ventana, no solo estado final.
+
+Fase futura: tiempos de primera automatización/compra útil, saldo y compras
+inalcanzables sin suerte; primer hallazgo, gaps posteriores, unidades elegibles,
+contador, hallazgos y títulos según umbrales candidatos. Reportar mediana/p90/p99
+en tiempo calendario, online y actividad manual (esta última no incluye clearing
+automático), desde el primer clearing aceptado. Separar primera búsqueda de gaps
+sostenidos y declarar censura: si un percentil no se observa dentro del horizonte,
+reportar “no alcanzado”, fracción sin hallazgo y denominador; nunca calcularlo solo
+sobre quienes encontraron. Publicar incertidumbre/método estadístico y no presentar
+la garantía por unidades como límite de tiempo real.
+
+Artefactos previstos: manifiesto completo legible por máquina, serie temporal por
+observación/evento, resumen por escenario y, en fase aleatoria, agregados y datos
+por corrida. Orden estable, unidades y precisión explícitas, sin timestamps variables
+en archivos comparados. Registrar comando exacto, revisión/configuración y esquema
+de salida. No hay aún comando del simulador ni artefactos de resultados: no inventarlos.
+
+Primer slice determinista: semilla `no aplicable`; repetir debe producir archivos
+idénticos en el mismo entorno. Fase RNG futura: fijar algoritmo y versión, semilla
+maestra y derivación por (escenario, cohorte, índice de corrida), sin RNG global ni
+reloj; guardar la lista de semillas y permitir repetir una corrida. Comparar ambas
+políticas con las mismas secuencias naturales; un hallazgo garantizado no debe
+consumir aleatoriedad extra que desplace la comparación. No usar Random de Roblox
+en el harness Lune. Selección de algoritmo e implementación requieren otro slice.
+
+Por versión candidata y escenario/política aleatoria: al menos **100000 corridas**
+(objetivo GDD), tamaño muestral y horizonte publicados. Contrastar distribución
+geométrica y truncada con §1, incluyendo contador 199999 → garantía en siguiente unidad, reset a cero y mismas
+reglas para primer/siguientes hallazgos. No hay mediciones nuevas en esta revisión;
+la aprobación de p/H proviene de D-011.
+
+### Primer slice implementable y aceptación propuesta
+
+**Próxima implementación para revisión, no realizada aquí:** runner Lune local,
+manifiestos S1–S5 y exportación determinista de producción/sesiones/eventos/métricas,
+reutilizando Production sin cambiar su contrato. Sin RNG, descubrimientos, economía,
+grafos, dependencias, runtime ni nuevas fixtures de convergencia. Ubicaciones propuestas:
+`scripts/` para runner y entradas; salida generada bajo `build/`; tests del runner
+solo para semántica nueva de sesiones/eventos/exportación. No crear esos archivos ahora.
+
+1. Entradas inválidas fallan antes de emitir resultados; manifiesto completo permite
+   repetir exactamente cada ejecución y su orden de eventos.
+2. Cada transición conserva O_anterior+A=O_nuevo+T y Q_anterior+T=Q_nuevo+P,
+   capacidades, límites de tasa y dt solicitado=simulado+descartado. Tolerancia
+   absoluta propuesta 1e-6 unidades por corrida de hasta 1200 s en S1–S5;
+   justificarla con error observado y escala, sin reutilizar automáticamente 1e-8
+   de los fixtures cortos. No admite pérdida sistemática ni inventario negativo.
+3. Ausencias producen cero A,T,P y cero tiempo simulado/descartado; el inventario
+   se conserva. S4 coincide con su control online de 900 s a igual partición activa.
+4. Eventos ocurren en su frontera exacta; no hay servicio acumulado en bloqueos.
+   Métricas derivadas cuadran con series y denominadores; todo descarte es visible.
+5. Repetir entradas produce salida idéntica. Sensibilidad h/h2 se publica por tramo;
+   diferencias se explican con orden/capacidad (§§8–11), sin afirmar una cota universal.
+   Una diferencia sin explicación impide usar el escenario para decidir balance.
+6. Pasan check local y diff check. El informe declara herramientas y límites, sin
+   afirmar validación Studio, rendimiento de ocho plots o balance aprobado.
+
+Ese slice **no completa** el simulador sembrado ni cierra M0. Fases posteriores
+necesitan autorización separada para economía/elegibilidad/RNG y validación de
+sus contratos; después, resultados reales permiten resolver Q-002 y validar el
+pacing de D-011/D-012, sin reabrir decisiones aprobadas por defecto.
 
 ## 6. Revision log (initial)
 
 | Revision | Date | Source | Result |
 | --- | --- | --- | --- |
 | `GDD-2.1-proposal` | 2026-10-15 | Original Master GDD v2.1 | Hypotheses transcribed; no simulation conducted as part of this documentation task |
+| `producer-2026-10-18-D011-D012` | 2026-10-18 | Explicit producer attachment, recorded in DECISIONS | Approved p/H and launch cap/reference capacities; analytical checks only, no seeded simulation |
 
 ## 7. Producer sign-off required
 
-Resolve `Q-001`, `Q-002`, `Q-003`, `Q-004` and `Q-005` in `DECISIONS.md` before claiming the numbers above are locked or building durable discovery/promotion data around them.
+Q-001 and Q-003 are resolved by D-011/D-012. Q-002 (experience targets), Q-004 (titles) and Q-005 (promotion economy) remain open; Q-007 must define the durable award protocol before persistence implementation. Prices and promotions must be reviewed against the approved 60/s cap, not implicitly accepted from the old table.
 
 ## 8. Verificación del paso temporal M0 (2026-10-18)
 
@@ -442,3 +583,249 @@ implementarlo. No se autoriza aquí RNG, economía, grafos ni gameplay. No hay
 prueba universal, error fluido entre observaciones, tasas continuas variables,
 validación del tick de gameplay ni cobertura de motor/red/dispositivos.
 M0 sigue abierto; sus decisiones de producto pendientes no cambian.
+
+
+## 12. Avance del simulador autorizado — 2026-10-18
+
+**Instantánea previa a D-013; superada por §13.** Se implementaron y verificaron
+primero runner determinista, luego descubrimiento experimental. Economía condicionada,
+compras, promoción y métricas de rangos todavía pendientes. La conexión del primer
+extractor necesita respuesta a Q-010 antes de fijar esa parte del experimento.
+No cambió `Production.luau`, su contrato, dependencias ni runtime.
+
+Reproducción desde la raíz, Lune 0.11.0:
+
+```sh
+lune run tests/balanceRunner.luau
+lune run tests/discoveryExperiment.luau
+lune run scripts/balance.luau
+lune run scripts/seededBalance.luau
+lune run scripts/check.luau
+git diff --check
+```
+
+Salidas ignoradas: `build/balance/deterministic.json` incluye escenarios completos,
+revisión Git/dirty, versión, métricas y series por frontera; `build/balance/seeded/`
+incluye manifiesto y CSV por escenario con semillas y cada corrida. No son evidencia
+de guardado durable. Repetición determinista comparada byte por byte con `cmp`.
+Modelo `deterministic-runner-v1`, balance `D011-D012-experimental-v1`, revisión base
+`2e15f5c`, dirty=true. Los números de sesión/buffer/upgrade siguen siendo hipótesis.
+
+| Escenario | Online s | A aceptado | P procesado |
+| --- | ---: | ---: | ---: |
+| S1 starter | 600 | 600 | 599.9375 |
+| S2 upgrades exógenos | 1200 | 16924.6875 | 16922.8125 |
+| S3 bloqueos | 1200 | 15727.375 | 15725.5 |
+| S4 sesiones y control continuo | 900 | 900 | 899.9375 |
+| S6 dos líneas | 3600 | 216000 | 215996.25 |
+
+S5: al reducir h de 1/32 a 1/64, A aumenta .15625 y P aumenta 1.09375
+para cada una de las tres capacidades ensayadas. En las fronteras de S2, el cambio
+de paso reduce retardo de arranque y desfase entre etapas; el buffer (50,30)
+permite aceptar 45 unidades adicionales frente a (5,3), conservadas en inventario,
+sin aumentar 45 unidades de caudal sostenible. Antes de decidir pacing falta
+publicar diferencias por ventana y completar los candidatos económicos.
+
+Runner: eventos se ordenan por tiempo e ID, recorta pasos en eventos/sesiones/
+observaciones; ausencia conserva inventario sin ejecutar Production. Las métricas
+de ocupación usan cuadratura por extremo izquierdo, no tiempo continuo exacto.
+El presupuesto global experimental se renueva por paso simulado y reparte por ID
+estable, sin bancar remanente; no es aprobación de prioridad entre fuentes en
+runtime. Se prueba demanda agregada 120/s limitada a 60/s y rechazo de tercera
+línea marcada como extractor máximo. Un perfil de fuentes debe declarar esa marca;
+no es validación de compras/construcción de gameplay.
+
+Descubrimiento: Park–Miller 16807/módulo 2147483647, vector de referencia probado;
+geometría inversa para saltar fallos naturales sin iterar cada unidad. El flujo
+natural conserva posiciones absolutas por unidad y la garantía no consume draws.
+Solo se pasa trabajo entero nuevo; la integración de fracciones con economía aún
+está pendiente. Las corridas usan floor(A+1e-8) al final y jamás procesan inventario
+inicial como oportunidad. No es una selección de RNG de producción.
+
+100000 corridas por cada uno de 12 escenarios/variantes y por política (2.4 millones
+en total), semilla maestra 20261018. Derivación y semillas individuales en artefactos.
+Políticas: garantía aprobada y control puro contrafactual. Tiempos desde la primera
+unidad entera aceptada, interpolados dentro del tramo de aceptación constante.
+Percentiles nearest-rank sobre **toda** la cohorte, censura como infinito.
+Banda DKW 99% descriptiva ±.005148 en CDF bajo draws independientes ideales; no
+cubre sesgo del PRNG ni incertidumbre sobre comportamiento humano.
+
+Contraste independiente en unidades (100000 corridas por política):
+
+| Política | Media medida | Media analítica | Mediana | p90 | p99 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Garantía | 86468.72151 | 86466.607012 | 69319 | 200000 | 200000 |
+| Control puro | 100002.01759 | 100000 | 69319 | 230217 | 460314 |
+
+13.535% de la cohorte de contraste llega a H. En S6 la garantía produce mediana
+1155.5833 s y p90/p99 3333.3167 s online/calendario desde la primera unidad.
+En S1/S2/S3/S4 no se alcanzan mediana/p90/p99 dentro de sus horizontes;
+fracciones censuradas respectivas 99.402%, 84.432%, 85.447%, 99.103%.
+No extrapolar estos horizontes a compras, rangos ni primera promoción.
+
+Checks locales pasaron tras corregir formato; ninguna prueba nueva de Studio,
+multiplayer, touch o servicios reales. No commit/push de paso 1 todavía: falta
+completar su alcance y verificarlo antes de cruzar la puerta al paso 2.
+
+
+## 13. Simulador M0 completo offline — paso 1 (2026-10-18)
+
+**Implementado; resultados experimentales, sin aprobación de economía/pacing.**
+D-013 resuelve la sustitución del starter. `Production.luau`, runtime, configuración
+Rojo, herramientas y dependencias permanecen intactos. Se verificó primero el runner
+determinista (§12), luego descubrimiento y economía, cada incremento con pruebas.
+Los pasos de evaluación/aprobación de producto, guardado y cierre M0 son posteriores.
+
+### Contratos e hipótesis del experimento
+
+- `EconomyExperiment`: starter gratuito 1/1/1, Intel inicial 0; primer extractor
+  sustituye manual sin sumar caudal (D-013). Precios incrementales de §2; política
+  ordenada: extractor, procesador básico, cinta básica, extractor T2, procesador T2,
+  cinta mejorada, extractor T3; después segunda línea y sus mejoras. La secuencia
+  sirve de prerrequisito; una compra sin saldo espera, sin inyección de moneda.
+- Segunda línea **hipotética** conectada por 95 Intel (30 extractor +60 procesador
+  +5 segmento), inicialmente 1/10/10. Un segmento lógico por línea; no pretende
+  medir distancia/coste del routing físico. No aprueba un paquete para runtime.
+- Compra en primera frontera de paso asequible; demora de 5 segundos **online**
+  entre decisiones. Sin costes de construcción/animación ni errores del jugador.
+  Variantes de precio multiplican todos esos precios, sin alterar p/H ni capacidades.
+- Buffers (50,50) por línea; sensibilidad (1,1). h=1/32, catch-up cap=2 s;
+  pasos recortados en fronteras de sesión/actividad/bloqueo. Sin catch-up offline.
+  Presupuesto fresco compartido 60*dt, orden estable de línea; hasta dos líneas.
+- Promoción: consentimiento voluntario programado después de completar compras,
+  tutorial-equivalente por automatización y alcanzar requisitos de producción/Intel.
+  Es una política experimental explícita, no promoción automática de gameplay.
+  Reset a starter/100 Intel, multiplicador 1.25; inventario descartado contabilizado,
+  Intel sobrante reseteado contabilizado; solo una promoción por corrida.
+- Elegibilidad: `floor(accepted acumulado +1e-8)` da IDs de trabajo enteros nuevos;
+  nunca redondear cada paso/sesión. Las fracciones y el total acumulado sobreviven
+  al reset; las unidades previamente aceptadas no vuelven a sortearse. Tolerancia
+  1e-8 solo para redondeo numérico. Descubrimiento se acopla a esos IDs, nunca a P.
+  RNG y contadores se conservan en chunks/promoción/reconexión. El experimento no
+  emite Demonstration Archives ni les permite entrar al flujo elegible.
+- Archivos no alteran ingresos/compras: el mismo camino económico determinista
+  puede reutilizarse para todas las semillas sin cambiar resultados de economía.
+  Cada unidad ordinaria sigue en inventario/procesamiento aunque descubra archivo.
+  Conservación por transición, tasas y presupuesto se comprueban; balances acumulados
+  de material y moneda con tolerancia absoluta 1e-6 en horizontes de hasta 100h online.
+- Se acelera únicamente repetición de un estado de buffers fijo comprobado, sin
+  compras/promoción pendientes, en pasos h enteros hasta próxima frontera. Test
+  contra recorrido no acelerado: A/T/P/Intel coinciden a <1e-6. No extrapola fluido.
+
+### Reproducción y artefactos
+
+```sh
+lune run scripts/check.luau
+lune run scripts/balance.luau
+lune run scripts/seededBalance.luau
+lune run scripts/economyBalance.luau
+lune run scripts/steadyBalance.luau
+lune run scripts/balanceSensitivity.luau
+lune run scripts/economyBalance.luau E1-baseline 1
+lune run scripts/seededBalance.luau S6-cap 1
+git diff --check
+```
+
+Lune 0.11.0; semilla maestra 20261018. Código/entradas versionados en Git;
+`build/balance/` generado e ignorado. `economy/all.json` registra manifiestos completos,
+trayectorias, transacciones, resúmenes, revisión/dirty, hashes Git del contenido de
+cada fuente y comando. CSV por escenario conserva semillas, resultados individuales
+(y vacíos censurados). El comando final repite una corrida por índice sin cambiar
+su derivación. Algoritmo y método de censura/percentiles/bandas están en §12;
+`BalanceMetrics` incluye intervalo por inversión de banda DKW 99% para cada percentil.
+No interpretar esa banda como validación de supuestos de comportamiento humano.
+
+Corridas: S1–S6 y variantes: 12 escenarios ×2 políticas ×100000; economía:
+11 escenarios ×2 políticas ×100000; control sostenido: 100000 caminos por política
+mapeados a 1/10/30/60/s con draws comunes. Contraste analítico separado: 100000 por
+política (§12); se comprueban medias y CDF en umbrales de trabajo frente a fórmulas
+geométrica/truncada, tanto primer hallazgo como gap posterior. Garantía es la política aprobada; puro aleatorio solo control.
+Los horizontes cortos conservan censura; los largos llegan a 100h online según sesión.
+Rangos candidatos 1/5/15/40/100, sin depender de producción/Intel. Gaps posteriores:
+primero→segundo hallazgo; control sostenido los separa de arranque y progresión.
+
+### Compras y primera promoción (medidas, desde inicio de sesión inicial)
+
+| Candidato | Primera automatización | Fábrica 60/s | Primera promoción programada |
+| --- | ---: | ---: | ---: |
+| E1 precios originales | 30.0625 s | 344.8125 s | no solicitada |
+| E2 5 min cada hora | 30.0625 s | 3644.8125 s calendario /344.8125 s online | no solicitada |
+| E3 30 min diarios | 30.0625 s | 344.8125 s | no solicitada |
+| E4 bloqueo + reconexión | 30.0625 s | 354.84375 s | no solicitada |
+| E5 precios ×5 | 150.0625 s | 1719.75 s | no solicitada |
+| E6 promoción 25k P/10k Intel | 30.0625 s | 344.8125 s | 721.84375 s |
+| E7 manual 10 s/día, online 5 min/día | 172810.0625 s calendario | 259224.875 s calendario | no solicitada |
+| E8 buffers (1,1) | 30.0625 s | 344.8125 s | no solicitada |
+| E9 precios ×2 | 60.0625 s | 688.03125 s | no solicitada |
+| E10 promoción 100k P/50k Intel | 30.0625 s | 344.8125 s | 1971.84375 s |
+| E11 manual solo 10 s, horizonte 600 s | **inalcanzable** | **inalcanzable** | no solicitada |
+
+E1 coste total de maquinaria 2380 Intel; E5 11900; E9 4760.
+E11 produce solo 10 unidades, saldo 10; extractor de 30 no se compra por suerte ni
+por inyección de Intel. E6/E10 conservan trabajo elegible al reset y registran
+exactamente una promoción. No se simula segunda promoción, edificios o rutas arbitrarias.
+
+### Descubrimiento, sesiones y rangos (garantía)
+
+E1 primera búsqueda: mediana 1459.4427 s (~24.32 min), p90/p99 3637.4260 s
+(~60.62 min), desde primera unidad entera. Gap segundo hallazgo: mediana ~19.27 min,
+p90/p99 ~55.56 min. La garantía limita trabajo; la rampa puede superar 55.56 min
+online para el primer archivo, y las ausencias aumentan el tiempo calendario.
+
+| Escenario | Mediana primer archivo calendario | p90/p99 calendario | Mediana online |
+| --- | ---: | ---: | ---: |
+| E1 continuo | 24.32 min | 60.62 min | 24.32 min |
+| E2 5 min/hora | 4.07 h | 12.01 h | 24.32 min |
+| E3 30 min/día | 24.33 min | 48.01 h | 24.33 min |
+| E4 bloqueo/reconexión | 36.10 min | 92.40 min | 26.10 min |
+| E5 precios ×5 | 44.59 min | 80.90 min | 44.59 min |
+| E6 promoción temprana | 27.09 min | 63.39 min | 27.09 min |
+| E7 manual limitado | ~6.00 días | ~14.00 días | 33.99 min |
+
+Valores individuales y bandas completas en los artefactos; redondeos de tabla no
+son objetivos de producto. Cohortes independientes por escenario; diferencias
+pequeñas entre E1/E8 incluyen variación muestral, no efecto probado del buffer.
+En E2 rango100 queda censurado en el horizonte de 100 sesiones de 5 min; no
+presentarlo como alcanzado. Tiempo manual se reporta aparte: en E1, los hallazgos
+posteriores a automatizar no suman actividad manual aunque sí tiempo online.
+
+| Rango candidato | E1 mediana online | E1 p90 online | E1 p99 online |
+| ---: | ---: | ---: | ---: |
+| 1 | .4054 h | 1.0104 h | 1.0104 h |
+| 5 | 2.0584 h | 3.0004 h | 3.7675 h |
+| 15 | 6.0685 h | 7.6439 h | 8.9439 h |
+| 40 | 16.0714 h | 18.5998 h | 20.7080 h |
+| 100 | 40.0864 h | 44.0606 h | 47.3885 h |
+
+Control sostenido 60/s: primer hallazgo mediana 1155.4833 s, p90/p99 3333.3167 s;
+gap posterior mediana 1155 s, p90/p99 3333.3333 s. A 1/s, mediana primera
+19.2581h y p90/p99 55.5553h: el starter sin automatizar es lento de forma explícita.
+No proponer un hallazgo genuino rápido de tutorial con estos p/H sin cambiar producto.
+El demo no sustituye estadísticas genuinas. Otros caudales y control puro en `steady.json`.
+
+### Aceptación, sensibilidad y límites
+
+Pasaron tests de runner, RNG, economía/métricas, 16 tests previos de Production,
+formato/lint/build/smoke y diff check. Tests económicos incluyen asequibilidad,
+no suma manual/auto, espera/reconexión, bloqueo, compra imposible, promoción y
+retención de fracciones/counter; no afirman persistencia durable ni T-009.
+
+En todos E1–E11, h/2 conserva secuencia de transacciones. Máxima diferencia de A:
+8.375 unidades en hasta 100h online; máximo adelanto de transacción .21875 s online
+(en E6/E10). Umbral de diagnóstico 100 unidades solo alarma cambios grandes;
+la aceptación usa diferencias observadas pequeñas y su causa, no una cota universal.
+Variación procede de latencia downstream-first y compra en fronteras discretas;
+no hay pérdida acumulada ni aumento de caudal estable. En S5, diferencias por ventana
+para (5,3): P +.03125 [0,120], +.28125 [120,200], +.78125 [900,1200]; A +.15625
+[300,400]; resto cero. Las tres capacidades comparten estos deltas. T e inventario
+concuerdan por conservación. Artefacto completo `sensitivity.json`.
+
+Repetición completa: todos los CSV económicos resultaron byte-idénticos (SHA-256);
+replay individual E1 índice 1 y S6 índice 1 coincide exactamente para ambas políticas.
+La exportación determinista también coincidió byte por byte. Estas comprobaciones
+excluyen cambios esperados de procedencia Git tras el commit; los valores son reproducibles.
+
+No se eligió tick de gameplay. No se validaron motor, Studio, red, touch, ocho plots,
+servicios reales, persistencia o durabilidad. Sin modificaciones a `src/` ni Production.
+Los resultados son candidatos para decidir el paso 2; M0 continúa abierto hasta
+aprobar pacing/economía y completar los pasos 3–5.

@@ -91,3 +91,17 @@ para fixtures, derivación analítica discreta/fluida, particiones distintas,
 resultados, tolerancias y evaluación de suficiencia. El contrato no cambia.
 Todas las transiciones verifican inventario inicial, conservación, capacidades,
 tasas y tiempo. Studio/multiplayer/touch no ejecutados: aritmética fuera de Rojo.
+
+
+## Harness de balance autorizado
+
+`lune run tests/balanceRunner.luau` prueba sesiones/reconexión sin catch-up,
+eventos en fronteras no alineadas, conservación por transición, presupuesto global,
+rechazo de tercera línea máxima declarada, entradas inválidas y tiempo descartado.
+`lune run tests/discoveryExperiment.luau` prueba vector Park–Miller, garantía,
+reset, continuidad en chunks y flujo natural común entre políticas.
+Ambos están incluidos en `scripts/check.luau`. No agregan fixtures al modelo
+Production ni prueban persistencia. Comandos/resultados y límites en BALANCE §12;
+`tests/economyExperiment.luau` cubre economía condicionada, fracciones, reset,
+reconexión, censura y aceleración de estado fijo. También se ejecuta en el check.
+Resultados del simulador completo en BALANCE §13; pacing pendiente de aprobación.

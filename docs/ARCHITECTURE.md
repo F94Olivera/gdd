@@ -60,7 +60,7 @@ This is not an Express-style controller/service/repository mapping. **Services o
 | PlayerData | Session locking, migrations, profile loading, budgets, durable operations, reconciliation | A client-provided balance or progress |
 | Plot + Build | Eight-plot ownership, slots/ports/grid topology, safe equipment edits, inventory conservation | Client-declared placement, inventory, ownership |
 | Production | Logical input units, queues, processing rates, backpressure, fractional accumulation, fixed-step/capped catch-up | Visual paper objects or client-reported throughput |
-| Discovery | Once-per-eligible-unit roll, server RNG, optional approved guarantee, unique reward operation IDs and pending commitments | Client randomness, discovered archive count |
+| Discovery | Once-per-eligible-unit roll, server RNG, mandatory H=200000 guarantee (D-011), unique reward operation IDs and pending commitments | Client randomness, discovered archive count |
 | Economy + Progression | Intel credit/spending, machine eligibility, permanent count-derived rank, sector access and voluntary promotion | Client prices, permissions or rank |
 | Tutorial | Server-confirmed step completion; separate unranked demonstration reward | UI animation as proof of completion |
 | Stats | One-time authoritative event semantics and versioned period counters | Client timings/scores and repeated events |
@@ -82,6 +82,14 @@ plot supply (fresh logical units)
 ```
 
 A genuine archive reward is **additional** to ordinary output. Each fresh unit receives discovery eligibility **exactly once**. The scanner/process stage never gates the existence of an archive; reprocessing, moving belts and reconnects cannot regenerate clearing events.
+
+Approved launch design D-012 caps **combined manual/automatic fresh clearing at
+60 units/s per player/factory across all floors and sectors**. At most two maximum
+extractor lines, reference rates 30 clearing / 50 transport / 40 processing per line.
+Build rules and UI must expose the restriction. Before implementation, define the
+shared budget accounting/allocation across simultaneous sources, without banking
+blocked work or silently reducing odds. This is a future server/build contract,
+not a change to the isolated two-buffer Production module. Use versioned parameters.
 
 ### Simulation contract
 
@@ -117,7 +125,7 @@ Use stable IDs and explicit schema/balance versioning for machine specs, tiers, 
 ## Open architecture decisions
 
 - Select and verify a maintained profile/session persistence solution and define its real commit semantics.
-- Choose approved rarity/guarantee rules and data encoding for pending awards.
+- Define pending-award data encoding and durable commit protocol under approved D-011 (p=0.00001, H=200000); policy choice is resolved.
 - Define bounded queue recovery and exact event identity for throughput accounting.
 - Confirm when a leaderboard projection can be reconciled without trusting stale writes.
 - Validate Studio-only scene/asset workflows before considering the experience reproducible.
