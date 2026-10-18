@@ -106,3 +106,76 @@ Store outputs/parameters in a reproducible, non-secret artifact and summarize ac
 ## 7. Producer sign-off required
 
 Resolve `Q-001`, `Q-002`, `Q-003`, `Q-004` and `Q-005` in `DECISIONS.md` before claiming the numbers above are locked or building durable discovery/promotion data around them.
+
+## 8. Verificación del paso temporal M0 (2026-10-18)
+
+**Medición experimental, no balance aprobado.** Modelo: `scripts/models/Production.luau`,
+orden downstream-first conservado. Reproducción: `lune run tests/production.luau`
+con Lune 0.11.0. No RNG, descubrimientos, economía, grafos ni gameplay.
+
+Fixtures: estado inicial vacío; horizonte 20 s; capacidades `(output, processing)=(5,3)`.
+Tasas `(clearing, transport, processing)` en unidades/s:
+
+| Escenario | Tasas y eventos |
+| --- | --- |
+| Flujo estable | `(2,4,4)`, constantes |
+| Cuello de botella | `(4,3,2)`, constantes |
+| Bloqueo/recuperación | `(4,3,2)`; procesamiento 0 en `[4.375,9.625)` s y 2 después |
+
+Se observa cada 0.5 s, además de 4.375, 9.625 y 9.75 s (43 observaciones).
+Todos los pasos se cortan en esos tiempos, incluidos los eventos que no coinciden
+con la grilla gruesa. El nuevo valor de tasa rige desde el evento, nunca antes.
+El cap se iguala a h; no hay tiempo descartado. Se controla conservación local y
+acumulada, no negatividad, capacidades y límites de tasas en cada transición,
+incluidas las referencias finas. Los siete tests anteriores se conservan.
+
+**Referencia independiente:** límite fluido con residencia cero, utilizado solo como
+oráculo matemático de estos fixtures. Flujo estable: `A=T=P=2*t`, `O=Q=0`.
+Para el cuello: `P=2*t`, `Q=min(t,3)`, `O=t` hasta t=3 y
+`O=min(2*t-3,5)` después; `T=P+Q`, `A=P+Q+O`.
+En el bloqueo ambos buffers ya están llenos: usar esas mismas fórmulas con tiempo
+activo `t-clamp(t-4.375,0,5.25)`. Esto no postula tiempos de viaje de gameplay.
+
+**Error:** máximo absoluto sobre las cinco cantidades `(A,T,P,O,Q)` y las 43
+observaciones, en unidades. Además se comparan ejecuciones consecutivas y una
+referencia numérica h=1/1024 s, contrastada con h=1/2048 s y con el límite analítico.
+En los tres escenarios se observó la misma envolvente máxima:
+
+| Paso máximo h (s) | Error al límite analítico | Error a referencia 1/1024 | Diferencia al paso anterior |
+| ---: | ---: | ---: | ---: |
+| 0.5 | 2 | 1.996093750 | — |
+| 0.25 | 1 | 0.996093750 | 1 |
+| 0.125 | 0.5 | 0.496093750 | 0.5 |
+| 0.0625 | 0.25 | 0.246093750 | 0.25 |
+| 0.03125 | 0.125 | 0.121093750 | 0.125 |
+
+La separación entre referencias es 0.001953125 unidades en cada escenario;
+sus errores al límite son 0.00390625 y 0.001953125. Por eso la referencia fina no
+se presenta como exacta. Los errores máximos coinciden porque el retardo inicial
+común domina la norma; esto no significa que las trayectorias sean iguales.
+
+**Tolerancias:** comparación algebraica/conservación absoluta de `1e-8` unidades
+para redondeo de estos tamaños y horizontes. Para refinamiento se exige `E(h)<=8*h+1e-8`:
+envolvente conservadora de dos pasos de retardo por la tasa máxima del fixture
+(4 unidades/s), no una cota demostrada para cualquier configuración. Se exige además
+`E(h/2)<=0.6*E(h)+1e-8`: margen explícito frente al factor 0.5 esperado de error
+lineal; no basta aprobar solo una tolerancia final amplia. Las referencias también
+se comprueban contra la envolvente analítica correspondiente.
+
+**Orden y limitaciones:** en flujo estable, al final `O=Q=2*h`, `T=40-2*h`,
+`P=40-4*h`, `A=40`; el cuello también termina con `P=40-4*h`, `O=5`, `Q=3`.
+El orden impide atravesar dos etapas en un paso, pero permite reutilizar espacio
+liberado aguas abajo durante ese paso. Produce un retardo artificial que desaparece
+al reducir h; no representa una latencia física fija. Los tres fixtures muestran
+convergencia de primer orden en puntos compartidos, sin defecto que requiera cambiar
+el modelo. La recuperación comprueba 0.25 unidades procesadas y aceptadas entre
+9.625 y 9.75 s, sin trabajo acumulado durante el bloqueo.
+
+No hay prueba general para cualquier tasa/capacidad, pasos grandes, estados iniciales,
+eventos entre observaciones, tasas variables continuas, horizontes largos ni otro
+orden de actualización. Capacidades cero y tiempo descartado mantienen sus tests
+anteriores, pero quedan fuera de este experimento de convergencia. Cambiar el
+muestreo también cambia la partición y puede cambiar el error. No se selecciona
+un paso de producción ni se valida el 5 Hz propuesto. El siguiente incremento seguro
+es contrastar otros regímenes de esta misma línea (por ejemplo transporte limitante)
+con oráculos independientes antes de ampliar topología o integrar gameplay.

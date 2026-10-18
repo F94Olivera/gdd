@@ -15,21 +15,35 @@
 
 ## M0 — Specification + foundation (current)
 
-**Already reported as done in the initial setup audit:** local repo initialization, pinned toolchain, Rojo build/serve, Luau format/lint checks, Wally resolution, offline smoke checks, local clone test, and Studio opening the built place. This is not proof of a functional game or remote CI.
+**Technical foundation:** local repo initialization, pinned toolchain, Rojo build/serve, Luau format/lint checks, Wally resolution, offline smoke checks, local clone test, and Studio opening the built place were reported in the [initial setup audit](history/setup-validation-2026-10-18.md). No gameplay is implemented.
+
+**Reconciled on 2026-10-18:**
+
+- [x] Manual Studio live Rojo connection and edit/removal synchronization confirmed by the developer in the [setup follow-up](history/setup-follow-up-2026-10-18.md). Not rerun by the assistant during this review.
+- [x] Both `[Server] Bootstrap ready` and `[Client] Bootstrap ready` in Studio Play Output confirmed by the developer in the same follow-up. Not a multiplayer or device test.
+- [x] Remote `origin` configured as `https://github.com/F94Olivera/gdd.git`; integration branch is `master`. [GitHub Actions run 39155891887](https://github.com/F94Olivera/gdd/actions/runs/39155891887) completed successfully for commit `032131b00250a5da27972b067852b6984155c1e8`.
+- [x] Local `lune run scripts/check.luau` rerun successfully during the repository review: formatting, lint, Rojo build and structural smoke checks.
+- [x] Original Master GDD v2.1 reviewed against `docs/GDD.md`, with the companion prompt and future-concepts backlog inspected as reference material. Original-file retention/linking is no longer a requirement per producer decision E-005. This review does not make the working summary a verbatim transcription or approve proposed balance values.
+
+**Separate contributor follow-up:** onboarding on the second contributor's Windows computer remains their responsibility, outside this setup's acceptance scope per the setup follow-up. It is not claimed as verified and does not block this local setup.
+
+**First code increment (2026-10-18):** isolated continuous-quantity production model
+in `scripts/models/Production.luau`, with explicit rates, two bounded buffers,
+backpressure and capped steps; seven Lune tests included in the project check.
+No gameplay integration or approved balance. This is a foundation for the full
+seeded simulator below, not completion of that deliverable or a milestone gate.
 
 **Remaining:**
 
-- [ ] Finish manual Studio **live Rojo connect** verification (edit in VS Code -> appears in Studio -> removal syncs).
-- [ ] Run Studio Play and confirm both bootstrap messages in Output.
-- [ ] Complete onboarding on the second developer's separate Mac/PC.
-- [ ] Create/authorize a private remote only when requested; then run and confirm GitHub Actions check.
-- [ ] Compare `docs/GDD.md` against the full original Master GDD v2.1 and attach/link canonical source in the actual coding workspace.
+- [ ] Incorporate reviewed GDD details into the working summary: free connected starter sorter/conveyor/processor at 1 unit/s, included connection capacity for the first extractor, and competition presentation/reward constraints. No new product choices are implied.
 - [ ] Run initial pure simulator with reproducible seeds: clearing rates, bounded buffers, random and proposed guarantee; export median/p90/p99 first-find waits under realistic sessions.
 - [ ] Resolve Q-001–Q-003 in `DECISIONS.md` (random/guarantee, target waits, late-capacity bounds).
 - [ ] Review rank titles, first promotion economy, sector plan and critical persistence strategy before building affected systems.
 - [ ] Map asset ownership, authorized Roblox group/experience ownership and Studio-only scene versioning strategy.
 
 **Exit gate:** signed-off blocking M0 rules, executable documented offline balance model, actually verified Rojo/Studio round trip, updated `DECISIONS.md` and M1 scoped tasks. No need to build gameplay to pass M0.
+
+**Next slice:** reconcile the working GDD details above, then agree simulation scenarios with the producer before implementing the offline model. Session lengths, upgrade choices, queue capacities and stall schedules must be explicit inputs; do not silently turn assumptions into approved balance. Discuss Q-001–Q-003 together after presenting seeded results, as required by `DECISIONS.md`.
 
 ## M1 — First playable vertical slice
 

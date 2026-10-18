@@ -49,6 +49,10 @@ lune run scripts/check.luau
 
 The build directory must exist before invoking Rojo directly if the command does not create it; the project check is expected to prepare it. `build/`, downloaded packages, and generated sourcemaps are not committed. If an individual tool command differs from the checked-in scripts or project configuration, use the repository configuration and update this README in the same change.
 
+The check also runs the isolated M0 production-model tests. Run them alone with
+`lune run tests/production.luau`; see [the model contract](tests/README.md). Its
+fixture values are not approved balance, and it is not connected to gameplay.
+
 ### First clone on another developer's computer
 
 Install Roblox Studio, VS Code, Git, Git LFS and **Rokit 1.2.0** first, from their official sources; if using Homebrew on macOS, Git LFS can be installed with `brew install git-lfs`. Once, add `export PATH="$HOME/.rokit/bin:$PATH"` to the shell profile (`~/.zshrc` for default zsh), then restart the terminal/VS Code. Some Intel-only tool binaries may require Rosetta on Apple Silicon.

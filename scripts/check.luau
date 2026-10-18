@@ -20,4 +20,5 @@ if not fs.isDir("build") then
 end
 run("rojo", { "build", "default.project.json", "--output", "build/game.rbxlx" })
 run("lune", { "run", "tests/smoke.luau" })
+run("lune", { "run", "tests/production.luau" })
 print("All checks passed")

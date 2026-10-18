@@ -32,6 +32,35 @@ These are **GDD-approved direction**, not new user approvals during this documen
 | E-003 | Accepted as current scope constraint | No external Node.js API, SQL database, Docker, compulsory dependency-injection framework or unrequested packages in M0. |
 | E-004 | Accepted as team workflow | Small reviewable changes with checks; no unattended push, Studio publishing or asset upload. |
 
+### E-005 — Original reference file retention
+
+- Date: 2026-10-18
+- Status: Accepted
+- Context: the original Master GDD v2.1, companion Claude prompt and future-concepts workbook were supplied and inspected during the repository review.
+- Producer decision: "olvidate de los archivos originales, no importa" in this chat, followed by authorization to continue the roadmap reconciliation.
+- Impact: retaining, copying or linking the original files in the repository is not an M0 requirement. Continue with the working repository documentation and explicit producer decisions; no new gameplay or balance approval follows from supplying the files. The working GDD remains a summary, not a verbatim conversion.
+- Alternatives: retain originals in the repository or document their external location; neither is required by the producer.
+- Required review: incorporate identified summary omissions separately without changing product rules. No runtime or persistence migration.
+
+### E-006 — First isolated M0 code increment
+
+- Date: 2026-10-18
+- Status: Accepted (scope only)
+- Producer request: "Implementemos primero un modelo offline mínimo de producción con tasas, buffers limitados y backpressure, con tests en Lune, sin integrarlo todavía al gameplay. Los valores de prueba no son balance aprobado."
+- Impact: authorize the isolated continuous-quantity model and offline tests; keep M0 and all open product/balance choices unchanged. This does not authorize gameplay integration or offline player production.
+- Implementation choice: fixed two-buffer line, downstream-first steps, explicit parameters and reported discarded catch-up time. These are experiment semantics, not approved gameplay timing.
+- Alternatives deferred: arbitrary graphs, discrete unit eligibility, discovery, economy and full seeded balance scenarios.
+- Required review: conservation, capacity/rate bounds, stalls/recovery, determinism and invalid inputs in Lune. No persistent state or migration.
+
+### E-007 — Temporal convergence verification of the M0 model
+
+- Date: 2026-10-18
+- Status: Accepted (scope only)
+- Producer request: "verificar la convergencia del modelo al reducir el paso temporal, antes de ampliar escenarios o integrarlo al gameplay."
+- Impact: three deterministic Lune fixtures (stable flow, bottleneck, blocking/recovery), shared horizon/events, conservation and buffer checks on every transition, measured error and documented tolerances. All values remain experimental fixtures.
+- Implementation: compare step halvings with independent fluid solutions and two fine numerical references; retain the existing downstream-first model. Results and limits are in `BALANCE.md` section 8.
+- Deferred: RNG, discoveries, economy, graphs and gameplay integration. No balance, gameplay tick or open product choice is approved. No M0/M1 gate changes.
+
 ## Open producer choices — do not silently implement
 
 | ID | Status | Question / alternatives | Why it matters |
