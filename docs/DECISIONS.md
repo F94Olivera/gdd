@@ -69,6 +69,14 @@ These are **GDD-approved direction**, not new user approvals during this documen
 - Impact: two deterministic Lune scenarios on the existing two-buffer line, independent analytic oracles, per-component and per-window refinement including transition increments. Results in `BALANCE.md` section 9.
 - All numbers remain experimental fixtures. No gameplay, balance, RNG, economy, graph or milestone gate approval. Existing model semantics retained after verification.
 
+### E-009 — Nonempty buffers and small downstream verification
+
+- Date: 2026-10-18
+- Status: Accepted (scope only)
+- Producer request: "verificar la misma línea de dos buffers con estados iniciales no vacíos y capacidad downstream pequeña, antes de ampliar topología o integrar gameplay."
+- Impact: two deterministic Lune fixtures, independent discrete/fluid oracles, component/window errors and conservation including initial inventory. Results and limitations in `BALANCE.md` section 10.
+- Existing downstream-first contract retained; no defect found within this scope. Values are experimental, not approved balance. No RNG, discovery, economy, topology, dependencies or gameplay added; M0 remains open and product decisions remain pending.
+
 ## Open producer choices — do not silently implement
 
 | ID | Status | Question / alternatives | Why it matters |

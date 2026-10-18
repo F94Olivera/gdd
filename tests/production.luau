@@ -543,4 +543,182 @@ for _, stopped in { false, true } do
 	end)
 end
 
+-- Nonempty fixtures: closed-form discrete oracle, not a fine-run reference.
+local smallCapacity = 1 / 16
+local initialTimes = { 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6 }
+local initialWindows = {
+	{ first = 0, last = 0.5, name = "initial" },
+	{ first = 0.5, last = 1, name = "drain-tail" },
+	{ first = 1, last = 2, name = "before-stop" },
+	{ first = 2, last = 4, name = "stopped" },
+	{ first = 4, last = 4.5, name = "restart" },
+	{ first = 4.5, last = 6, name = "late" },
+}
+
+local function initialOracle(time: number, step: number?, drain: boolean): Sample
+	local speed = if step then math.min(2, smallCapacity / step) else 2
+	if drain then
+		-- Q stays full until O empties at 1/speed; then drains at 2/s.
+		local transported = math.min(speed * time, 1)
+		local processed = transported + math.clamp(2 * (time - 1 / speed), 0, smallCapacity)
+		return {
+			output = 1 - transported,
+			processing = smallCapacity + transported - processed,
+			accepted = 0,
+			transported = transported,
+			processed = processed,
+		}
+	end
+	local active = time - math.clamp(time - 2, 0, 2)
+	return {
+		output = 1,
+		processing = smallCapacity,
+		accepted = speed * active,
+		transported = speed * active,
+		processed = speed * active,
+	}
+end
+
+for _, drain in { true, false } do
+	test(
+		"nonempty small downstream: " .. (if drain then "drain" else "full stop/restart"),
+		function()
+			for _, step in { 1 / 4, 1 / 8, 1 / 16, 1 / 32, 1 / 64, 1 / 128, 1 / 256 } do
+				local config: Production.Config = {
+					clearingRate = if drain then 0 else 4,
+					transportRate = 2,
+					processingRate = 2,
+					outputCapacity = if drain then 2 else 1,
+					processingCapacity = smallCapacity,
+					maxStepSeconds = step,
+				}
+				local state = { output = 1, processing = smallCapacity }
+				local accepted, transported, processed, time = 0, 0, 0, 0
+				local samples: { Sample } = {}
+				for _, target in initialTimes do
+					while time < target do
+						config.processingRate = if not drain
+								and time >= 2
+								and time < 4
+							then 0
+							else 2
+						-- All targets and events are on EVERY grid; observations never subdivide h.
+						assert(time + step <= target)
+						local previous = state
+						local result = Production.step(config, state, step)
+						state = result.state
+						accepted += result.accepted
+						transported += result.transported
+						processed += result.processed
+						near(result.simulatedSeconds, step)
+						near(result.discardedSeconds, 0)
+						near(result.simulatedSeconds + result.discardedSeconds, step)
+						assert(state.output >= 0 and state.output <= config.outputCapacity)
+						assert(
+							state.processing >= 0 and state.processing <= config.processingCapacity
+						)
+						assert(
+							result.accepted >= 0 and result.accepted <= config.clearingRate * step
+						)
+						assert(
+							result.transported >= 0
+								and result.transported <= config.transportRate * step
+						)
+						assert(
+							result.processed >= 0
+								and result.processed <= config.processingRate * step
+						)
+						near(previous.output + result.accepted, state.output + result.transported)
+						near(
+							previous.processing + result.transported,
+							state.processing + result.processed
+						)
+						near(1 + accepted - transported, state.output)
+						near(smallCapacity + transported - processed, state.processing)
+						near(
+							1 + smallCapacity + accepted,
+							state.output + state.processing + processed
+						)
+						time += step
+						-- Exact discrete prediction at every transition, including unobserved drain times.
+						local discrete = initialOracle(time, step, drain)
+						near(state.output, discrete.output)
+						near(state.processing, discrete.processing)
+						near(accepted, discrete.accepted)
+						near(transported, discrete.transported)
+						near(processed, discrete.processed)
+					end
+					table.insert(samples, {
+						output = state.output,
+						processing = state.processing,
+						accepted = accepted,
+						transported = transported,
+						processed = processed,
+					})
+				end
+				near(time, 6)
+				for _, window in initialWindows do
+					local anchor = table.find(initialTimes, window.first)
+					assert(anchor)
+					local origin = initialOracle(window.first, nil, drain)
+					local parts = {}
+					for _, field in fields do
+						local absolute, increment = 0, 0
+						local predictedAbsolute, predictedIncrement = 0, 0
+						for index, t in initialTimes do
+							if t >= window.first and t <= window.last then
+								local fluid = initialOracle(t, nil, drain)
+								local discrete = initialOracle(t, step, drain)
+								local discreteOrigin = initialOracle(window.first, step, drain)
+								absolute = math.max(
+									absolute,
+									math.abs(samples[index][field] - fluid[field])
+								)
+								increment = math.max(
+									increment,
+									math.abs(
+										samples[index][field]
+											- samples[anchor][field]
+											- fluid[field]
+											+ origin[field]
+									)
+								)
+								predictedAbsolute = math.max(
+									predictedAbsolute,
+									math.abs(discrete[field] - fluid[field])
+								)
+								predictedIncrement = math.max(
+									predictedIncrement,
+									math.abs(
+										discrete[field]
+											- discreteOrigin[field]
+											- fluid[field]
+											+ origin[field]
+									)
+								)
+							end
+						end
+						-- Assert the actual error profile, without assuming monotone refinement.
+						near(absolute, predictedAbsolute)
+						near(increment, predictedIncrement)
+						table.insert(
+							parts,
+							string.format("%s=%.9f/%.9f", field, absolute, increment)
+						)
+					end
+					print(
+						string.format(
+							"INITIAL drain=%s h=%.9f %s abs/delta %s",
+							tostring(drain),
+							step,
+							window.name,
+							table.concat(parts, " ")
+						)
+					)
+				end
+			end
+		end
+	)
+end
+
 print(tostring(cases) .. " production model tests passed")

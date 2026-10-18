@@ -67,3 +67,15 @@ para derivación del oráculo, pasos, ventanas, tolerancias, mediciones y limita
 de incrementos por ventana para que arranque y estado final no oculten transiciones.
 No requieren Studio: el módulo está fuera del árbol Rojo. Lune prueba toda la
 aritmética involucrada; estos resultados no verifican motor, red, touch ni carga.
+
+## Inventario inicial y capacidad pequeña (2026-10-18)
+
+Dos casos más (14 en total) verifican drenaje y buffers llenos con parada/reinicio,
+K=1/16 y pasos 1/4 a 1/256 sobre 6 s. Observaciones cada .5 s no recortan ningún
+paso. Ver [BALANCE, sección 10](../docs/BALANCE.md#10-inventario-inicial-y-downstream-pequeño--m0-2026-10-18)
+para fórmulas discretas/fluidas independientes, resultados, ventanas y tolerancias.
+`INITIAL` imprime errores abs/delta por componente y ventana. Se exige el perfil
+analítico de errores, sin asumir reducción estricta: el caudal discreto es
+min(2,K/h), y coincide con el fluido desde h=1/32 solo para estos fixtures.
+Cada transición verifica además oráculo discreto, conservación con inventario
+inicial, tasas, capacidades y tiempo. No cambia el contrato ni el alcance M0.

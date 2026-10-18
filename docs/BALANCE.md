@@ -263,3 +263,95 @@ observaciones ni un teorema de convergencia. Las invariantes sí se comprueban e
 cada paso. No hay Roblox runtime involucrado ni aprobación del tick de gameplay.
 Siguiente incremento seguro: estados iniciales no vacíos y capacidad downstream
 pequeña en esta misma línea, con oráculos independientes, antes de grafos.
+
+## 10. Inventario inicial y downstream pequeño — M0 (2026-10-18)
+
+**Fixtures experimentales, no balance aprobado.** Se conserva el contrato de
+`Production.step`, sin cambios al módulo. Dos tests nuevos, 14 ejecuciones:
+
+| Fixture | O inicial | Q inicial/capacidad K | Capacidad O | (c,b,p) | Eventos |
+| --- | ---: | ---: | ---: | --- | --- |
+| Drenaje | 1 | 1/16 | 2 | (0,2,2) | ninguno |
+| Llenos | 1 | 1/16 | 1 | (4,2,2) | p=0 en [2,4), después p=2 |
+
+Horizonte 6 s, observaciones 0,0.5,…,6; pasos uniformes
+1/4,1/8,1/16,1/32,1/64,1/128,1/256 s. Todas las observaciones y eventos
+pertenecen a todas las grillas. Un assert impide recortar pasos: cada refinamiento
+cambia realmente la partición. Los eventos rigen desde su instante; no hay tiempo
+descartado. No se agrega scheduler al modelo.
+
+### Derivación independiente
+
+Definir v=min(2h,K), s=v/h. Mientras Q está lleno y hay inventario O,
+procesar libera v y transportar repone v; por inducción Q permanece K.
+Esto deriva la recurrencia discreta sin ejecutar el módulo como oráculo.
+En estos pasos 1/v es entero: O se vacía exactamente tras N=1/v pasos,
+en t_d=N*h=1/s. Después Q se drena a 2/s, con último paso parcial en cantidad.
+Para el drenaje, en puntos de la grilla:
+
+- T=min(s*t,1), O=1-T, A=0.
+- P=T+clamp(2*(t-t_d),0,K), Q=K+T-P.
+
+El límite fluido tiene s=2, t_d=1/2 y acaba de drenar Q en 17/32 s.
+El drenaje discreto termina en la primera grilla en o después de t_d+K/2;
+la fórmula se evalúa solo en grilla, no inventa interpolación entre pasos.
+
+En el fixture lleno, c=4 repone lo transportado; O=1 y Q=K siempre.
+Durante la detención p=0 no se libera espacio: P=T=A=0 por transición.
+Con a=t-clamp(t-2,0,2), los acumulados son A=T=P=s*a.
+El fluido usa s=2. La recuperación comienza inmediatamente, sin trabajo bancado.
+
+**El orden importa:** con Q=K y h=1/4, procesar da 1/16, transportar repone
+1/16. En fluido pasan 1/2 unidades durante ese intervalo. No se puede sustituir
+la composición por un mínimo de tasas constantes: K/h limita el caudal discreto.
+Transportar antes de procesar encontraría cero espacio y daría T=0 en ese paso.
+No se supone que los límites conmutan ni se impone convergencia monótona de errores.
+
+### Mediciones y aceptación
+
+`INITIAL` imprime, para cada paso/fixture, errores absolutos e incrementales de
+O,Q,A,T,P en seis ventanas: inicial [0,.5], cola de drenaje [.5,1],
+antes de parada [1,2], parada [2,4], reinicio [4,4.5], tardía [4.5,6].
+Son las mismas ventanas para ambos fixtures; sus nombres no implican eventos en
+el drenaje. Cada incremento resta el valor al inicio de su propia ventana,
+cancelando errores previos. Se contrastan los 60 errores de cada ejecución con
+los predichos por las dos fórmulas, no solamente con una envolvente global.
+
+Máximos absolutos sobre observaciones, orden (O,Q,A,T,P):
+
+| h | s | Drenaje | Llenos |
+| ---: | ---: | --- | --- |
+| 1/4 | .25 | (.875,.0625,0,.875,.875) | (0,0,7,7,7) |
+| 1/8 | .5 | (.75,.0625,0,.75,.75) | (0,0,6,6,6) |
+| 1/16 | 1 | (.5,.0625,0,.5,.5) | (0,0,4,4,4) |
+| 1/32 hasta 1/256 | 2 | (0,0,0,0,0) | (0,0,0,0,0) |
+
+Ejemplo que separa transiciones: drenaje h=1/4, ventana [.5,1], errores
+absolutos (.875,.0625,0,.875,.875), incrementales (.125,.0625,0,.125,.0625).
+En llenos, parada [2,4] mantiene error acumulado A/T/P de 3.5 con h=1/4,
+pero error incremental cero. Reinicio [4,4.5] da error incremental .875
+para A/T/P, independientemente de ese desfase anterior. Q del drenaje mantiene
+error .0625 para varios pasos gruesos: no hay reducción estricta por componente.
+Las fórmulas y la salida completa permiten reproducir todas las ventanas.
+
+Se acepta diferencia absoluta <1e-8 unidades frente a las identidades y fórmulas,
+no error <1e-8 frente al fluido para pasos gruesos. Los fixtures son diádicos,
+horizonte corto y cantidades <=8; esa tolerancia es margen de redondeo, no una
+licencia para pérdida sistemática. Coincidencia exacta observada con el oráculo
+discreto en **cada transición** y con el fluido desde h=1/32 en estos fixtures.
+Se comprueban en cada transición de cada ejecución: cantidades no negativas,
+tasas por tiempo simulado, capacidades, tiempo simulado=h, descartado=0,
+conservación local O_anterior+A=O_nuevo+T y Q_anterior+T=Q_nuevo+P,
+y acumulada O=1+A-T, Q=K+T-P, O+Q+P=1+K+A.
+El test anterior de catch-up sigue cubriendo descarte positivo.
+
+**Limitaciones:** no es un teorema general de convergencia; el llenado inicial
+Q=K y b=p hacen resoluble el caso y eliminan el retardo de arranque de los tests
+vacíos. No se verifican estados iniciales arbitrarios, b distinto de p, eventos
+fuera de grilla ni error fluido entre observaciones; sí conservación y oráculo
+discreto en todas las transiciones. Ningún defecto encontrado exige cambiar
+`Production.luau`. No hay integración Roblox; Studio/multiplayer/touch no se
+requieren para esta aritmética offline ni fueron ejecutados. M0 sigue abierto.
+Siguiente incremento seguro: Q inicialmente parcial con b distinto de p y
+transiciones de llenado/vaciado interiores, todavía en esta línea y con oráculo
+independiente antes de ampliar topología.
