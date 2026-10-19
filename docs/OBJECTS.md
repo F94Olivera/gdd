@@ -172,7 +172,7 @@ limpiar: en la pila (manual) o en una **bandeja protegida** (extractor).
 | --- | --- | --- | --- | --- | --- |
 | [ ] | **Confidential Archive (el coleccionable)** | `archive_confidential` | 2 × 1.5 × 0.5 (carpeta/dossier) o 2 × 1.5 × 2 (caja de archivo) | **Un solo modelo.** Debe leerse como «confidencial» a 20 studs de distancia (sello, precinto, color distintivo). Un serial opcional es solo procedencia, no cambia valor (GDD v2.0 §2). Se reutiliza en bandeja, vitrina y reveal. | **Gemini (NanoBanana)** concept → **Blender** high/low-poly + bake → **Substance Painter** PBR → **Roblox Studio** import, puertos, colisión (hero asset principal; máximo presupuesto de textura) |
 | [ ] | **Demonstration Archive (tutorial)** | `archive_demonstration` | mismas que `archive_confidential` | Misma geometría con etiqueta clara «DEMO / Demonstration» (D-007). No cuenta para rango ni contador. Debe ser imposible confundirlo visualmente con el genuino. | **Substance Painter** texture set «DEMO» sobre el mismo mesh → **Roblox Studio** |
-| [ ] | **Bandeja de descubrimiento protegida** | `archive_reveal_tray` | 4 × 4 × 3 | Se acopla al extractor (1×1 celda adyacente o integrada). Cubierta/cristal que se abre al revelar. Mencionada como entregable del primer handoff (ASSET_PIPELINE). | **Gemini (NanoBanana)** concept → **Blender** con cubierta animable → **Substance Painter** → **Roblox Studio** animación de apertura y cristal |
+| [ ] | **Bandeja de descubrimiento protegida** | `archive_reveal_tray` | 3 × 3 × 2.5 | Asset separado que se monta en un nicho del extractor, **dentro** de su footprint 2×2 (no ocupa celda propia; ver contrato). Cubierta de cristal que se abre al revelar. Entregable del primer handoff (ASSET_PIPELINE). | **Gemini (NanoBanana)** concept → **Blender** con cubierta animable → **Substance Painter** → **Roblox Studio** animación de apertura y cristal |
 | [ ] | **Papel ordinario (visual)** | `paper_sheet_visual` | 1 × 1.2 × 0.05 | Hoja/legajo representativo que se anima sobre cintas y en la pila. Presupuesto: 240 por cliente, 120 en plot propio, 30 por plot vecino. Low-poly extremo (≤ 12 triángulos). | **Blender** plano ≤12 tris → **Substance Designer** atlas de hojas (4–8 variantes) → **Roblox Studio** instanciado por presupuesto |
 | [ ] | **Fajo/caja de papeles (visual)** | `paper_bundle_visual` | 2 × 1.5 × 1 | Variante agrupada para cintas rápidas (50 u/s) donde una hoja por unidad sería ilegible. | **Blender** → **Substance Designer** mismo atlas → **Roblox Studio** |
 
@@ -334,6 +334,117 @@ polígonos. Estas son las reglas que propongo adoptar desde el primer asset.
 | [ ] | Nunca pedir «estilo de <juego existente>»; describir el nuestro: «almacén de archivo industrial estilizado, legible, acero y pintura de seguridad, papel crema, un acento rojo lacre» |
 | [ ] | Guardar prompt, fecha y modelo junto a cada imagen en `assets/references/<id>/README.md`. Hasta revisar procedencia y licencia (D-020), ninguna imagen ni textura derivada entra al juego |
 
+## Contratos de modelo — primer entregable (M1-09)
+
+Especificación que el modelador necesita para trabajar **sin preguntar**, para los
+cinco objetos del primer handoff: `machine_extractor_t1`, `belt_straight_t1`,
+`machine_processor_t1`, `archive_reveal_tray` y `archive_confidential`. Son el
+«reviewed model contract» del paso 1 de ASSET_PIPELINE. Todo valor es propuesta de
+ingeniería hasta que la prueba del cubo y el primer import en Studio lo confirmen;
+las medidas de las tablas anteriores mandan si hubiera diferencia.
+
+### Convenciones comunes a todos los contratos
+
+| Tema | Regla |
+| --- | --- |
+| Sistema de coordenadas local | Origen en el **centro de la base** (Y = 0 es el piso de la parcela). X a la derecha, Y arriba, **−Z es el frente**. Coordenadas en studs. En Blender: frente a −Y y export FBX con `Forward = −Z, Up = Y`. |
+| Altura de flujo `FLOW_Y` | **1.0 stud.** Es la altura de la superficie de las cintas y de todos los puertos de entrada/salida. Los papeles visuales viajan con su centro en Y ≈ 1.05. Si cambia, cambia en todos los modelos a la vez. |
+| Carril A | Las máquinas de 2×2 celdas tienen sus puertos de cinta en la **celda izquierda** (X = −2), nunca en el centro del modelo (X = 0), porque las cintas ocupan una celda y el puerto debe caer en el centro de esa celda. Así extractor → cintas → procesador forman una línea recta sin desplazamientos. |
+| Puertos | Nombre `Port_<Tipo>_<n>`; posición local; **dirección = normal hacia afuera de la cara que cruza el material**. Tipos: `In` (recibe de cinta), `Out` (entrega a cinta), `Supply` (toma de la pila, no es cinta). En Blender se marcan con **Empties** con esos nombres, en la posición exacta. En Studio son `Attachment` con el mismo nombre dentro de la `PrimaryPart`; si el importador no los trae como instancias, se crean a mano la primera vez y quedan guardados en el `.rbxm`. |
+| Montajes | Nombre `Mount_<Qué>`: puntos donde se acopla otro asset o una UI (`Mount_Tray`, `Mount_Archive`, `Mount_Prompt`). Misma regla que los puertos. |
+| Partes móviles | Cada pieza que se mueve es un **objeto separado** en Blender (y una `Part`/`MeshPart` separada en Studio) con su pivote en el eje de giro o en el inicio del recorrido. **El código las mueve** (TweenService / CFrame). Sin huesos ni animaciones horneadas en este entregable. |
+| Luz de estado | `StatusLight`: Part de 0.6 × 0.6 × 0.6, material Neon, con `PointLight` hijo. Colores los pone el código: verde = trabajando, ámbar = sin suministro, rojo = salida llena, gris = desconectado. No va en el mapa emissive. |
+| Colisión | Máquinas: `CollisionFidelity = Box` sobre la `PrimaryPart` invisible que cubre exactamente el footprint. Decoración, brazos y bandeja **sin colisión** (`CanCollide = false`, `CanQuery = false`). |
+| Jerarquía en Studio | `Model` llamado como el ID, `PrimaryPart` = `Footprint` (Part invisible del tamaño exacto del footprint, pivote en la base). Hijos: `Body` (MeshPart principal con `SurfaceAppearance`), partes móviles, `StatusLight`, Attachments. |
+| Entregables por asset | `assets/source/blender/<id>.blend` · `assets/exports/models/<id>.fbx` (low-poly) y `<id>_HIGH.fbx` · `assets/source/substance/<id>.spp` · `assets/exports/textures/<id>/<id>_{Color,Normal,Roughness,Metalness}.png` · captura de pantalla del asset en Studio junto a un cubo de 4×4×4 y un R15 por defecto · fila en el manifiesto. |
+| Aceptación común | Importa sin advertencias con `Scale Unit = Studs`; bounding box = medidas de la tabla (±0.1); triángulos y resolución dentro del presupuesto; un material y un set UV; normal OpenGL; Attachments en las coordenadas de este contrato; pivote en la base; frente a −Z; Box de colisión no pisa la celda vecina. |
+
+### Contrato 1 — `machine_extractor_t1`
+
+| Campo | Valor |
+| --- | --- |
+| Footprint / bounding box | 2×2 celdas: X ∈ [−4, 4], Z ∈ [−4, 4], Y ∈ [0, 8]. La silueta puede ser más baja en partes, nunca más ancha. |
+| Pivote / frente | Centro de la base (0, 0, 0). Frente −Z: la salida y la bandeja están en la cara frontal. |
+| `Port_Supply_0` | (0, 1.0, +4), dirección +Z. Cara trasera, mira a la pila. El papel entra visualmente por acá (tolva o boca ancha de ~6 studs). El servidor decide si exige adyacencia física a la pila; el modelo solo marca la boca. |
+| `Port_Out_0` | **(−2, 1.0, −4)**, dirección −Z. Carril A. La cinta que recibe tiene su centro en (−2, 0, −6). La boca de salida mide 3.2 de ancho × 1.5 de alto, con el borde inferior en Y = 1.0. |
+| Nicho de bandeja | Hueco en la cara frontal derecha: X ∈ [0.5, 3.5], Y ∈ [1.0, 3.5], Z ∈ [−4, −1]. `Mount_Tray` en **(2, 1.0, −2.5)**, dirección −Z. El nicho queda vacío en el modelo del extractor; lo llena `archive_reveal_tray`. |
+| `Mount_Prompt` | (0, 4.5, −4.2): punto del `ProximityPrompt` de inspección/mejora, cara frontal, altura de pecho de un R15. |
+| Partes móviles | `Arm` (brazo recolector): pivote en (0, 6.5, +2), gira sobre X entre 0° (horizontal hacia la pila, +Z) y −40° (baja hacia el papel); longitud ~5 studs. `Drum` (tambor interno visible por una rejilla frontal): cilindro de radio 1, eje X, pivote en (−2, 2.5, −1), gira continuo. El código fija velocidad y amplitud según estado. |
+| `StatusLight` | Centro en (3, 7.5, −3), en una torreta corta sobre la esquina frontal derecha. |
+| Lenguaje visual | Es el **hero** de la maquinaria y fija el estilo de t2/t3 y del procesador: cuerpo de chapa gris-azulada, franjas de pintura de tier (t1 = gris claro), remaches y paneles atornillados, tolva trasera, rejilla frontal, un panel de control pequeño junto al `Mount_Prompt`. Sin texto legible salvo calcas originales. |
+| Presupuesto | 6 000–10 000 triángulos (todas las partes sumadas). Texturas 1024², un texture set para `Body`; `Arm` y `Drum` comparten ese mismo set (islas reservadas) para no sumar materiales. |
+| Qué NO hacer | No tapar la boca de salida con decoración; no colocar nada sobre el nicho (la bandeja debe verse desde el frente y desde 3⁄4); no sobresalir del footprint ni siquiera con el brazo en su extremo. |
+| Aceptación propia | Con `belt_straight_t1` colocada en (−2, 0, −6) y la bandeja montada, la línea se ve continua y la tapa de la bandeja abre sin atravesar el cuerpo. |
+
+### Contrato 2 — `belt_straight_t1`
+
+| Campo | Valor |
+| --- | --- |
+| Footprint / bounding box | 1 celda: X ∈ [−2, 2], Z ∈ [−2, 2], Y ∈ [0, 1.0] (superficie en `FLOW_Y`); las barandas laterales pueden subir hasta Y = 1.4. |
+| Pivote / frente | Centro de la base. El material fluye de +Z a −Z (entra por atrás, sale por el frente). |
+| `Port_In_0` / `Port_Out_0` | (0, 1.0, +2) dirección +Z · (0, 1.0, −2) dirección −Z. |
+| Partes | `Frame` (MeshPart: bastidor, patas, rodillos de los extremos horneados en la normal, barandas) con `SurfaceAppearance`. `BeltSurface`: **Part plana nativa** de 3.2 × 4.0 × 0.1 con su cara superior en Y = 1.0, material SmoothPlastic negro, con una instancia `Texture` de goma/tacos (de Designer, 1 tile = 1 stud) que el código desplaza en `OffsetStudsV`. No usar SurfaceAppearance acá: no se puede animar. |
+| Zona de papel | El papel viaja centrado en X = 0, Y ≈ 1.05; ancho útil 3.2 → las barandas no deben invadir X ∈ [−1.6, 1.6]. |
+| Esquina (`belt_corner_t1`, fuera de este entregable) | Mismo contrato con `Port_Out_0` en (+2, 1.0, 0) dirección +X; la rotación de 90° la aplica el servidor sobre el mismo modelo. Diseñar el `Frame` recto pensando en que la esquina reutilice sus piezas. |
+| Presupuesto | 150–300 triángulos. Textura del `Frame` desde la **trim sheet** industrial (sin texture set propio). Textura de goma 256² tileable. |
+| Aceptación propia | Diez segmentos en fila no muestran costuras ni z-fighting entre bastidores; el `Texture` tilea sin salto entre segmentos. |
+
+### Contrato 3 — `machine_processor_t1`
+
+| Campo | Valor |
+| --- | --- |
+| Footprint / bounding box | 2×2 celdas: X ∈ [−4, 4], Z ∈ [−4, 4], Y ∈ [0, 8]. |
+| Pivote / frente | Centro de la base. Frente −Z. |
+| `Port_In_0` | **(−2, 1.0, +4)**, dirección +Z. Carril A, cara trasera. Recibe de la cinta cuyo centro está en (−2, 0, +6). Boca 3.2 × 1.5 con borde inferior en Y = 1.0. |
+| `Port_Out_0` | (−2, 1.0, −4), dirección −Z. Salida segura: el papel ordinario «desaparece» acá y paga Intel. En M1 puede ser un buzón cerrado integrado al cuerpo; `machine_secure_output` separado queda para después. |
+| `Mount_Prompt` | (0, 4.5, −4.2). |
+| Partes móviles | `Roller_0` y `Roller_1`: cilindros radio 0.5, eje X, pivotes en (−2, 1.0, +2.5) y (−2, 1.0, −2.5), visibles bajo la cubierta, giran continuo. `ScanBar`: barra de 3.4 × 0.2 × 0.2 con material Neon que recorre Z ∈ [+2, −2] a Y = 2.2 sobre el papel; pivote en (−2, 2.2, +2). |
+| `StatusLight` | (3, 7.5, −3). |
+| Lenguaje visual | Hermano del extractor (misma chapa, mismos remaches, misma franja de tier) pero **más cerrado y limpio**: cuerpo tipo gabinete de escaneo con una ventana de cristal (Studio `Glass`) sobre el carril A para ver rodillos y barra. **Evitar** que parezca un detector de archivos: sin lupas, radares ni iconos de «alerta»; es una máquina de oficina industrial que clasifica. |
+| Presupuesto | 5 000–8 000 triángulos. Texturas 1024², un texture set; rodillos y barra en islas del mismo set. |
+| Aceptación propia | Con la cinta en (−2, 0, +6) la línea extractor → cinta → procesador se ve continua y el papel visual entra por el centro de la boca. |
+
+### Contrato 4 — `archive_reveal_tray`
+
+| Campo | Valor |
+| --- | --- |
+| Bounding box | 3 × 3 × 2.5: X ∈ [−1.5, 1.5], Z ∈ [−1.5, 1.5], Y ∈ [0, 2.5] en coordenadas **propias**. Montada en el extractor, su origen va en `Mount_Tray` = (2, 1.0, −2.5) del extractor, con el frente (−Z) coincidiendo con la cara frontal del extractor. |
+| Pivote / frente | Centro de la base. Frente −Z (la cara que ve el jugador). |
+| Partes | `Base`: bandeja metálica con bordes, 3 × 3 × 0.5. `Cover`: cúpula/tapa de cristal (Studio `Glass`, `Transparency` 0.3) de 2.8 × 2.8 × 2.0, **pivote en la arista trasera superior** (0, 2.5, +1.4) para abrir hacia atrás hasta 100°; o alternativamente desliza hacia +Z 2.5 studs: elegir una y dejarlo documentado en el manifiesto. `Lamp`: Part Neon 0.4 × 0.1 × 0.4 en el techo interior de la `Cover`, se enciende en el reveal. |
+| `Mount_Archive` | (0, 0.5, 0), dirección +Y: donde el servidor coloca `archive_confidential` (o el demo) al revelar. Cualquier forma del archivo cabe en 2 × 1.5 × 1.5. |
+| Lenguaje visual | Acabado distinto al resto de la máquina: acero inoxidable cepillado o pintura blanca «sala limpia», con una franja negra/amarilla fina en el borde de la base. Es el único lugar «protegido» de la fábrica y tiene que leerse así. Sin rojo lacre (reservado al archivo). |
+| Presupuesto | 400–800 triángulos. Texturas 512² propias para `Base`; `Cover` y `Lamp` son Parts nativas sin textura. |
+| Aceptación propia | Montada en el extractor, la `Cover` abre sin atravesar el nicho ni el cuerpo; el archivo colocado en `Mount_Archive` es visible desde el frente y desde 3⁄4 a 20 studs. |
+
+### Contrato 5 — `archive_confidential` (hero principal)
+
+**Decisión pendiente del productor: forma.** Para que el modelador arranque, este
+contrato fija una **propuesta por defecto** y mantiene la alternativa dentro del mismo
+footprint, de modo que bandeja, vitrina y pedestal no cambien con la decisión.
+
+| Campo | Valor |
+| --- | --- |
+| Propuesta por defecto | **Caja de dossier** cerrada con tapa: 2 × 1.5 × 1.5 (X × Z × Y). Lee mejor a distancia, se apoya estable en la bandeja y la vitrina, y tiene una cara frontal grande para el sello. |
+| Alternativa | Carpeta/dossier plano con precinto: 2 × 1.5 × 0.5, mismo pivote y mismos nombres de partes (`Body`, `Lid` = solapa, `Seal`). |
+| Pivote / frente | Centro de la base. Frente −Z = cara del sello. |
+| Partes | `Body` (caja). `Lid`: tapa, pivote en la arista trasera superior (0, 1.5, +0.75), abre sobre X hasta 110° en la inspección de 3 s. `Seal`: precinto/lacre sobre la junta frontal, Part separada para que el código pueda ocultarlo o «romperlo» en el reveal. `Mount_Serial`: Attachment en (0, 0.9, −0.76) para un `SurfaceGui` opcional con serial/fecha (solo procedencia, GDD v2.0 §2). |
+| Lenguaje visual | El **único** objeto con el acento rojo lacre: sello, cinta de precinto y una franja diagonal. Cuerpo de cartón prensado oscuro o cuero envejecido con cantos metálicos; una etiqueta original con tipografía de sello («CONFIDENTIAL» o equivalente inventado, nunca copiado). Tiene que ser inconfundible al lado de una `prop_archive_box` ordinaria: distinta proporción (más baja y ancha), distinto material, distinto color. |
+| Variante demo | `archive_demonstration`: mismo `.blend` y `.spp`, texture set alternativo: sin rojo, etiqueta «DEMO» grande en la tapa y el frente, cuerpo gris neutro. No se modela aparte. |
+| Presupuesto | 1 500–2 500 triángulos (se ve de cerca en el reveal y en la vitrina). Texturas 1024², un texture set. Sin alpha. |
+| Dónde se usa | En `Mount_Archive` de la bandeja, en la pila (reveal manual), en las tres `plot_display_case` y en el reveal de inspección a cámara cerca (~6 studs): el detalle de roughness del lacre y el cuero tiene que aguantar esa distancia. |
+| Aceptación propia | A 20 studs se distingue de una caja ordinaria por silueta y color aun en escala de grises; a 6 studs la tapa abre sin intersecar el cuerpo; el `Seal` se puede ocultar sin dejar agujero visible. |
+
+### Qué sigue faltando para el arte final (fuera de este contrato)
+
+- **Moodboard y paleta en hex** del productor/director de arte (referencias de época,
+  grado de estilización, cantidad de desgaste). Es la entrada del paso Concept.
+- **Decisión caja vs carpeta** para el archivo (ítem 4 de las decisiones pendientes).
+- **Layout de parcela** (posición de pila, bahías y carril starter) para el piso y la
+  grilla; no bloquea estas cinco piezas.
+- Un **place de prueba en Studio** con la grilla de 4 studs dibujada, un cubo de 4×4×4
+  y un R15 por defecto, provisto por ingeniería para la aceptación (M0.1-12 pendiente:
+  Studio no está instalado en la Mac actual).
+
 ## Decisiones pendientes que afectan este inventario
 
 1. **Tamaño de bahía fija y su precio** (sin número aprobado; observación §9 del
@@ -341,7 +452,11 @@ polígonos. Estas son las reglas que propongo adoptar desde el primer asset.
 2. **Distribución de las 8 parcelas alrededor del hub** (anillo vs cruz) ⇒ medidas
    del hub y si hacen falta portales.
 3. **Almacén cerrado con techo o abierto** ⇒ columnas, cerchas y restricciones de cámara.
-4. **Forma del archivo**: carpeta/dossier plano vs caja de archivo. Afecta bandeja,
-   vitrina y legibilidad a distancia.
+4. **Forma del archivo**: carpeta/dossier plano vs caja de archivo. El contrato 5
+   propone **caja de dossier 2 × 1.5 × 1.5** por defecto y mantiene ambas dentro del
+   mismo footprint, así bandeja, vitrina y pedestal no cambian con la decisión.
+6. **Bandeja integrada al footprint del extractor** (contrato 1/4) en vez de una celda
+   adyacente propia: simplifica la validación de construcción (el extractor sigue
+   siendo 2×2) a cambio de un nicho en el modelo. Confirmar al ver el blockout.
 5. **Sector vs piso (Q-012):** si la primera promoción abre un sector nuevo,
    hará falta un segundo set de piso/entorno visual aunque la grilla sea la misma.
