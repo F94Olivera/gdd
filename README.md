@@ -128,6 +128,7 @@ The integration branch is `master`. Review/accept normal Rokit source trust requ
     ├── BALANCE.md
     ├── TEST_PLAN.md
     ├── ASSET_PIPELINE.md
+    ├── OBJECTS.md
     └── history/               # dated setup audits and historical notes
 ```
 
@@ -144,6 +145,7 @@ Paths listed for future systems are **planned**, not a claim they already exist.
 | [Balance](docs/BALANCE.md) | Approved initial tuning, experimental assumptions, reproducible models and measured results |
 | [Test plan](docs/TEST_PLAN.md) | What must be tested in Lune, Studio, multiplayer and devices |
 | [Asset pipeline](docs/ASSET_PIPELINE.md) | Two-person art handoff, licensing, LFS, Studio publication |
+| [Objects](docs/OBJECTS.md) | Checklist of 3D objects to model, with proposed stud dimensions and priorities |
 | [AGENTS](AGENTS.md) | Non-negotiable instructions for Codex and other coding agents |
 
 **Authority order:** later explicitly approved producer decisions in `docs/DECISIONS.md` > original *Master GDD v2.1* (2026-10-15) > this repository's working `docs/GDD.md` summary > implementation details and proposals. The original GDD and companion prompt were reviewed previously; E-005 removes the requirement to retain their files. D-013/D-019 resolve the identified starter/competition omissions. The working GDD remains a summary, not a claim of verbatim conversion. `AGENTS.md` governs implementation process and does not override product rules.
