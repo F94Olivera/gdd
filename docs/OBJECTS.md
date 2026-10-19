@@ -14,8 +14,10 @@ no arte entregado ni medidas aprobadas.
 
 - Unidad: **studs** de Roblox. Un personaje R15 por defecto mide ~5 studs de alto y
   ~4 studs de ancho de hombros; una celda de la grilla mide **4×4 studs** (D-018).
-- Formato: **ancho × profundidad × alto** (X × Z × Y), siguiendo la convención
-  `Size` de Roblox donde Y es la altura.
+- Formato: **ancho × profundidad × alto**, es decir **X × Z × Y**. Atención: no es el
+  orden de `Vector3`/`Size` de Roblox (X, Y, Z). Para no confundir, en el manifiesto
+  de assets las medidas se guardan como tres campos con nombre (`size_x`, `size_y`,
+  `size_z`) y los contratos de modelo escriben el bounding box como rangos por eje.
 - Las medidas de máquinas son **múltiplos exactos de 4 studs** en planta para que
   encajen en la grilla; la altura es libre pero debe dejar la cámara en tercera
   persona legible. Todas son hipótesis a validar con placeholders en M1-09
@@ -28,19 +30,21 @@ no arte entregado ni medidas aprobadas.
 ## Herramientas y pipeline AAA
 
 Cada fila termina con la columna **Herramienta (pipeline AAA)**: el flujo de programas
-elegido para ese objeto, en orden. El estándar es el de un juego AAA: modelado
-hard-surface con high-poly → low-poly y bake de normales, texturizado PBR por texture
-set, materiales tileables para superficies grandes, y Studio solo para ensamblar,
-iluminar y poner la UI. Nada se modela «a mano» con Parts salvo la UI en mundo.
+elegido para ese objeto, en orden. El estándar es el de un juego AAA, aplicado
+**selectivamente**: high-poly → low-poly con bake de normales solo en los seis hero
+assets; el resto de máquinas se modela directo en low-poly con biseles horneados por
+shader; props y estructura usan trim sheet y materiales tileables compartidos; los
+tiers son texture sets sobre el mismo mesh; y Studio ensambla, ilumina y pone la UI,
+con Parts nativas donde una Part alcanza (pisos, colisión, cristal, luces, blockouts).
 
 | Herramienta | Rol en este proyecto | Nunca para |
 | --- | --- | --- |
-| **Blender** | Todo el modelado hard-surface, UVs, high→low-poly, bake, LODs, pivotes y Attachments de puertos, export FBX/glTF | Texturizado final (se pierde calidad PBR) |
+| **Blender** | Todo el modelado hard-surface, UVs, high→low-poly, bake, LODs, pivotes y puertos `_Att`, export FBX/glTF. Texturizado aceptable para assets simples (atlas de papel, trim sheet básica, bakes procedurales) | Texturizado de hero assets y máquinas con desgaste/calcas: ahí Painter es más rápido y controlable. No es una prohibición absoluta (revisión 2026-10-19) |
 | **Substance Painter** | Texturizado PBR por objeto: metal/pintura/desgaste/sellos/etiquetas; un texture set por mesh; export para SurfaceAppearance | Materiales tileables grandes (pesan y repiten mal) |
 | **Substance Designer** | Materiales tileables procedurales: hormigón, acero, goma de cinta, papel apilado, atlas de hojas | Objetos únicos con detalle local |
 | **Substance Sampler / 3D Assets** | Opcional: convertir referencias fotográficas en materiales base para Designer | Assets finales sin pasar por Designer/Painter |
 | **Gemini Pro (NanoBanana)** | Concept art y exploración de siluetas/paleta **antes** de modelar los hero assets (extractor, archivo, bóveda, pila, portal) | Assets finales, texturas o meshes en runtime: D-020 y ASSET_PIPELINE lo limitan a referencia hasta revisar procedencia y licencia |
-| **Roblox Studio** | Import 3D, MeshPart + SurfaceAppearance, colisiones, Attachments, materiales nativos (Glass, Neon), luces, partículas, SurfaceGui/BillboardGui, UI en mundo scripteada | Modelar máquinas o props con Parts/CSG (no da calidad AAA ni control de UVs) |
+| **Roblox Studio** | Import 3D, MeshPart + SurfaceAppearance, colisiones, Attachments, materiales nativos (Glass, Neon), `MaterialVariant` para tileables, luces, partículas, SurfaceGui/BillboardGui, UI en mundo scripteada. **Parts nativas sí** para pisos, carriles, volúmenes de colisión, cristales, luces, superficie de cinta, piezas estructurales simples y blockouts | Modelar máquinas, archivo o props detallados con Parts/CSG (sin control de UVs ni bake) |
 
 **Hero assets** (reciben pase de concept + presupuesto de textura máximo):
 `archive_confidential`, `machine_extractor_t1`, `machine_processor_t1`, `plot_vault`,
@@ -170,7 +174,7 @@ limpiar: en la pila (manual) o en una **bandeja protegida** (extractor).
 
 | ✓ | Objeto | ID lógico sugerido | Medidas (studs) | Notas | Herramienta (pipeline AAA) |
 | --- | --- | --- | --- | --- | --- |
-| [ ] | **Confidential Archive (el coleccionable)** | `archive_confidential` | 2 × 1.5 × 0.5 (carpeta/dossier) o 2 × 1.5 × 2 (caja de archivo) | **Un solo modelo.** Debe leerse como «confidencial» a 20 studs de distancia (sello, precinto, color distintivo). Un serial opcional es solo procedencia, no cambia valor (GDD v2.0 §2). Se reutiliza en bandeja, vitrina y reveal. | **Gemini (NanoBanana)** concept → **Blender** high/low-poly + bake → **Substance Painter** PBR → **Roblox Studio** import, puertos, colisión (hero asset principal; máximo presupuesto de textura) |
+| [ ] | **Confidential Archive (el coleccionable)** | `archive_confidential` | **2 × 1.5 × 1.5** (caja de dossier, propuesta por defecto del contrato 5) o 2 × 1.5 × 0.5 (carpeta plana, alternativa) | **Un solo modelo.** Debe leerse como «confidencial» a 20 studs de distancia (sello, precinto, color distintivo). Un serial opcional es solo procedencia, no cambia valor (GDD v2.0 §2). Se reutiliza en bandeja, vitrina y reveal. | **Gemini (NanoBanana)** concept → **Blender** high/low-poly + bake → **Substance Painter** PBR → **Roblox Studio** import, puertos, colisión (hero asset principal; máximo presupuesto de textura) |
 | [ ] | **Demonstration Archive (tutorial)** | `archive_demonstration` | mismas que `archive_confidential` | Misma geometría con etiqueta clara «DEMO / Demonstration» (D-007). No cuenta para rango ni contador. Debe ser imposible confundirlo visualmente con el genuino. | **Substance Painter** texture set «DEMO» sobre el mismo mesh → **Roblox Studio** |
 | [ ] | **Bandeja de descubrimiento protegida** | `archive_reveal_tray` | 3 × 3 × 2.5 | Asset separado que se monta en un nicho del extractor, **dentro** de su footprint 2×2 (no ocupa celda propia; ver contrato). Cubierta de cristal que se abre al revelar. Entregable del primer handoff (ASSET_PIPELINE). | **Gemini (NanoBanana)** concept → **Blender** con cubierta animable → **Substance Painter** → **Roblox Studio** animación de apertura y cristal |
 | [ ] | **Papel ordinario (visual)** | `paper_sheet_visual` | 1 × 1.2 × 0.05 | Hoja/legajo representativo que se anima sobre cintas y en la pila. Presupuesto: 240 por cliente, 120 en plot propio, 30 por plot vecino. Low-poly extremo (≤ 12 triángulos). | **Blender** plano ≤12 tris → **Substance Designer** atlas de hojas (4–8 variantes) → **Roblox Studio** instanciado por presupuesto |
@@ -260,6 +264,14 @@ efecto en mecánicas**. No modelar hasta que exista una decisión de comercio (M
 | P1 | 9 | cerco, cartel, hub, spawn, puerta, bóveda, vitrina, marcador tutorial, pedestal |
 | P2 | 11+ | tablero global, 10 props de almacén, cosméticos |
 
+**Esfuerzo real por familias, no por filas.** De las ~47 filas, solo unas **18 son
+proyectos de modelado distintos**: extractor (t1 + añadidos t2/t3), procesador (t1 +
+añadidos t2, variante starter por textura), sorter, salida segura, pila (4 estados),
+cinta recta, cinta esquina, bandeja, archivo (demo por textura), papel/fajo (atlas),
+bahía, cerco, cartel, bóveda, vitrina, portal, tablero, y el kit de props (estantería,
+caja, pallet, carro, columna, lámpara, portón, señal, cercha) que comparte una trim
+sheet. El resto son variantes de material, instancias repetidas, Parts nativas o UI.
+
 **Primer entregable sugerido (ASSET_PIPELINE):** `machine_extractor_t1` +
 `belt_straight_t1` + `machine_processor_t1` + `archive_reveal_tray` +
 `archive_confidential`, con medidas, pivotes y puertos validados en Studio antes de
@@ -303,7 +315,7 @@ polígonos. Estas son las reglas que propongo adoptar desde el primer asset.
 | [ ] | Antes de exportar: `Apply All Transforms`, origen en la base, escala 1/rotación 0, normales recalculadas hacia afuera, `Mesh › Clean Up` para vértices sueltos |
 | [ ] | Export FBX: solo lo seleccionado (`Selected Objects`), `Apply Scalings = FBX Units Scale`, `Forward −Z / Up Y`, `Apply Modifiers`, `Triangulate Faces`, sin leaf bones ni animación |
 | [ ] | Variantes de tier: **no duplicar el modelo entero**; `t2` y `t3` son el mesh `t1` más objetos añadidos (tolva, brazo, torre) para que el footprint y los puertos no se muevan nunca |
-| [ ] | El papel visual es un plano de 2 triángulos (4 si tiene doblez) con UV apuntando al atlas; se exporta una vez y se instancia en Studio |
+| [ ] | El papel visual es una **caja fina con volumen** de 1 × 1.2 × 0.05 (12 triángulos), no un plano: la especificación de Roblox pide mallas con volumen y un plano de una cara se ve invisible desde atrás salvo `DoubleSided`. UV apuntando al atlas; se exporta una vez y se instancia en Studio |
 
 ### Substance Painter (texturizado)
 
@@ -324,7 +336,7 @@ polígonos. Estas son las reglas que propongo adoptar desde el primer asset.
 | --- | --- |
 | [ ] | Materiales 1024² perfectamente tileables, con parámetros expuestos (color de pintura, desgaste, suciedad) y publicados como `.sbsar` para que Painter y las variantes de skin futuras los reutilicen |
 | [ ] | Set inicial: `hormigón_pulido_almacén`, `acero_galvanizado`, `pintura_industrial`, `goma_cinta_rodillos`, `papel_apilado_bordes`, `cartón_archivo`, `piso_pintado_carriles` (líneas de seguridad), y la **trim sheet** |
-| [ ] | Export Color / Normal (OpenGL) / Roughness / Metalness en PNG; en Studio se cargan como `SurfaceAppearance` en Parts con `MaterialVariant` para que el tiling siga la escala de la Part |
+| [ ] | Export Color / Normal (OpenGL) / Roughness / Metalness en PNG. En Studio son dos sistemas distintos y no se mezclan: los materiales **tileables** van como **`MaterialVariant`** (en `MaterialService`, se aplican a Parts o MeshParts y tilean por `StudsPerTile`); `SurfaceAppearance` es **solo** para mallas únicas con UV propio (máquinas, archivo, props). Corrección 2026-10-19: la versión anterior mezclaba ambos |
 
 ### Gemini Pro (NanoBanana), solo referencia
 
@@ -350,8 +362,8 @@ las medidas de las tablas anteriores mandan si hubiera diferencia.
 | Sistema de coordenadas local | Origen en el **centro de la base** (Y = 0 es el piso de la parcela). X a la derecha, Y arriba, **−Z es el frente**. Coordenadas en studs. En Blender: frente a −Y y export FBX con `Forward = −Z, Up = Y`. |
 | Altura de flujo `FLOW_Y` | **1.0 stud.** Es la altura de la superficie de las cintas y de todos los puertos de entrada/salida. Los papeles visuales viajan con su centro en Y ≈ 1.05. Si cambia, cambia en todos los modelos a la vez. |
 | Carril A | Las máquinas de 2×2 celdas tienen sus puertos de cinta en la **celda izquierda** (X = −2), nunca en el centro del modelo (X = 0), porque las cintas ocupan una celda y el puerto debe caer en el centro de esa celda. Así extractor → cintas → procesador forman una línea recta sin desplazamientos. |
-| Puertos | Nombre `Port_<Tipo>_<n>`; posición local; **dirección = normal hacia afuera de la cara que cruza el material**. Tipos: `In` (recibe de cinta), `Out` (entrega a cinta), `Supply` (toma de la pila, no es cinta). En Blender se marcan con **Empties** con esos nombres, en la posición exacta. En Studio son `Attachment` con el mismo nombre dentro de la `PrimaryPart`; si el importador no los trae como instancias, se crean a mano la primera vez y quedan guardados en el `.rbxm`. |
-| Montajes | Nombre `Mount_<Qué>`: puntos donde se acopla otro asset o una UI (`Mount_Tray`, `Mount_Archive`, `Mount_Prompt`). Misma regla que los puertos. |
+| Puertos | Nombre `Port_<Tipo>_<n>`; posición local; **dirección = normal hacia afuera de la cara que cruza el material**. Tipos: `In` (recibe de cinta), `Out` (entrega a cinta), `Supply` (toma de la pila, no es cinta). En Blender **no** usar Empties: el importador de Roblox convierte en `Attachment` la **geometría cuyo nombre termina en `_Att`** (documentado para accesorios; probarlo con la malla del cubo en el primer import). Modelar cada puerto como un cubo diminuto de 0.1 studs llamado `Port_Out_0_Att`, con su origen en la posición exacta y su eje local −Z apuntando en la dirección del puerto. Si la prueba falla, los Attachments se crean a mano la primera vez con las coordenadas de este contrato y quedan guardados en el `.rbxm`. |
+| Montajes | Nombre `Mount_<Qué>`: puntos donde se acopla otro asset o una UI (`Mount_Tray`, `Mount_Archive`, `Mount_Prompt`). Misma regla que los puertos (sufijo `_Att` en Blender). |
 | Partes móviles | Cada pieza que se mueve es un **objeto separado** en Blender (y una `Part`/`MeshPart` separada en Studio) con su pivote en el eje de giro o en el inicio del recorrido. **El código las mueve** (TweenService / CFrame). Sin huesos ni animaciones horneadas en este entregable. |
 | Luz de estado | `StatusLight`: Part de 0.6 × 0.6 × 0.6, material Neon, con `PointLight` hijo. Colores los pone el código: verde = trabajando, ámbar = sin suministro, rojo = salida llena, gris = desconectado. No va en el mapa emissive. |
 | Colisión | Máquinas: `CollisionFidelity = Box` sobre la `PrimaryPart` invisible que cubre exactamente el footprint. Decoración, brazos y bandeja **sin colisión** (`CanCollide = false`, `CanQuery = false`). |
@@ -369,7 +381,7 @@ las medidas de las tablas anteriores mandan si hubiera diferencia.
 | `Port_Out_0` | **(−2, 1.0, −4)**, dirección −Z. Carril A. La cinta que recibe tiene su centro en (−2, 0, −6). La boca de salida mide 3.2 de ancho × 1.5 de alto, con el borde inferior en Y = 1.0. |
 | Nicho de bandeja | Hueco en la cara frontal derecha: X ∈ [0.5, 3.5], Y ∈ [1.0, 3.5], Z ∈ [−4, −1]. `Mount_Tray` en **(2, 1.0, −2.5)**, dirección −Z. El nicho queda vacío en el modelo del extractor; lo llena `archive_reveal_tray`. |
 | `Mount_Prompt` | (0, 4.5, −4.2): punto del `ProximityPrompt` de inspección/mejora, cara frontal, altura de pecho de un R15. |
-| Partes móviles | `Arm` (brazo recolector): pivote en (0, 6.5, +2), gira sobre X entre 0° (horizontal hacia la pila, +Z) y −40° (baja hacia el papel); longitud ~5 studs. `Drum` (tambor interno visible por una rejilla frontal): cilindro de radio 1, eje X, pivote en (−2, 2.5, −1), gira continuo. El código fija velocidad y amplitud según estado. |
+| Partes móviles | `Arm` (brazo recolector): pivote en (0, 6.5, +1), gira sobre X entre 0° (horizontal hacia la pila, +Z) y −60° (baja hacia la boca); **longitud máxima 2.5 studs** para que la punta nunca pase de Z = +3.5 ni salga del footprint en ninguna pose (corrección 2026-10-19: la versión anterior de 5 studs desde Z = +2 sobresalía hasta Z = +7). `Drum` (tambor interno visible por una rejilla frontal): cilindro de radio 1, eje X, pivote en (−2, 2.5, −1), gira continuo. El código fija velocidad y amplitud según estado. Validar el barrido completo en el blockout. |
 | `StatusLight` | Centro en (3, 7.5, −3), en una torreta corta sobre la esquina frontal derecha. |
 | Lenguaje visual | Es el **hero** de la maquinaria y fija el estilo de t2/t3 y del procesador: cuerpo de chapa gris-azulada, franjas de pintura de tier (t1 = gris claro), remaches y paneles atornillados, tolva trasera, rejilla frontal, un panel de control pequeño junto al `Mount_Prompt`. Sin texto legible salvo calcas originales. |
 | Presupuesto | 6 000–10 000 triángulos (todas las partes sumadas). Texturas 1024², un texture set para `Body`; `Arm` y `Drum` comparten ese mismo set (islas reservadas) para no sumar materiales. |
