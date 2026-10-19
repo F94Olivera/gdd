@@ -8,7 +8,7 @@ This repository is the **single monorepo** for the Roblox codebase, configuratio
 
 ## Current technical baseline
 
-The following versions were reported and locally validated during the initial setup on an Apple Silicon Mac on 2026-10-18. These are **project pins**, not claims that newer versions do not exist. The actual tool source of truth is `rokit.toml`.
+The following versions were reported and locally validated during the initial setup on an Apple Silicon Mac on 2026-10-18, and reinstalled from scratch and revalidated on another Apple Silicon Mac on 2026-10-19 (CLI checks only; Roblox Studio was not installed there, see ROADMAP M0.1-12). These are **project pins**, not claims that newer versions do not exist. The actual tool source of truth is `rokit.toml`.
 
 | Tool | Version | Purpose |
 | --- | --- | --- |
@@ -64,6 +64,25 @@ Resultados, parámetros y límites en [BALANCE §13](docs/BALANCE.md#13-simulado
 Economía/pacing iniciales aprobados D-014–D-016; E10 repetido y validado.
 La estrategia de guardado D-017 y alcance Ground D-018/D-019 están definidos;
 ver [cierre M0 y primer slice M1](docs/ROADMAP.md). No son implementación de gameplay.
+
+### Roblox Studio plugins
+
+> **Producer question (2026-10-19, verbatim):** *Please provide a list of Roblox Studio plugins you think will be most needed for our specific project, and if you need me to install those in advance or if this is something you can take of on your side.*
+
+**Assistant answer (2026-10-19; tracked as ROADMAP M0.1-07):**
+
+| Plugin | Why this project needs it | Earliest use | Who installs |
+| --- | --- | --- | --- |
+| **Rojo 7.7.1** (managed plugin) | Live sync of `src/` into Studio; already installed and user-confirmed | Now | Already done via `rojo plugin install`; the assistant can re-run that CLI command |
+| **Luau Language Server companion** (JohnnyMorganz) | Lets the VS Code Luau LSP read the live DataModel for types/autocomplete of Studio instances | M1-07 onwards | Producer/developer, from the Creator Store (needs the Roblox account session) |
+| **Tag Editor** (CollectionService tags) | Marking plot anchors, machine slots, port attachments and the discovery tray in Studio scenes without hardcoding instance paths | M1-07 / M1-09 | Producer/developer |
+| **DataStore Editor** (sleitnick, paid) — optional | Inspecting the **test** experience's profiles while running P-001–P-012 failure injection; never pointed at production stores | M1-05 | Producer decides; optional |
+
+Built into Studio, no plugin required: Device Emulator (touch checks, T-015), Team Test (two-client isolation, T-014), MicroProfiler and Script Performance (T-016), Developer Console, 3D Importer (Blender exports), Material Manager.
+
+Not recommended: Knit/ProfileService installers (ruled out by AGENTS §3 and D-017), building/snap/grid plugins (the 4-stud grid and port validation are server rules, not editor conveniences), and bulk asset packs (original assets only).
+
+Who does what: Creator Store plugins install into the Roblox account signed in to Studio, so the producer or developer installs them; the assistant has no Studio control and will not claim it. The assistant can run `rojo plugin install` and keep `rokit.toml` pinned. Plugins execute with Studio-level trust: prefer open-source ones and review the source before installing. Record installed plugin versions on **both** contributor machines when closing M0.1-07.
 
 ### First clone on another developer's computer
 

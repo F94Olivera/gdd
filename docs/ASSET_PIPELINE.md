@@ -15,7 +15,11 @@ publisher, destination and verified permissions. Nothing in M0 authorizes upload
 
 
 - Engineering: Roblox Studio integration, Rojo mappings, gameplay contracts, collision/performance testing, stable game IDs and asset manifest.
-- Art: Blender models and source scenes, Adobe Substance materials when justified, original textures, optimization and authored previews. Higgsfield or other concept tools are optional and not runtime requirements.
+- Art: Blender models and source scenes, Adobe Substance materials when justified, original textures, optimization and authored previews. ~~Higgsfield~~ Gemini Pro (NanoBanana) or other concept tools are optional and not runtime requirements (D-020, 2026-10-19).
+
+> **Producer instruction (2026-10-19, verbatim):** *Scratch Higgsfield as one of our resource tools. You will be using Gemini Pro (NanoBanana) as a replacement. Please confirm you will be able to login to my Gemini account through your virtual browser and use it as an image/video generation tool whenever needed.*
+>
+> **Assistant status (2026-10-19):** not verified. The assistant has browser automation available in this session (Playwright and a Chrome extension that reuses the producer's logged-in Chrome tabs), so driving gemini.google.com is technically plausible, but no login or generation has been attempted. Per the Master Prompt rule «never claim to control art tools without a working integration», this stays *unverified* until a supervised test is recorded (ROADMAP M0.1-06). Points to settle in that test: Google 2FA/captcha behaviour, Google's automation terms, and commercial-use rights of generated images inside a Roblox experience. Generated images remain **reference material** until provenance and permitted use are reviewed (see «Content quality and policy»).
 - Each asset has **one current editor/owner** and a documented handoff. A Git LFS pointer represents source versioning, **not** Roblox publication or inclusion in a place build.
 - Use placeholder geometry until M1 game loop, scale and port contracts prove correct. Replacing a mesh must not require rewriting production rules.
 

@@ -23,7 +23,7 @@
 - [x] Both `[Server] Bootstrap ready` and `[Client] Bootstrap ready` in Studio Play Output confirmed by the developer in the same follow-up. Not a multiplayer or device test.
 - [x] Remote `origin` configured as `https://github.com/F94Olivera/gdd.git`; integration branch is `master`. [GitHub Actions run 39155891887](https://github.com/F94Olivera/gdd/actions/runs/39155891887) completed successfully for commit `032131b00250a5da27972b067852b6984155c1e8`.
 - [x] Local `lune run scripts/check.luau` rerun successfully during the repository review: formatting, lint, Rojo build and structural smoke checks.
-- [x] Original Master GDD v2.1 reviewed against `docs/GDD.md`, with the companion prompt and future-concepts backlog inspected as reference material. Original-file retention/linking is no longer a requirement per producer decision E-005. This review does not make the working summary a verbatim transcription or approve proposed balance values.
+- [x] ~~Original Master GDD v2.1 reviewed against `docs/GDD.md`, with the companion prompt and future-concepts backlog inspected as reference material. Original-file retention/linking is no longer a requirement per producer decision E-005. This review does not make the working summary a verbatim transcription or approve proposed balance values.~~ **Revisado 2026-10-19:** el archivo original entregado por el productor se titula *Master GDD v2.0* (9 páginas, 8 secciones), no «v2.1»/«12-page»; además GDD.md §8 (competición global) no es trazable a ese archivo. Ver [contraste](history/source-contrast-2026-10-19.md) y M0.1-01/M0.1-03.
 
 **Separate contributor follow-up:** onboarding on the second contributor's Windows computer remains their responsibility, outside this setup's acceptance scope per the setup follow-up. It is not claimed as verified and does not block this local setup.
 
@@ -35,7 +35,7 @@ seeded simulator below, not completion of that deliverable or a milestone gate.
 
 **M0 acceptance record:**
 
-- [x] Reconcile available reviewed starter details and competition rules in GDD §§4/8 (E-011). Starter connection resolved by D-013; competition presentation/rewards resolved by D-019.
+- [x] Reconcile available reviewed starter details ~~and competition rules~~ in GDD §4 ~~/8~~ (E-011). Starter connection resolved by D-013; ~~competition presentation/rewards resolved by D-019~~ → la «omisión de competición» no existe en el GDD v2.0 entregado; D-019 sigue válida como decisión del productor, pero su premisa debe re-trazarse (M0.1-03).
 - [x] Prepare the reviewable simulator specification and proposed deterministic first slice in BALANCE §5; no implementation or balance approval.
 - [x] Resolve starter part of Q-010 via D-013 (replacement at 1/s).
 - [x] Resolve remaining Q-010 competition presentation/rewards via D-019.
@@ -75,6 +75,78 @@ real construction pacing and eight-plot load remain their named milestone gates.
 | 3 safe-save strategy | D-017 approved; official/source review and idempotent protocol; no service access | `fa541cb`; [CI success](https://github.com/F94Olivera/gdd/actions/runs/39173514986) |
 | 4 scope/assets | D-018/D-019/E-013; original scene absence reported, source preservation plan, no upload | `a72f46b`; [CI success](https://github.com/F94Olivera/gdd/actions/runs/39173852158) |
 | 5 closure/M1 | This exit-gate audit and dependency/acceptance plan; final commit/push/CI reported at handoff | Final handoff records actual commit/run; not inferred from local checks |
+
+## M0.1 — Revalidación contra las fuentes originales (abierto, 2026-10-19)
+
+**Origen:** el productor entregó los tres archivos originales (Master GDD, Claude Master
+Prompt y Future Concepts Backlog) como fuente de verdad y pidió contrastarlos con el
+trabajo de M0. Diagnóstico completo en
+[history/source-contrast-2026-10-19.md](history/source-contrast-2026-10-19.md).
+Los ítems M0 ya marcados no se borran: los mal interpretados quedan tachados arriba y
+se corrigen aquí. M0.1 no reabre decisiones D-011–D-019 ni autoriza M1.
+
+- [ ] **M0.1-01** Confirmar con el productor la versión canónica del GDD: el archivo
+  entregado es **v2.0** (9 páginas, 8 secciones); el repo cita «v2.1», «12-page» y el
+  backlog cita «v2.1 section 11». Si existe v2.1, entregarlo y repetir el contraste;
+  si no existe, corregir todas las referencias a «v2.1» en AGENTS/README/docs (Q-011).
+- [ ] **M0.1-02** Decidir si los tres originales (o exportaciones de texto) entran al
+  repo bajo `docs/reference/` con hash SHA-256 registrado. El propio GDD §8 pide
+  «keep the GDD … in the repository»; E-005 dijo «no requerido», no «prohibido» (Q-013).
+- [ ] **M0.1-03** Re-trazar D-004, D-010, GDD.md §8 (competición global: categorías
+  *documents cleared* / *Intel earned* / *fastest first*, periodos UTC, semana lunes,
+  refresco 5 min) y la premisa de D-019 al archivo canónico. Si no están en el
+  original, re-etiquetarlos como propuesta del asistente y pedir ratificación o
+  rechazo explícito mediante una D-0xx; no cambiar su estado por inferencia.
+- [ ] **M0.1-04** Resolver «sector» vs «piso» y qué desbloquea la primera promoción.
+  GDD v2.0 §5: «Promotion opens a new sector and machine eligibility»; GDD.md §5 hoy:
+  «no additional sector or throughput is unlocked by the first promotion in M1».
+  D-018 resolvió pisos (Ground/Upper/Basement), no el conteo de sectores que AGENTS §3
+  lista como bloqueante (Q-012).
+- [ ] **M0.1-05** Incorporar a `docs/GDD.md` los detalles de v2.0 omitidos, sin cambiar
+  reglas: vault counter y tres posiciones de exhibición cosmética; texto overhead con
+  rango y total; banners con cooldown/agregación; serial/timestamp solo como
+  procedencia; «controls before lore, never require a store visit»; «owning more
+  archives does not stack production buffs»; validación de configuración al arranque.
+- [ ] **M0.1-06** Inventariar herramientas de arte realmente disponibles y verificadas:
+  Higgsfield queda descartado (D-020) y lo reemplaza Gemini Pro (NanoBanana); registrar
+  estado de instalación de Blender y Substance; probar de forma supervisada el acceso
+  del asistente a Gemini antes de afirmar que funciona (ver ASSET_PIPELINE).
+- [ ] **M0.1-07** Cerrar la lista de plugins de Roblox Studio y quién los instala
+  (ver README «Roblox Studio plugins»); confirmar instalación en la máquina del
+  desarrollador y en la del segundo contribuidor.
+- [ ] **M0.1-08** Citar los IDs F01–F19 del backlog en GDD.md §9 / Q-008 para que todo
+  pedido futuro de alcance sea trazable al registro de ideas.
+- [ ] **M0.1-09** Tras cerrar M0.1-01, actualizar `AGENTS.md` §1 («Refer to the original
+  Master GDD v2.1»), README «Authority order» y los encabezados de ARCHITECTURE/BALANCE.
+
+- [x] **M0.1-10** Base técnica re-verificada en esta estación el 2026-10-19 (el repo
+  estaba recién clonado sin toolchain): Rokit 1.2.0 desde el release oficial (SHA-256
+  `eb8e6b4f…a3ee`, igual al digest publicado), Git LFS 3.8.0 vía Homebrew, trust
+  explícito de las seis fuentes y `rokit install` (Rojo 7.7.1, Wally 0.3.2, Selene
+  0.32.0, StyLua 2.6.0, Luau LSP 1.70.1, Lune 0.11.0), `wally install`, plugin Rojo
+  instalado en `~/Documents/Roblox/Plugins`, `lune run scripts/check.luau` **pasa**, y
+  todas las corridas de BALANCE §§12–14 repetidas con resultados idénticos. Detalle en
+  [contraste §10](history/source-contrast-2026-10-19.md). Cubre los ítems M0 de las
+  líneas 24–25 (CLI); las líneas 22–23 (Studio) **no**: ver M0.1-12.
+- [ ] **M0.1-12** Round trip Rojo/Studio en esta estación: Roblox Studio **no está
+  instalado** en esta Mac (no existe `/Applications/RobloxStudio.app`), por lo que la
+  conexión live, la sincronización de edición/borrado y el Output `[Server]/[Client]
+  Bootstrap ready` siguen siendo evidencia del entorno anterior. Instalar Studio,
+  conectar el plugin a `localhost:34872`, repetir las tres comprobaciones y registrarlas
+  con fecha. Responsable: productor/desarrollador (requiere cuenta Roblox en Studio).
+
+- [ ] **M0.1-11** Seguimientos de la revisión de código del 2026-10-19 (ver
+  [contraste §9](history/source-contrast-2026-10-19.md)); ninguno bloquea y ninguno
+  cambia reglas: extender `selene` a `scripts/` y `tests/` con un std adecuado para
+  Lune; mover el default de `economyScenarios.base()` a la promoción aprobada
+  (100 000/50 000) o renombrar la base como hipótesis; reutilizar `BalanceMetrics`
+  en `seededBalance.luau`; documentar que el coste de bahía no tiene número aprobado.
+  Hacerlo solo tras M0.1-10, para poder correr `lune run scripts/check.luau` y las
+  repeticiones byte a byte antes y después.
+
+**Exit gate M0.1:** versión canónica confirmada, cada regla de `docs/GDD.md` y cada
+D-001–D-010 trazable a una sección del original o a una decisión explícita del
+productor, y Q-011–Q-013 cerradas. No requiere código ni Studio.
 
 ## M1 — First playable vertical slice
 

@@ -113,6 +113,15 @@ These are **GDD-approved direction**, not new user approvals during this documen
 - Rule: mantener D-010 y GDD§8: títulos permanentes separados de standing por categoría/periodo, sin beneficio pagado. Sin premios materiales, pagos ni insignias de ganador por clasificación al lanzamiento. No inventar premios para recuperar texto del original.
 - Impact: globales siguen gate M3/M4; M1 solo counters/local UI. Sin tareas extra de premios, otra moneda o cambios en rango.
 
+### D-020 — Higgsfield descartado; Gemini Pro (NanoBanana) como herramienta de concepto
+
+- Date: 2026-10-19
+- Status: Accepted (decisión de herramienta); integración **no verificada**.
+- Producer approval: texto literal del productor: «Scratch Higgsfield as one of our resource tools. You will be using Gemini Pro (NanoBanana) as a replacement. Please confirm you will be able to login to my Gemini account through your virtual browser and use it as an image/video generation tool whenever needed.»
+- Rule: Higgsfield deja de figurar como herramienta opcional de concepto (GDD v2.0 §6 «Tool roles»). Gemini Pro (NanoBanana) ocupa ese rol para imagen/video de concepto. Sigue siendo herramienta de referencia, no dependencia de runtime ni fuente de assets finales sin revisión de procedencia/licencia (ASSET_PIPELINE «Content quality»).
+- Assistant status: el asistente dispone de automatización de navegador en esta sesión (Playwright y extensión de Chrome), pero **no ha probado** iniciar sesión en Gemini ni generar una imagen. No se afirma control de la herramienta hasta una prueba supervisada registrada (M0.1-06). Riesgos a revisar en esa prueba: 2FA/captcha de la cuenta Google, términos de uso de automatización, y derechos de uso comercial de las imágenes generadas dentro de Roblox.
+- Impact: ASSET_PIPELINE «Goals and ownership»; ROADMAP M0.1-06. Sin cambios de producto, balance ni código.
+
 ### E-013 — Identidades diferidas y contenido desde cero
 
 - Date: 2026-10-18
@@ -218,6 +227,9 @@ These are **GDD-approved direction**, not new user approvals during this documen
 | Q-008 | Open — before broader content | Optional assignments, manual tools, value-added paper, splitter/merger routing? | New gameplay mechanics require explicit scope authorization |
 | Q-009 | **M0 resolved scope — E-013** | Functional responsibilities and source-preservation workflow; no existing scenes. Names/Roblox owner deferred by producer; verify before future publication. Final budgets after first placeholder handoff/measurements. | Reproducibility and two-person work |
 | Q-010 | **Resolved — D-013/D-019** | Starter replacement on free1/s lane; documented competition rules and no classification prizes at launch. | The prior review identifies omissions without preserving their full wording; do not invent prizes or additive throughput. |
+| Q-011 | **Open — M0.1-01** | ¿Cuál es el GDD canónico? El archivo entregado el 2026-10-19 es *Master GDD v2.0* (9 páginas, 8 secciones); el repo y el backlog citan «v2.1». ¿Existe v2.1? | Toda la trazabilidad de D-001–D-010 y de GDD.md depende de esto. Ver [contraste](history/source-contrast-2026-10-19.md). |
+| Q-012 | **Open — M0.1-04** | «Sector» vs «piso»: GDD v2.0 §5 dice que la promoción abre un nuevo sector y elegibilidad de máquinas; GDD.md §5 dice que la primera promoción en M1 no desbloquea sector ni caudal. ¿Cuántos sectores hay en lanzamiento y qué abre la primera promoción? | AGENTS §3 lista «sector count» como bloqueante; D-018 resolvió pisos, no sectores. Afecta M1-08 y preview de promoción. |
+| Q-013 | **Open — M0.1-02** | ¿Entran los tres originales (o su texto) al repo bajo `docs/reference/` con hash? GDD §8 pide conservar el GDD en el repositorio; E-005 lo marcó como no requerido. | Sin el original en el repo, las revisiones futuras no pueden trazar reglas. |
 
 ## Remaining scope gates
 
@@ -230,7 +242,7 @@ future asset/publication gates, explicitly deferred by E-013, not invented appro
 ## Decision entry template
 
 ```markdown
-### D-020 — <short title>
+### D-021 — <short title>
 - Date: YYYY-MM-DD
 - Status: Proposed | Accepted | Superseded
 - Context: ...
