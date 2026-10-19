@@ -23,6 +23,9 @@ publisher, destination and verified permissions. Nothing in M0 authorizes upload
 - Each asset has **one current editor/owner** and a documented handoff. A Git LFS pointer represents source versioning, **not** Roblox publication or inclusion in a place build.
 - Use placeholder geometry until M1 game loop, scale and port contracts prove correct. Replacing a mesh must not require rewriting production rules.
 
+The per-object inventory, proposed stud dimensions, tool chain, verified Roblox
+import limits and modelling/texturing recommendations live in [OBJECTS.md](OBJECTS.md).
+
 ## Initial folder recommendation
 
 Add folders **only when real assets exist**. Suggested eventual organization:

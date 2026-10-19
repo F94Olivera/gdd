@@ -46,6 +46,80 @@ iluminar y poner la UI. Nada se modela «a mano» con Parts salvo la UI en mundo
 `archive_confidential`, `machine_extractor_t1`, `machine_processor_t1`, `plot_vault`,
 `supply_pile_ground`, `hub_plot_gate`. El resto reutiliza su lenguaje visual.
 
+## Formatos de archivo, compatibilidad e incorporación a Roblox
+
+**Respuesta corta:** sí, Blender y Substance son compatibles entre sí y con Roblox.
+El puente es **FBX** para geometría y **PNG** para texturas. Blender exporta FBX,
+Substance Painter lo abre tal cual, Painter exporta PNG con un preset oficial de
+Roblox, y Roblox Studio importa el FBX y los PNG. Ninguna herramienta necesita
+convertidores externos.
+
+| Herramienta | Formato **fuente** (va a Git/LFS, nunca se borra) | Formato de **intercambio** que exporta | Quién lo recibe |
+| --- | --- | --- | --- |
+| Blender | `.blend` | `.fbx` (recomendado), `.gltf/.glb`, `.obj` | Substance Painter y Roblox Studio |
+| Substance Painter | `.spp` (proyecto con capas) | Texturas `.png` 8 bits (también `.tga`, `.exr`) | Roblox Studio |
+| Substance Designer | `.sbs` (grafo editable) | `.sbsar` (material publicado) y bitmaps `.png` | Painter (lee `.sbsar` directo) y Roblox Studio (PNG) |
+| Substance Sampler | `.ssa` | `.sbsar` y bitmaps `.png` | Designer / Painter |
+| Gemini Pro (NanoBanana) | `.png` / `.jpg` (imágenes generadas) | Las mismas imágenes | Carpeta `assets/references/`; **nunca** al runtime |
+| Roblox Studio | `.rbxl` / `.rbxlx` (place), `.rbxm` / `.rbxmx` (modelo) | Asset IDs publicados | El juego |
+
+Lo que Roblox Studio acepta, verificado en la documentación oficial (2026-10-19):
+
+| Regla | Valor oficial | Fuente |
+| --- | --- | --- |
+| Formatos de malla que importa el 3D Importer | `.fbx`, `.obj`, `.gltf`. FBX y glTF soportan jerarquías, PBR, rig y animación; OBJ solo malla simple | [3D Importer](https://create.roblox.com/docs/art/modeling/3d-importer) |
+| Triángulos por malla | **máximo 20 000**; geometría watertight, con volumen, quads donde sea posible | [Modeling specifications](https://create.roblox.com/docs/art/modeling/specifications) |
+| Formatos de textura | `.png`, `.jpg`, `.tga`, `.bmp` | [Texture specifications](https://create.roblox.com/docs/art/modeling/texture-specifications) |
+| Resolución | Hasta 4096×4096 para texturas básicas; para mapas PBR el espacio UV recomendado es **1024×1024**. Guía: 256 px para objetos de 5×5 studs, 512 px para 10×10, 1024 px para 20×20 | ídem |
+| Materiales y UVs | **Un solo material por malla**, **un solo set de UV**, todo dentro de 0–1; se permiten UVs solapadas | ídem |
+| Mapas PBR (`SurfaceAppearance`) | Color (RGB), Normal (RGB, **solo OpenGL tangent-space**), Roughness (gris 8 bits), Metalness (gris 8 bits, flujo metalness), Emissive (gris 8 bits). No hay mapa de AO | [Texture specs](https://create.roblox.com/docs/art/modeling/texture-specifications), [Surface appearance](https://create.roblox.com/docs/art/modeling/surface-appearance) |
+| Export FBX desde Blender | `Transform › Apply Scalings = FBX Units Scale`, `Path Mode = Copy`, `Embed Textures` activado, `Add Leaf Bones` desactivado, `Bake Animation` desactivado salvo animación real | [Export requirements](https://create.roblox.com/docs/art/modeling/export-requirements) |
+| Preset de Painter para Roblox | Desde Substance Painter 8.2 existen la plantilla de proyecto y el preset de export **«Roblox – Surface Appearance»** (y «Roblox – Material Variant») | [Notas de versión de Adobe](https://experienceleague.adobe.com/en/docs/substance-3d-painter/using/release-notes/all-changes) |
+
+### Flujo concreto por objeto (del concept al juego)
+
+1. **Concept (Gemini, solo hero assets).** 3–5 imágenes de silueta/paleta. Se guardan en
+   `assets/references/<id>/` con fecha y prompt. No se importan a Studio.
+2. **Blender: blockout a medida.** Un cubo con las medidas exactas de la tabla (1 unidad
+   de Blender = 1 stud, ver abajo). Se exporta ese blockout como **placeholder** y se
+   prueba en Studio **antes** de detallar: así se validan medidas, pivote, puertos y
+   cámara (ROADMAP M1-09) sin tirar trabajo de texturizado.
+3. **Blender: high-poly → low-poly.** High-poly con biseles/subdivisión para hornear;
+   low-poly dentro del presupuesto de triángulos (tabla abajo), UV única en 0–1,
+   transformaciones aplicadas, origen en el centro de la base. Export `.fbx` con las
+   opciones de la tabla anterior. Exportar también el high-poly a `.fbx` aparte solo
+   para el bake.
+4. **Substance Painter: texturizado.** Nuevo proyecto con la plantilla **Roblox –
+   Surface Appearance**, formato de normal **OpenGL**, importar el low-poly FBX, hornear
+   desde el high-poly (Normal, AO, Curvature, Position, Thickness), pintar, exportar
+   con el preset Roblox a PNG 8 bits, 1024×1024 máximo.
+5. **Substance Designer: materiales tileables.** Para pisos, acero, goma de cinta y
+   papel apilado: grafo `.sbs` → publicar `.sbsar` (para reutilizar en Painter) y
+   exportar PNG 1024 (Color/Normal OpenGL/Roughness/Metalness) para Studio.
+6. **Roblox Studio: integración.** `File › Import 3D` con `Scale Unit = Studs`;
+   MeshPart resultante + `SurfaceAppearance` con los mapas; `CollisionFidelity = Box`
+   para máquinas (coincide con el footprint de grilla) y `Hull` para props; crear los
+   `Attachment` de puertos (`Port_In`, `Port_Out`) desde los Empties exportados;
+   agrupar en un `Model` con `PrimaryPart`; guardar como `.rbxm` y anotar los Asset
+   IDs en el manifiesto (ASSET_PIPELINE «Asset handoff contract»).
+7. **Git.** `.blend`, `.spp`, `.sbs`, `.sbsar`, `.fbx` y los PNG exportados van a
+   **LFS** (`.gitattributes` ya tiene reglas para binarios; verificar con
+   `git check-attr filter <archivo>` antes de agregar). El manifiesto y este archivo
+   van en Git normal. Subir a Roblox sigue requiriendo autorización explícita.
+
+### Escala: 1 unidad de Blender = 1 stud
+
+Trabajar en Blender con la escena por defecto (Unit Scale 1.0) tratando **1 metro =
+1 stud**, y en el importador de Studio dejar `Scale Unit = Studs`. Así las medidas de
+las tablas se escriben tal cual en Blender. Esto no está fijado por Roblox como
+regla: la documentación oficial muestra `0.01` para rigs de avatar en centímetros, así
+que la **prueba del cubo de 4×4×4** en el primer import (paso 2) es obligatoria antes
+de modelar nada más; si hay desvío, se ajusta `Scale Unit` y se anota aquí.
+
+Orientación: en Roblox el frente de un modelo es **−Z**. En Blender, modelar el frente
+mirando a **−Y** y exportar FBX con los valores por defecto (`Forward = −Z`, `Up = Y`)
+lo deja correcto. Confirmar en la misma prueba del cubo con una marca en la cara frontal.
+
 ## Prioridad
 
 | Tier | Significado |
@@ -190,6 +264,75 @@ efecto en mecánicas**. No modelar hasta que exista una decisión de comercio (M
 `belt_straight_t1` + `machine_processor_t1` + `archive_reveal_tray` +
 `archive_confidential`, con medidas, pivotes y puertos validados en Studio antes de
 encargar el resto.
+
+## Recomendaciones de diseño para calidad AAA en Roblox
+
+Roblox no es Unreal: no hay LODs por malla, ni mapa de AO, ni cambio de mapas PBR en
+tiempo de ejecución, y el cliente móvil es el límite. La calidad «AAA» acá viene de
+**siluetas legibles, materiales PBR bien horneados y un kit modular coherente**, no de
+polígonos. Estas son las reglas que propongo adoptar desde el primer asset.
+
+### Generales
+
+| ✓ | Recomendación | Por qué |
+| --- | --- | --- |
+| [ ] | **Presupuesto de triángulos por clase:** hero machines 6 000–10 000; máquinas normales 3 000–6 000; cintas 150–300 por segmento; props grandes 800–2 000; cajas/props chicos 100–400; papel visual ≤ 12. Siempre bajo el máximo de 20 000 | Ocho parcelas × 60 nodos de simulación + visitantes en móvil (30 FPS mínimo, ROADMAP). Cada cinta se repite decenas de veces |
+| [ ] | **Presupuesto de texturas:** hero 1024²; máquinas y props medianos 512²; cajas y piezas chicas 256² o atlas compartido | Guía oficial de 256/512/1024 según tamaño del objeto; la memoria de textura es el cuello en móvil |
+| [ ] | **Texel density constante:** ~10 px/stud en hero, ~5 px/stud en props | Evita que una caja se vea más nítida que la máquina de al lado; se mide con el checker de Blender |
+| [ ] | **Una trim sheet industrial** (1024²) compartida: chapa, remaches, pintura de seguridad amarilla/negra, rejilla, cantos gastados, calcas de advertencia originales | Cercos, columnas, cerchas, bahías, carriles y pallets se texturizan en minutos y quedan coherentes. Es la técnica estándar de kits modulares AAA |
+| [ ] | **Un atlas de papel** (512²) con 8 variantes de hoja/legajo/etiqueta | Los 240 papeles visuales comparten una sola textura y un solo material |
+| [ ] | **Paleta cerrada:** acero gris-azulado, pintura industrial (un color de marca por tier de máquina: t1 gris, t2 azul, t3 naranja), cartón/papel crema, y **un único acento** rojo lacre reservado al Confidential Archive | El jugador debe reconocer el tier desde la cámara en tercera persona y el archivo debe ser inconfundible a 20 studs. Nada más usa el rojo lacre |
+| [ ] | **Siluetas por tier, no solo color:** t2 agrega una tolva o brazo; t3 agrega chimenea/torre con luz | Legibilidad en móvil y con daltonismo; el GDD pide «leerse como máxima capacidad a distancia» |
+| [ ] | **Luces de estado como Parts separadas** (`StatusLight`, material Neon + `PointLight`), no en el mapa emissive | `SurfaceAppearance` no se puede cambiar por script en runtime; los cuatro estados (trabajando / sin suministro / salida llena / desconectado) tienen que cambiar de color en vivo |
+| [ ] | **Superficie de cinta animada como Part con `Texture`**, no como SurfaceAppearance | Solo `Texture.OffsetStudsU/V` se puede animar por script; el bastidor de la cinta sí lleva SurfaceAppearance |
+| [ ] | **Pivote en el centro de la base**, alineado al centro de la celda 4×4 que ocupa, frente a −Z | La colocación en grilla y la rotación de 90° del servidor dependen de un pivote predecible (ASSET_PIPELINE «Origin / pivot / facing») |
+| [ ] | **Puertos como Empties en Blender** (`Port_In_0`, `Port_Out_0`) exportados dentro del FBX → `Attachment` en Studio | El contrato de puertos tipados vive en datos, no en el dibujo; el código los lee por nombre |
+| [ ] | **Colisión Box para máquinas, Hull para props, y nunca geometría decorativa con colisión** | El footprint lógico es la celda; la cámara y los avatares no deben trabarse con detalles (ASSET_PIPELINE «Collision») |
+| [ ] | **Ambient Occlusion horneada dentro del Color** (multiplicar suave, 20–30 %) | Roblox no tiene mapa de AO; sin esto los modelos se ven planos bajo luz uniforme |
+| [ ] | **Probar cada asset en Studio con `Lighting.Technology = Future`, en una parcela con iluminación real, en PC y en el emulador de móvil** | Painter y Studio no coinciden en brillo/reflejos según la propia documentación; lo que vale es el render de Studio |
+
+### Blender (modelado)
+
+| ✓ | Recomendación |
+| --- | --- |
+| [ ] | Escena vacía nueva por asset, Unit Scale 1.0, cuadrícula de 4 unidades activada para alinear a la grilla de celdas. Guardar como `assets/source/blender/<id>.blend` |
+| [ ] | Flujo high → low: high-poly con **Bevel modifier + Weighted Normal** (o Subdivision con soporte de aristas); low-poly a mano, sin n-gons, triangulación al exportar. Nunca entregar un Decimate como low-poly final |
+| [ ] | Cada arista dura es una costura de UV; **Smooth by Angle** (~30°) para que el bake de normales no sufra gradientes |
+| [ ] | Una sola UV, isla con padding de 8 px a 1024; islas de las caras simétricas solapadas para ganar densidad (Roblox permite solape) |
+| [ ] | Nombres de objeto = ID lógico: `machine_extractor_t1`, con `_HIGH` para el high-poly y `_COL` si hay malla de colisión aparte. Un material por objeto, llamado igual que el ID |
+| [ ] | Antes de exportar: `Apply All Transforms`, origen en la base, escala 1/rotación 0, normales recalculadas hacia afuera, `Mesh › Clean Up` para vértices sueltos |
+| [ ] | Export FBX: solo lo seleccionado (`Selected Objects`), `Apply Scalings = FBX Units Scale`, `Forward −Z / Up Y`, `Apply Modifiers`, `Triangulate Faces`, sin leaf bones ni animación |
+| [ ] | Variantes de tier: **no duplicar el modelo entero**; `t2` y `t3` son el mesh `t1` más objetos añadidos (tolva, brazo, torre) para que el footprint y los puertos no se muevan nunca |
+| [ ] | El papel visual es un plano de 2 triángulos (4 si tiene doblez) con UV apuntando al atlas; se exporta una vez y se instancia en Studio |
+
+### Substance Painter (texturizado)
+
+| ✓ | Recomendación |
+| --- | --- |
+| [ ] | Proyecto desde la plantilla **Roblox – Surface Appearance**; `Normal Map Format = OpenGL`; `Compute tangent space per fragment` activado; resolución del documento 2048 para pintar y **exportar a 1024** |
+| [ ] | Hornear todo desde el `_HIGH`: Normal, World Space Normal, AO, Curvature, Position, Thickness. Si hay gradientes raros en la normal, re-exportar el low-poly con tangentes desde Blender (recomendación de la doc de Roblox) |
+| [ ] | Metalness **binaria**: 0 o 1 salvo transiciones de óxido/pintura descascarada. Roblox usa solo flujo metalness |
+| [ ] | Roughness **variada**: huellas, polvo, rayones; es lo que separa un asset «AAA» de uno plano. Si aparecen artefactos de Fresnel en Studio, subir roughness ~0.1 (nota de la doc oficial) |
+| [ ] | Smart materials propios (`SA_SteelPainted`, `SA_Cardboard`, `SA_Lacquer`) guardados en el shelf del proyecto y reutilizados en todas las máquinas; los de fábrica de Adobe solo como punto de partida |
+| [ ] | Texto y calcas (etiquetas «CONFIDENTIAL», números de bahía, señalética): **originales**, hechas como alphas propios; nada tomado de otro juego ni de bancos sin licencia |
+| [ ] | El `archive_demonstration` se hace como **texture set alternativo** del mismo proyecto `.spp` del archivo genuino: misma geometría, sello «DEMO», paleta neutra (sin rojo lacre) |
+| [ ] | Export con el preset Roblox a PNG 8 bits; nombres `<id>_Color.png`, `<id>_Normal.png`, `<id>_Roughness.png`, `<id>_Metalness.png`, `<id>_Emissive.png` (si aplica). Mantener la carpeta `assets/exports/textures/<id>/` |
+
+### Substance Designer (materiales tileables)
+
+| ✓ | Recomendación |
+| --- | --- |
+| [ ] | Materiales 1024² perfectamente tileables, con parámetros expuestos (color de pintura, desgaste, suciedad) y publicados como `.sbsar` para que Painter y las variantes de skin futuras los reutilicen |
+| [ ] | Set inicial: `hormigón_pulido_almacén`, `acero_galvanizado`, `pintura_industrial`, `goma_cinta_rodillos`, `papel_apilado_bordes`, `cartón_archivo`, `piso_pintado_carriles` (líneas de seguridad), y la **trim sheet** |
+| [ ] | Export Color / Normal (OpenGL) / Roughness / Metalness en PNG; en Studio se cargan como `SurfaceAppearance` en Parts con `MaterialVariant` para que el tiling siga la escala de la Part |
+
+### Gemini Pro (NanoBanana), solo referencia
+
+| ✓ | Recomendación |
+| --- | --- |
+| [ ] | Prompts que pidan **vistas ortográficas** (frente/lado/3⁄4) con fondo neutro y la medida escrita, para traducir directo a Blender |
+| [ ] | Nunca pedir «estilo de <juego existente>»; describir el nuestro: «almacén de archivo industrial estilizado, legible, acero y pintura de seguridad, papel crema, un acento rojo lacre» |
+| [ ] | Guardar prompt, fecha y modelo junto a cada imagen en `assets/references/<id>/README.md`. Hasta revisar procedencia y licencia (D-020), ninguna imagen ni textura derivada entra al juego |
 
 ## Decisiones pendientes que afectan este inventario
 
