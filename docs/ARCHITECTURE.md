@@ -57,6 +57,8 @@ assets/                                 # source assets and exports as defined b
 
 **M1-03 (2026-10-20):** `src/server/PlotGraph.luau` validates a whole candidate belt set on every edit (bounds, fixed footprints, blocked cells, port alignment, cycles, own-bay routing) and returns either a new state or an error code, never a half-applied one. Belts store no units (D-023); line status per bay (`connected`, `no_belt`, `dangling`) and the slowest belt's rate feed the production ledger's transport rate.
 
+**M1-04 (2026-10-20):** `src/server/ProfileProtocol.luau` implements steps 1, 3–5 and 7 of the protocol above as pure UpdateAsync transforms plus a `save` driver over a `Store` interface (`update`, uncached `read`). Award IDs are `generation:unitId`; the durable `eligibleCursor` is the permanent guard against re-granting, so the outbox can drop presented entries. The lease and outbox sizes come from `Catalog.definitions.durability` (D-017). Backoff timing, the natural discovery plan and the real DataStore adapter are not here.
+
 This is not an Express-style controller/service/repository mapping. **Services own authoritative domain behavior**, client controllers orchestrate UX, and `shared/simulation` holds engine-free domain calculations. Persistence adapters should live behind `PlayerDataService` (separate `repositories/` only if concrete duplication justifies it).
 
 ## Ownership of domain boundaries

@@ -96,6 +96,11 @@ Roblox/stores de prueba separados. No producción ni Studio API access en este p
 | P-011 | Throttling, 8 perfiles activos y cierre abrupto | Orden serial, budgets/tamaño medidos, backoff sin cola ilimitada, ningún “guardado” falso; rejoin reconcilia |
 | P-012 | Migrations/rollback/corrupt backup y aislamiento | Archivos/IDs/counter no disminuyen por migración; restore controlado preserva awards; test jamás escribe namespace/universo prod |
 
+**Estado 2026-10-20 (M1-04):** P-001–P-005 y P-007–P-010 pasan contra el fake
+store determinista de `tests/profileProtocol.luau`. Es la primera de las dos etapas;
+la segunda (experiencia y stores de prueba, P-011/P-012 incluidos) sigue pendiente
+para M1-05. P-006 depende del plan natural de M1-06.
+
 Para cada frontera registrar checkpoint anterior/candidato/backend tras crash,
 awardId/mutationId/epoch/seq y cantidades esperadas/observadas. Repetir ambas
 políticas de evento: natural y garantía H; incluir demo sin entrada genuina.

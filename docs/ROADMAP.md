@@ -200,6 +200,8 @@ sources/exports; identities remain deferred per E-013. Preserve Git as code sour
 
 **M1-03 delivered (2026-10-20, D-023):** `src/server/PlotGraph.luau` and `tests/plotGraph.luau`, over a placeholder flat-floor layout in `Catalog.layout`. Belts carry no inventory, so edits only connect or disconnect bay lines. Pricing and refunds of belts stay in M1-08; client placement in M1-07/M1-10.
 
+**M1-04 delivered (2026-10-20):** `src/server/ProfileProtocol.luau` and `tests/profileProtocol.luau`. UpdateAsync-shaped pure transforms (`acquire`, `commit`, `release`), uncached reconciliation, `save` with bounded attempts, award/ack/outbox and command high-water helpers. Evidence is fake-store only (P-001–P-005, P-007–P-010); real-service evidence is M1-05. Next: M1-05, blocked until Studio and a separate test experience exist (E-018).
+
 **First next slice (original note):** M1-01 only, after explicit authorization. Add the smallest
 catalog/types needed to represent the existing starter and upgrade definitions,
 plus meaningful validation/rank-boundary tests. Do not scaffold services, choose a
