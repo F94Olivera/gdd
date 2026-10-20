@@ -1,6 +1,6 @@
 # Implementation roadmap — M0 to M4
 
-**Status:** M0 completed on 2026-10-18; M0.1 exit gate passed on 2026-10-20 (Studio/art follow-ups M0.1-06/07/12 still open, non-blocking); M1 in progress, M1-01 done under E-016 and M1-02 under E-017. Milestones are **acceptance gates**, not fixed delivery dates or evidence that features already exist. The Master GDD v2.0 ([transcription](reference/MASTER_GDD_v2.0.md)) controls gameplay scope. Assign owners and realistic sprint estimates only after M0 blockers and the actual repo have been reviewed.
+**Status:** M0 completed on 2026-10-18; M0.1 exit gate passed on 2026-10-20 (Studio/art follow-ups M0.1-06/07/12 still open, non-blocking); M1 in progress, M1-01 done under E-016 and M1-02 under E-017, M1-03 under D-023. Milestones are **acceptance gates**, not fixed delivery dates or evidence that features already exist. The Master GDD v2.0 ([transcription](reference/MASTER_GDD_v2.0.md)) controls gameplay scope. Assign owners and realistic sprint estimates only after M0 blockers and the actual repo have been reviewed.
 
 ## Definition of Done (all gameplay slices)
 
@@ -183,7 +183,7 @@ sources/exports; identities remain deferred per E-013. Preserve Git as code sour
 | --- | --- | --- | --- |
 | M1-01 ✅ 2026-10-20 | Minimal versioned definition catalog + explicit domain types for one line, rank and first promotion | New producer authorization to begin M1 | Stable IDs, approved D-011–D-019 values traced, no second sector/promotion; validate invalid prices/rates/IDs and rank boundaries in Lune. Define candidate buffers/tick as engineering experiments; no remotes, services or dependencies. |
 | M1-02 ✅ 2026-10-20 | Pure authoritative accepted-unit accounting and bounded production budget | M1-01 | Separate provisional/confirmed work; fresh global unit cursor/fractions; combined manual+auto <=60/s, max2 maximum lines, stable ordering, no banking; conservation and variable-step/stall tests. Confirm gameplay step/buffers preserve desired throughput; do not copy h from the offline harness by habit. |
-| M1-03 | Pure Ground graph and transactional edits | M1-02 | Straight/corner typed ports, 90deg rotation, bounds/overlap/cycle rejection; preserve old inventory and eligibility or reject atomically when bounded recovery cannot fit it. Lune invalid/edit/replay cases. |
+| M1-03 ✅ 2026-10-20 | Pure Ground graph and transactional edits | M1-02 | Straight/corner typed ports, 90deg rotation, bounds/overlap/cycle rejection; preserve old inventory and eligibility or reject atomically when bounded recovery cannot fit it. Lune invalid/edit/replay cases. |
 | M1-04 | Pure D-017 transaction/cursor/lease/outbox state machine with fake store | M1-01/M1-02 | Immutable CAS candidates, no RNG in callback, permanent idempotence despite history eviction; inject failures P-001–P-010. No Roblox DataStore access in this task. |
 | M1-05 | Native storage adapter in isolated test experience/store | M1-04; actual test owner/destination/permissions confirmed | Fail-closed loads, session fencing, bounded budgets/retries, exact commit ack and recovery. Execute service P-001–P-012, including lost responses and two servers. No production stores; any Studio API enablement needs its explicit test-only authorization. |
 | M1-06 | Server natural-plan/discovery + atomic ordinary output/award/outbox | M1-02/M1-05 | Plan persisted before accepting units, p/H endpoints and distribution validated, one genuine +1, ordinary payment retained; no reveal before ack. Natural/guarantee crash/rejoin tests and demo exclusion. Do not declare durable grants from fake-store evidence alone. |
@@ -197,6 +197,8 @@ sources/exports; identities remain deferred per E-013. Preserve Git as code sour
 **M1-01 delivered (2026-10-20, E-016):** `src/shared/Catalog.luau` and `tests/catalog.luau`. Bays and buffer sizes stay out until they have approved numbers; tick 5 Hz and catch-up 2 s are recorded as GDD v2.0 defaults to measure, not approvals. Engine loading is unverified until Studio is installed. Next: M1-02, which needs buffer sizes first.
 
 **M1-02 delivered (2026-10-20, E-017):** `src/server/ProductionLedger.luau` and `tests/productionLedger.luau`. Shared 60/s budget in stable ID order, 5 Hz sub-steps with 2 s capped catch-up, contiguous unit IDs with surviving fractions, and a 600-unit provisional bound that stops clearing until `confirm`. Sealing batches, leases and the outbox remain M1-04. Next: M1-03 (pure Ground graph and transactional edits).
+
+**M1-03 delivered (2026-10-20, D-023):** `src/server/PlotGraph.luau` and `tests/plotGraph.luau`, over a placeholder flat-floor layout in `Catalog.layout`. Belts carry no inventory, so edits only connect or disconnect bay lines. Pricing and refunds of belts stay in M1-08; client placement in M1-07/M1-10.
 
 **First next slice (original note):** M1-01 only, after explicit authorization. Add the smallest
 catalog/types needed to represent the existing starter and upgrade definitions,

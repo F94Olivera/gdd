@@ -167,6 +167,22 @@ These are **GDD-approved direction**, not new user approvals during this documen
 - Scope: M1-02, ledger puro en `src/server/ProductionLedger.luau`. Sin servicios, remotes, persistencia real, RNG ni descubrimiento.
 - Measured offline: a 5 Hz con buffers de 50, dos líneas de referencia sostienen 60/s exactos, también con catch-up de 2 s (ver BALANCE). Con buffer de 5 el catálogo lo rechaza, porque limitaría a 25/s.
 
+### D-023 — Grafo de Ground en M1: layout provisorio, cintas sin inventario y dos bahías
+
+- Date: 2026-10-20
+- Status: Accepted; alcance de M1-03.
+- Producer approval: a «¿Las cintas guardan unidades?» respondió «No guardan (Recomendado)»; a la segunda bahía, «2 bahías, la 2ª gratis (Recomendado)». Sobre el layout preguntó si hacía falta el modelo de Alan: «si es plano podes continuar, ahora si empieza a tener texturas u objetos en el medio, no lo sabemos».
+- Rule: (1) las unidades viven solo en los dos buffers de cada línea; una cinta fija la tasa de transporte (la del segmento más lento) y quitarla o moverla solo desconecta la línea, así que la «cola de recuperación» del GDD v2.0 §4 queda vacía por diseño y no hay pérdida ni duplicación. (2) Dos bahías fijas; la starter viene con su conexión de 7 cintas a 1/s y la segunda cuesta 0 en M1, igual que el pacing medido de E10. (3) Las posiciones de pila, bahías y carril starter son un **placeholder de ingeniería** para piso plano, guardado como dato en `Catalog.layout`; si el piso de Alan tiene columnas u objetos dentro de la grilla, se agregan como `blockedCells` sin tocar código.
+- Engineering choices pending producer review: una fuente solo puede alimentar al procesador de su propia bahía (`cross_bay`); la celda que alimenta un puerto de procesador solo puede tener una cinta que apunte a ese puerto.
+- Impact: Catalog (layout, `beltRates`), `src/server/PlotGraph.luau`, tests. Precio de bahías futuras sigue sin número.
+
+### E-018 — Studio para M1-05
+
+- Date: 2026-10-20
+- Status: Accepted (plan)
+- Producer statement: a «Sin Studio, ¿hasta dónde llego?» respondió «vamos a instalar roblox studio asi podes cumplir esta tarea».
+- Impact: M1-03 y M1-04 se hacen sin Studio; M1-05 y M1-06 esperan a que esté instalado Studio y exista una experiencia de prueba separada con acceso a DataStores solo ahí.
+
 ### E-013 — Identidades diferidas y contenido desde cero
 
 - Date: 2026-10-18
