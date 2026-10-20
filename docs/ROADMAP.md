@@ -108,11 +108,12 @@ se corrigen aquí. M0.1 no reabre decisiones D-011–D-019 ni autoriza M1.
   lista como bloqueante (Q-012).
   **Hecho 2026-10-20 (D-022):** un sector al lanzamiento inicial; la primera promoción
   da clearance 1 y 1.25× sin abrir sector; los sectores llegan con la expansión.
-- [ ] **M0.1-05** Incorporar a `docs/GDD.md` los detalles de v2.0 omitidos, sin cambiar
+- [x] **M0.1-05** Incorporar a `docs/GDD.md` los detalles de v2.0 omitidos, sin cambiar
   reglas: vault counter y tres posiciones de exhibición cosmética; texto overhead con
   rango y total; banners con cooldown/agregación; serial/timestamp solo como
   procedencia; «controls before lore, never require a store visit»; «owning more
   archives does not stack production buffs»; validación de configuración al arranque.
+  **Hecho 2026-10-20:** agregados a GDD.md §§1, 4, 5, 7 citando la sección de v2.0.
 - [ ] **M0.1-06** Inventariar herramientas de arte realmente disponibles y verificadas:
   Higgsfield queda descartado (D-020) y lo reemplaza Gemini Pro (NanoBanana); registrar
   estado de instalación de Blender y Substance; probar de forma supervisada el acceso
@@ -124,8 +125,9 @@ se corrigen aquí. M0.1 no reabre decisiones D-011–D-019 ni autoriza M1.
   desarrollador y en la del segundo contribuidor.
   **Nota 2026-10-20 (E-015):** Alan no trabaja en el repo; basta con la máquina del
   productor. Pendiente hasta instalar Studio.
-- [ ] **M0.1-08** Citar los IDs F01–F19 del backlog en GDD.md §9 / Q-008 para que todo
+- [x] **M0.1-08** Citar los IDs F01–F19 del backlog en GDD.md §9 / Q-008 para que todo
   pedido futuro de alcance sea trazable al registro de ideas.
+  **Hecho 2026-10-20:** GDD.md §9 y Q-008 citan los F-IDs y enlazan la transcripción.
 - [x] **M0.1-09** Tras cerrar M0.1-01, actualizar `AGENTS.md` §1 («Refer to the original
   Master GDD v2.1»), README «Authority order» y los encabezados de ARCHITECTURE/BALANCE.
   **Hecho 2026-10-20:** también GDD.md, ROADMAP y la tabla D-001–D-010 de DECISIONS.

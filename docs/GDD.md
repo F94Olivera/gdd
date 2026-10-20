@@ -9,6 +9,7 @@
 Players clear very large amounts of ordinary paperwork in an industrial archive warehouse. They begin by sorting by hand, earn **Intel** when ordinary documents complete secure processing, then automate clearing through increasingly capable factory lines. The long-term collectible goal is a genuine, rare **Confidential Archive**.
 
 - **One archive class**, with unlimited potential finds. Every genuine server-awarded archive is worth exactly **+1** lifetime archive and all finds count equally.
+- An optional serial number or timestamp on a find is provenance only and never changes value, odds or rank (v2.0 §2).
 - No rarity tiers, variants, duplicate penalties, individual collectible checklist, Research currency, dossier gates, archive-consuming upgrades or hidden throughput-based changes to discovery odds.
 - Permanent player title/rank derives **only** from lifetime genuine archives; independent production leaderboards recognize different accomplishments.
 - Readable stylized industrial realism, original assets and writing, R15 third-person avatars, eight independent plots, PC and touch for first release. Console release requires separate controller validation.
@@ -65,9 +66,15 @@ layout is an integration/asset contract; second-line connected bundle and routin
 
 Proposed tutorial mechanism: after **30 valid starter units and the first extractor purchase**, grant **one** demonstration. Demonstration does **not** grant Intel, lifetime archives, leaderboard progress or a guarantee-counter reset/advance. Genuine finds during the tutorial are genuine and count normally. Input hold-to-repeat is free for everyone, constrained to the same server-approved manual rate.
 
-Proposed UX targets: first interaction within 20 seconds; first automation within two minutes; demonstration within five minutes (must be measured). Show the genuine reveal **after the durability protocol confirms it**. It may have a skippable three-second inspection; ending or replaying animation never changes ownership. Retry pending commits without falsely promising a completed save. A discovery inbox batches reveals so the UI never blocks production.
+Proposed UX targets: first interaction within 20 seconds; first automation within two minutes; demonstration within five minutes (must be measured). Introduce controls before lore and never require a store visit; explain promotion and later rank thresholds when relevant, not in an opening lecture (v2.0 §3). Show the genuine reveal **after the durability protocol confirms it**. It may have a skippable three-second inspection; ending or replaying animation never changes ownership. Retry pending commits without falsely promising a completed save. A discovery inbox batches reveals so the UI never blocks production.
 
 Accessible presentation includes touch-friendly targets, high contrast, reduced motion, sound controls, concise text, and muted banners for visitors. Do not use fake near misses or false scarcity countdowns.
+
+**Social presentation (v2.0 §3):** each plot has a vault counter and three cosmetic
+display positions showing the same archive class. Displays are representative: no
+variants and no physical model per owned archive. Overhead text shows the owner's
+rank and lifetime count. Genuine-find banners use cooldowns and aggregate bursts;
+visitors are read-only and players can mute announcements.
 
 ## 5. Factory construction, upgrades and economy
 
@@ -86,7 +93,7 @@ approved expansion.
 - Selling belts refunds the recorded purchase price only once; machines are not initially sellable.
 - Show machine states: working, no supply, output full, disconnected. Distinguish **rated** from **measured** throughput.
 
-**Intel** is the only gameplay currency. Securely processed ordinary material initially earns **1 Intel per unit**. Intel buys equipment, capacity upgrades, bays/floors and voluntary promotion fees. An archive find must never require buying another random roll. Ordinary work and production milestones must carry progression even during unlucky archive streaks.
+**Intel** is the only gameplay currency. Securely processed ordinary material initially earns **1 Intel per unit**. Intel buys equipment, capacity upgrades, bays/floors and voluntary promotion fees. An archive find must never require buying another random roll. Ordinary work and production milestones must carry progression even during unlucky archive streaks. Owning more archives does not stack uncapped production buffs (v2.0 §4).
 
 Initial values approved by D-014/D-018 (see [BALANCE.md](BALANCE.md) for authority and experimental inputs): free manual lane at 1 unit/s; first extractor 30 Intel at 1 unit/s; basic processor 60 Intel at 10 units/s; extractor tier 2 upgrade 120 Intel at 10 units/s; extractor tier 3 upgrade 600 Intel at 30 units/s; processor tier 2 upgrade 350 Intel at 40 units/s; belt segment 5 Intel at 10 units/s with an upgrade costing 25 to 50 units/s. These original incremental prices are approved as the initial M1 candidate (D-014). D-018 also approves intermediate capacities 1→10→30 extractor, 10→40 processor and 10→50 belt. Buffers, timing, connected second-line bundle and geometry costs remain experimental.
 
@@ -119,7 +126,7 @@ Server owns RNG, logical rates, finite bounded queues, inventory, Intel, purchas
 
 Profile design must account for session locking, schema and balance versions, migrations, durable genuine grants, bounded operation identity/reconciliation, safe errors, retries, release/shutdown save, tutorial flags, machine/belt layouts, queues/fractions and preferences. Loading failure must leave the player in a retry state, not a blank playable profile that can overwrite saves.
 
-A Lua in-memory update is **not** proof that a reward is durable. Define the exact commit boundary, handle pending rewards, and verify disconnect/retry recovery before introducing a production economy. Remote inputs must be checked on server for data type, finite numbers, size, permissions, ownership, distances, state, bounds, prerequisites and rate limits.
+A Lua in-memory update is **not** proof that a reward is durable. Define the exact commit boundary, handle pending rewards, and verify disconnect/retry recovery before introducing a production economy. Validate config references, capacities, probability ranges, prerequisite reachability and migration mappings before startup; never quietly reset guarantees or lower odds to hide a bug (v2.0 §6). Remote inputs must be checked on server for data type, finite numbers, size, permissions, ownership, distances, state, bounds, prerequisites and rate limits.
 
 ## 8. Global competition
 
@@ -153,7 +160,14 @@ Milestones M0–M4 and exit gates are maintained in [ROADMAP.md](ROADMAP.md). Th
 
 Launch monetization direction: optional previewable **cosmetics** (machine skins, plot decorations, vault presentations) without mechanics/stat buffs. No paid real-money offers in M0/prototype. No paid archives, odds, rankings, direct Intel sales or production multipliers at launch. Any future alternative requires an explicit producer decision and new review of official Roblox rules.
 
-Reference footage can motivate **readable feedback**, compact upgrades, production metrics and placement previews. It does not authorize copying a competitor's assets, exact layout, graphics, scripting, economy or supposedly hidden rules. Defer power/water networks, complex recipes, huge tech trees, splitters, new manual tools, assignment quests and value-added paper product until specifically approved.
+Reference footage can motivate **readable feedback**, compact upgrades, production metrics and placement previews. It does not authorize copying a competitor's assets, exact layout, graphics, scripting, economy or supposedly hidden rules. Defer power/water networks (F16/F17), complex recipes and value-added paper product (F03), huge tech trees (F04/F18), splitters (F08), new manual tools (F01), assignment quests (F02) and offline Intel (F19) until specifically approved.
+
+**Future concepts backlog:** every idea F01–F19 in
+[reference/FUTURE_CONCEPTS_BACKLOG.md](reference/FUTURE_CONCEPTS_BACKLOG.md) is
+*Proposed*, not scope. A request to add one must cite its F-ID and get its own
+recorded decision (Q-008). Already-decided overlaps: extra sectors (F10) wait for an
+expansion decision (D-022); cosmetic competition rewards (F14) are excluded at launch
+(D-019); discovery serials and timestamps (F11) are provenance only.
 
 ## 10. Decision state and milestone boundary
 
