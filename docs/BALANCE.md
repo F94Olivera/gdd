@@ -1,6 +1,6 @@
 # Balance and simulation specification
 
-**Version:** working specification from Master GDD v2.1, updated by producer decisions D-011–D-019 on 2026-10-18.
+**Version:** working specification from Master GDD v2.0, updated by producer decisions D-011–D-019 on 2026-10-18.
 **Approval state:** p/H/cap/reference capacities (D-011/D-012), starter substitution
 (D-013), original prices/first promotion (D-014), pacing targets (D-015) and permanent
 titles (D-016) are approved. D-018 approves intermediate machinery rates and Ground/dimensions. Buffers,
@@ -248,7 +248,7 @@ pacing de D-011/D-012, sin reabrir decisiones aprobadas por defecto.
 
 | Revision | Date | Source | Result |
 | --- | --- | --- | --- |
-| `GDD-2.1-proposal` | 2026-10-15 | Original Master GDD v2.1 | Hypotheses transcribed; no simulation conducted as part of this documentation task |
+| `GDD-2.0-proposal` | 2026-10-15 | Original Master GDD v2.0 (previously mislabelled 2.1; E-014) | Hypotheses transcribed; no simulation conducted as part of this documentation task |
 | `producer-2026-10-18-D011-D012` | 2026-10-18 | Explicit producer attachment, recorded in DECISIONS | Approved p/H and launch cap/reference capacities; analytical checks only, no seeded simulation |
 
 ## 7. Producer sign-off state

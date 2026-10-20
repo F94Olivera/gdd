@@ -5,7 +5,7 @@ These rules apply to **Codex, Claude, and other coding assistants** working in t
 ## 1. Before editing
 
 1. Inspect the **actual repository** (`README.md`, `default.project.json`, `rokit.toml`, Wally manifests/lock, `src/`, `scripts/`, `tests/`, CI) and its current Git status. Do not assume planned paths exist.
-2. Read `docs/GDD.md`, `docs/DECISIONS.md`, `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, `docs/BALANCE.md`, and `docs/TEST_PLAN.md` for affected systems. Refer to the original Master GDD v2.1 when the working summary is ambiguous.
+2. Read `docs/GDD.md`, `docs/DECISIONS.md`, `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, `docs/BALANCE.md`, and `docs/TEST_PLAN.md` for affected systems. Refer to the original Master GDD v2.0 transcription in `docs/reference/MASTER_GDD_v2.0.md` when the working summary is ambiguous.
 3. State the narrow goal, files to modify, risks, and acceptance checks. Implement **one reviewable milestone slice**, not the entire launch game in one dump.
 4. Separate verified facts from assumptions, proposals, and producer decisions. Ask focused questions about blocking product tradeoffs; do not silently choose them.
 

@@ -1,6 +1,6 @@
 # Implementation roadmap — M0 to M4
 
-**Status:** M0 completed on 2026-10-18; M1 planned, not started or authorized. Milestones are **acceptance gates**, not fixed delivery dates or evidence that features already exist. The Master GDD v2.1 controls gameplay scope. Assign owners and realistic sprint estimates only after M0 blockers and the actual repo have been reviewed.
+**Status:** M0 completed on 2026-10-18; M1 planned, not started or authorized. Milestones are **acceptance gates**, not fixed delivery dates or evidence that features already exist. The Master GDD v2.0 ([transcription](reference/MASTER_GDD_v2.0.md)) controls gameplay scope. Assign owners and realistic sprint estimates only after M0 blockers and the actual repo have been reviewed.
 
 ## Definition of Done (all gameplay slices)
 
@@ -85,13 +85,16 @@ trabajo de M0. Diagnóstico completo en
 Los ítems M0 ya marcados no se borran: los mal interpretados quedan tachados arriba y
 se corrigen aquí. M0.1 no reabre decisiones D-011–D-019 ni autoriza M1.
 
-- [ ] **M0.1-01** Confirmar con el productor la versión canónica del GDD: el archivo
+- [x] **M0.1-01** Confirmar con el productor la versión canónica del GDD: el archivo
   entregado es **v2.0** (9 páginas, 8 secciones); el repo cita «v2.1», «12-page» y el
   backlog cita «v2.1 section 11». Si existe v2.1, entregarlo y repetir el contraste;
   si no existe, corregir todas las referencias a «v2.1» en AGENTS/README/docs (Q-011).
-- [ ] **M0.1-02** Decidir si los tres originales (o exportaciones de texto) entran al
+  **Hecho 2026-10-20 (E-014):** no existe v2.1; el canónico es v2.0.
+- [x] **M0.1-02** Decidir si los tres originales (o exportaciones de texto) entran al
   repo bajo `docs/reference/` con hash SHA-256 registrado. El propio GDD §8 pide
   «keep the GDD … in the repository»; E-005 dijo «no requerido», no «prohibido» (Q-013).
+  **Hecho 2026-10-20 (E-014):** transcripciones textuales y SHA-256 completos en
+  [reference/](reference/README.md); los binarios quedan fuera del repo.
 - [ ] **M0.1-03** Re-trazar D-004, D-010, GDD.md §8 (competición global: categorías
   *documents cleared* / *Intel earned* / *fastest first*, periodos UTC, semana lunes,
   refresco 5 min) y la premisa de D-019 al archivo canónico. Si no están en el
@@ -116,8 +119,10 @@ se corrigen aquí. M0.1 no reabre decisiones D-011–D-019 ni autoriza M1.
   desarrollador y en la del segundo contribuidor.
 - [ ] **M0.1-08** Citar los IDs F01–F19 del backlog en GDD.md §9 / Q-008 para que todo
   pedido futuro de alcance sea trazable al registro de ideas.
-- [ ] **M0.1-09** Tras cerrar M0.1-01, actualizar `AGENTS.md` §1 («Refer to the original
+- [x] **M0.1-09** Tras cerrar M0.1-01, actualizar `AGENTS.md` §1 («Refer to the original
   Master GDD v2.1»), README «Authority order» y los encabezados de ARCHITECTURE/BALANCE.
+  **Hecho 2026-10-20:** también GDD.md, ROADMAP y la tabla D-001–D-010 de DECISIONS.
+  Solo quedan citas a «v2.1» en registros históricos y en el texto original del backlog.
 
 - [x] **M0.1-10** Base técnica re-verificada en esta estación el 2026-10-19 (el repo
   estaba recién clonado sin toolchain): Rokit 1.2.0 desde el release oficial (SHA-256

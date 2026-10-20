@@ -1,6 +1,6 @@
 # Architecture — Find the Secret Archive
 
-**State:** M0 baseline complete, including approved D-017 save strategy. Future gameplay modules and service durability are not implemented or verified. Parent specification: Master GDD v2.1 and the approved decisions log.
+**State:** M0 baseline complete, including approved D-017 save strategy. Future gameplay modules and service durability are not implemented or verified. Parent specification: Master GDD v2.0 ([transcription](reference/MASTER_GDD_v2.0.md)) and the approved decisions log.
 
 ## Architecture principles
 

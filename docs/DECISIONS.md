@@ -6,22 +6,22 @@
 
 For each new decision record: `ID`, date, `Status` (`Accepted`, `Proposed`, `Open`, `Superseded`), context, alternatives considered, **producer approval** (quote/link when available), affected GDD section, implementation consequences and any migration/review trigger. Do not backdate producer approvals. If a future decision supersedes an older entry, add a new entry and mark the old ID superseded rather than deleting history.
 
-## Approved product baseline from Master GDD v2.1 (2026-10-15)
+## Approved product baseline from Master GDD v2.0 (2026-10-15)
 
-These are **GDD-approved direction**, not new user approvals during this documentation pass.
+These are **GDD-approved direction**, not new user approvals during this documentation pass. Until 2026-10-20 this table said «GDD v2.1»; the delivered and only GDD is v2.0 (E-014). D-004 and D-010 are not in v2.0 and are being re-traced under M0.1-03.
 
 | ID | Status | Decision / scope |
 | --- | --- | --- |
-| D-001 | Accepted (GDD v2.1) | One genuine Confidential Archive class. Equal credit +1 per genuine find; count has no finite cap. |
-| D-002 | Accepted (GDD v2.1) | Discovery eligibility at **fresh clearing**, manual or automated, never gated by scanning/processing. |
-| D-003 | Accepted (GDD v2.1) | Intel is the sole production currency; no Research currency, dossier requirement, duplicate conversion or archive-consuming unlocks. |
-| D-004 | Accepted (GDD v2.1) | Lifetime archive count determines permanent title; independent production/earnings boards supplement competition. |
-| D-005 | Accepted (GDD v2.1) | Eight independent bounded plots; PC and touch launch targets; Ground-only in M1. |
-| D-006 | Accepted (GDD v2.1) | Bounded queues and backpressure; no re-rolling old material after editing, reconnect or promotion. |
-| D-007 | Accepted (GDD v2.1) | Interactive, skippable, resumable tutorial with unranked Demonstration Archive. Hold-to-clear free. |
-| D-008 | Accepted (GDD v2.1) | Voluntary promotions based on ordinary production + Intel; preserve archives and discovery counter. |
-| D-009 | Accepted (GDD v2.1) | No combat, pets, theft, trading, offline finds, paid archives or pay-to-luck in launch scope. |
-| D-010 | Accepted (GDD v2.1) | Core global boards: genuine archives, fresh papers cleared and production Intel earned, each over UTC daily/weekly/monthly/all-time; secondary boards gated separately. |
+| D-001 | Accepted (GDD v2.0) | One genuine Confidential Archive class. Equal credit +1 per genuine find; count has no finite cap. |
+| D-002 | Accepted (GDD v2.0) | Discovery eligibility at **fresh clearing**, manual or automated, never gated by scanning/processing. |
+| D-003 | Accepted (GDD v2.0) | Intel is the sole production currency; no Research currency, dossier requirement, duplicate conversion or archive-consuming unlocks. |
+| D-004 | Accepted; not in GDD v2.0, re-trace pending (M0.1-03) | Lifetime archive count determines permanent title; independent production/earnings boards supplement competition. |
+| D-005 | Accepted (GDD v2.0) | Eight independent bounded plots; PC and touch launch targets; Ground-only in M1. |
+| D-006 | Accepted (GDD v2.0) | Bounded queues and backpressure; no re-rolling old material after editing, reconnect or promotion. |
+| D-007 | Accepted (GDD v2.0) | Interactive, skippable, resumable tutorial with unranked Demonstration Archive. Hold-to-clear free. |
+| D-008 | Accepted (GDD v2.0) | Voluntary promotions based on ordinary production + Intel; preserve archives and discovery counter. |
+| D-009 | Accepted (GDD v2.0) | No combat, pets, theft, trading, offline finds, paid archives or pay-to-luck in launch scope. |
+| D-010 | Accepted; not in GDD v2.0, re-trace pending (M0.1-03) | Core global boards: genuine archives, fresh papers cleared and production Intel earned, each over UTC daily/weekly/monthly/all-time; secondary boards gated separately. |
 
 ## Producer decisions — 2026-10-18
 
@@ -131,6 +131,14 @@ These are **GDD-approved direction**, not new user approvals during this documen
 - Verified locally: no fuentes de arte ni entradas LFS; solo build/game.rbxlx generado. Reported by producer: no escenas previas y trabajo desde cero. No prueba de restauración Studio de contenido que todavía no existe.
 - Future gate: titular/destino/permisos deberán identificarse/verificarse antes de publicar/importar assets donde corresponda; publicación sigue requiriendo autorización específica. Fuentes reales y restauración de primera escena se validarán cuando existan, según ASSET_PIPELINE. No crear carpeta/manifiesto vacío ni encargar arte final ahora.
 
+### E-014 — GDD canónico v2.0 y originales transcriptos en el repo
+
+- Date: 2026-10-20
+- Status: Accepted; resuelve Q-011 y Q-013. Supersede E-005.
+- Producer approval: a «¿Existe un v2.1?» respondió «No existe, es v2.0». Sobre conservar los originales: «fijate si esto ya no esta hecho en algun documento .md […] en caso que no, fijate de sumarlo en alguno de los que tenemos o si no tiene nada que ver con ninguno, crea uno nuevo».
+- Rule: el GDD canónico es *Master GDD v2.0* (15 Oct 2026). Toda cita a «v2.1», «12-page» o «section 11» en documentos del repo era un error de etiqueta y se corrige a v2.0; las del backlog original se conservan porque son texto de la fuente. Ningún documento `.md` contenía el texto de los originales, así que se crea `docs/reference/` con transcripciones textuales y el SHA-256 de cada archivo, sin subir binarios.
+- Impact: AGENTS §1, README «Authority order», GDD/ARCHITECTURE/BALANCE/ROADMAP encabezados y tabla D-001–D-010. D-004 y D-010 no aparecen en v2.0; su re-trazado es M0.1-03. Sin cambios de reglas de producto, código ni balance.
+
 ## Engineering baseline for M0 (from existing validated repo setup)
 
 | ID | Status | Decision / rationale |
@@ -143,7 +151,7 @@ These are **GDD-approved direction**, not new user approvals during this documen
 ### E-005 — Original reference file retention
 
 - Date: 2026-10-18
-- Status: Accepted
+- Status: Superseded by E-014 (2026-10-20). The «v2.1» below is the earlier mislabel of the delivered v2.0 file.
 - Context: the original Master GDD v2.1, companion Claude prompt and future-concepts workbook were supplied and inspected during the repository review.
 - Producer decision: "olvidate de los archivos originales, no importa" in this chat, followed by authorization to continue the roadmap reconciliation.
 - Impact: retaining, copying or linking the original files in the repository is not an M0 requirement. Continue with the working repository documentation and explicit producer decisions; no new gameplay or balance approval follows from supplying the files. The working GDD remains a summary, not a verbatim conversion.
@@ -227,9 +235,9 @@ These are **GDD-approved direction**, not new user approvals during this documen
 | Q-008 | Open — before broader content | Optional assignments, manual tools, value-added paper, splitter/merger routing? | New gameplay mechanics require explicit scope authorization |
 | Q-009 | **M0 resolved scope — E-013** | Functional responsibilities and source-preservation workflow; no existing scenes. Names/Roblox owner deferred by producer; verify before future publication. Final budgets after first placeholder handoff/measurements. | Reproducibility and two-person work |
 | Q-010 | **Resolved — D-013/D-019** | Starter replacement on free1/s lane; documented competition rules and no classification prizes at launch. | The prior review identifies omissions without preserving their full wording; do not invent prizes or additive throughput. |
-| Q-011 | **Open — M0.1-01** | ¿Cuál es el GDD canónico? El archivo entregado el 2026-10-19 es *Master GDD v2.0* (9 páginas, 8 secciones); el repo y el backlog citan «v2.1». ¿Existe v2.1? | Toda la trazabilidad de D-001–D-010 y de GDD.md depende de esto. Ver [contraste](history/source-contrast-2026-10-19.md). |
+| Q-011 | **Resolved — E-014** (no existe v2.1) | ¿Cuál es el GDD canónico? El archivo entregado el 2026-10-19 es *Master GDD v2.0* (9 páginas, 8 secciones); el repo y el backlog citan «v2.1». ¿Existe v2.1? | Toda la trazabilidad de D-001–D-010 y de GDD.md depende de esto. Ver [contraste](history/source-contrast-2026-10-19.md). |
 | Q-012 | **Open — M0.1-04** | «Sector» vs «piso»: GDD v2.0 §5 dice que la promoción abre un nuevo sector y elegibilidad de máquinas; GDD.md §5 dice que la primera promoción en M1 no desbloquea sector ni caudal. ¿Cuántos sectores hay en lanzamiento y qué abre la primera promoción? | AGENTS §3 lista «sector count» como bloqueante; D-018 resolvió pisos, no sectores. Afecta M1-08 y preview de promoción. |
-| Q-013 | **Open — M0.1-02** | ¿Entran los tres originales (o su texto) al repo bajo `docs/reference/` con hash? GDD §8 pide conservar el GDD en el repositorio; E-005 lo marcó como no requerido. | Sin el original en el repo, las revisiones futuras no pueden trazar reglas. |
+| Q-013 | **Resolved — E-014** (transcripciones en `docs/reference/`) | ¿Entran los tres originales (o su texto) al repo bajo `docs/reference/` con hash? GDD §8 pide conservar el GDD en el repositorio; E-005 lo marcó como no requerido. | Sin el original en el repo, las revisiones futuras no pueden trazar reglas. |
 
 ## Remaining scope gates
 

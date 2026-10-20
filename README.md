@@ -148,7 +148,7 @@ Paths listed for future systems are **planned**, not a claim they already exist.
 | [Objects](docs/OBJECTS.md) | Checklist of 3D objects to model, with proposed stud dimensions and priorities |
 | [AGENTS](AGENTS.md) | Non-negotiable instructions for Codex and other coding agents |
 
-**Authority order:** later explicitly approved producer decisions in `docs/DECISIONS.md` > original *Master GDD v2.1* (2026-10-15) > this repository's working `docs/GDD.md` summary > implementation details and proposals. The original GDD and companion prompt were reviewed previously; E-005 removes the requirement to retain their files. D-013/D-019 resolve the identified starter/competition omissions. The working GDD remains a summary, not a claim of verbatim conversion. `AGENTS.md` governs implementation process and does not override product rules.
+**Authority order:** later explicitly approved producer decisions in `docs/DECISIONS.md` > original *Master GDD v2.0* (2026-10-15, transcribed in [`docs/reference/`](docs/reference/README.md) with SHA-256) > this repository's working `docs/GDD.md` summary > implementation details and proposals. There is no v2.1 (E-014). The original GDD, companion prompt and future-concepts backlog are kept as text transcriptions per E-014, which supersedes E-005. D-013/D-019 resolve the identified starter/competition omissions. The working GDD remains a summary, not a claim of verbatim conversion. `AGENTS.md` governs implementation process and does not override product rules.
 
 ## Team and release rules
 

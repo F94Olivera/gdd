@@ -1,7 +1,7 @@
 # Find the Secret Archive — Game Design Document (working Markdown)
 
-**Source:** *Find the Secret Archive — Master Game Design Document v2.1*, dated 2026-10-15.
-**Status:** M0 working repository transcription/summary of the main product rules. This is **not** represented as a word-for-word replacement for the original 12-page GDD. E-005 removes original-file retention as a requirement; later decisions resolve the identified starter/competition gaps. This remains a working summary.
+**Source:** *Find the Secret Archive — Master Game Design Document v2.0*, dated 2026-10-15; textual transcription and SHA-256 in [reference/](reference/README.md). There is no v2.1 (E-014).
+**Status:** M0 working repository transcription/summary of the main product rules. This is **not** represented as a word-for-word replacement for the original GDD; the verbatim text lives in [reference/MASTER_GDD_v2.0.md](reference/MASTER_GDD_v2.0.md). Later decisions resolve the identified starter/competition gaps. This remains a working summary.
 **Authority:** a later explicit, recorded producer decision supersedes the original GDD only in the area it names. Proposed numeric values are not automatically approved.
 
 ## 1. High concept and player promise
