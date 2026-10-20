@@ -10,6 +10,7 @@ for _, path in
 		"src/server/Bootstrap.server.luau",
 		"src/client/Bootstrap.client.luau",
 		"src/shared/Catalog.luau",
+		"src/server/ProductionLedger.luau",
 	}
 do
 	assert(fs.readFile(path):match("^%-%-!strict"), path .. " must enable strict mode")
@@ -20,4 +21,5 @@ assert(place.ServerScriptService.Server.Bootstrap.ClassName == "Script")
 assert(place.StarterPlayer.StarterPlayerScripts.Client.Bootstrap.ClassName == "LocalScript")
 assert(place.ReplicatedStorage.Shared.ClassName == "Folder")
 assert(place.ReplicatedStorage.Shared.Catalog.ClassName == "ModuleScript")
+assert(place.ServerScriptService.Server.ProductionLedger.ClassName == "ModuleScript")
 print("Repository smoke checks passed")

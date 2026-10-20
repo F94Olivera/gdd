@@ -158,6 +158,15 @@ These are **GDD-approved direction**, not new user approvals during this documen
 - Impact: cierra M0.1 en lo que depende del repo y autoriza M1-01: catálogo versionado y tipos en `src/shared/Catalog.luau` con tests en Lune. Sin servicios, remotes, dependencias ni gameplay. Las tareas siguientes de M1 solo se encadenan si son chicas; una tarea que requiera un número sin aprobar (bahías, buffers) se detiene y pregunta.
 - Not done: Studio sigue sin instalarse, así que la carga del módulo en el motor no está verificada.
 
+### E-017 — Buffer experimental de 50 unidades y autorización de M1-02
+
+- Date: 2026-10-20
+- Status: Accepted (valor experimental y alcance)
+- Producer approval: a «¿arranco con 50 marcado como experimental y lo medimos con el tick real?» respondió «si, me parece bien. continuemos».
+- Rule: cada buffer de línea (salida y procesamiento) arranca en 50 unidades, igual que el harness offline. Es un valor **experimental**, no balance aprobado; se revisa con playtests y con el tamaño de bahía cuando exista. El catálogo exige que buffer × tickHz cubra la tasa más alta de cada tier, para que el paso discreto no limite el caudal.
+- Scope: M1-02, ledger puro en `src/server/ProductionLedger.luau`. Sin servicios, remotes, persistencia real, RNG ni descubrimiento.
+- Measured offline: a 5 Hz con buffers de 50, dos líneas de referencia sostienen 60/s exactos, también con catch-up de 2 s (ver BALANCE). Con buffer de 5 el catálogo lo rechaza, porque limitaría a 25/s.
+
 ### E-013 — Identidades diferidas y contenido desde cero
 
 - Date: 2026-10-18

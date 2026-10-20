@@ -2,7 +2,8 @@
 -- Versioned public definitions for the first M1 line, permanent ranks and the
 -- first promotion. Everything here replicates to clients: public values only.
 -- Each value cites the producer decision (docs/DECISIONS.md) that approves it.
--- Bays, buffer sizes and second-line bundles have no approved numbers yet.
+-- Bays and second-line bundles have no approved numbers yet; the buffer size is
+-- an experimental starting value (E-017).
 
 export type MachineKind = "extractor" | "processor" | "belt"
 
@@ -61,6 +62,10 @@ export type Catalog = {
 	simulation: {
 		tickHz: number,
 		maxCatchUpSeconds: number,
+		lineBufferUnits: number,
+	},
+	durability: {
+		maxProvisionalUnits: number,
 	},
 	economy: {
 		intelPerProcessedUnit: number,
@@ -92,10 +97,16 @@ local definitions: Catalog = {
 		maxEligiblePerSecond = 60,
 		maxMaximumLines = 2,
 	},
-	-- GDD v2.0 section 1 defaults, to be measured in Studio; not producer-approved.
+	-- tickHz and maxCatchUpSeconds: GDD v2.0 section 1 defaults, to be measured in
+	-- Studio. lineBufferUnits: experimental starting value per buffer (E-017).
 	simulation = {
 		tickHz = 5,
 		maxCatchUpSeconds = 2,
+		lineBufferUnits = 50,
+	},
+	-- D-017: at most 600 accepted units awaiting a durable commit.
+	durability = {
+		maxProvisionalUnits = 600,
 	},
 	economy = {
 		intelPerProcessedUnit = 1,
@@ -225,6 +236,18 @@ function Catalog.validate(catalog: Catalog): { string }
 	if not isPositive(catalog.simulation.maxCatchUpSeconds) then
 		fail("simulation.maxCatchUpSeconds must be positive")
 	end
+	if
+		not isCount(catalog.simulation.lineBufferUnits)
+		or catalog.simulation.lineBufferUnits < 1
+	then
+		fail("simulation.lineBufferUnits must be a positive integer")
+	end
+	if
+		not isCount(catalog.durability.maxProvisionalUnits)
+		or catalog.durability.maxProvisionalUnits < 1
+	then
+		fail("durability.maxProvisionalUnits must be a positive integer")
+	end
 	if not isPositive(catalog.economy.intelPerProcessedUnit) then
 		fail("economy.intelPerProcessedUnit must be positive")
 	end
@@ -277,6 +300,19 @@ function Catalog.validate(catalog: Catalog): { string }
 		fail("maximum extractor lines exceed throughput.maxEligiblePerSecond")
 	end
 
+	-- One tick must be able to move a full tier's worth through each buffer;
+	-- otherwise the discrete step, not the machine, caps throughput at buffer * tickHz.
+	if isPositive(catalog.simulation.tickHz) and isPositive(catalog.simulation.lineBufferUnits) then
+		local perTick = catalog.simulation.lineBufferUnits * catalog.simulation.tickHz
+		for _, machine in catalog.machines do
+			for _, tier in machine.tiers do
+				if isPositive(tier.rate) and tier.rate > perTick then
+					fail(tier.id .. ": rate exceeds lineBufferUnits * tickHz")
+				end
+			end
+		end
+	end
+
 	if #catalog.ranks == 0 or catalog.ranks[1].minArchives ~= 0 then
 		fail("ranks must start at minArchives 0")
 	end
@@ -326,6 +362,32 @@ function Catalog.validate(catalog: Catalog): { string }
 	end
 
 	return errors
+end
+
+-- Shared budget limits for the server production ledger (M1-02), derived from
+-- the catalog so they cannot drift from the approved values.
+function Catalog.productionLimits(catalog: Catalog): {
+	maxEligiblePerSecond: number,
+	maxMaximumLines: number,
+	maximumLineRate: number,
+	tickSeconds: number,
+	maxCatchUpSeconds: number,
+	maxProvisionalUnits: number,
+}
+	local maximumLineRate = 0
+	for _, machine in catalog.machines do
+		if machine.kind == "extractor" then
+			maximumLineRate = math.max(maximumLineRate, machine.tiers[#machine.tiers].rate)
+		end
+	end
+	return {
+		maxEligiblePerSecond = catalog.throughput.maxEligiblePerSecond,
+		maxMaximumLines = catalog.throughput.maxMaximumLines,
+		maximumLineRate = maximumLineRate,
+		tickSeconds = 1 / catalog.simulation.tickHz,
+		maxCatchUpSeconds = catalog.simulation.maxCatchUpSeconds,
+		maxProvisionalUnits = catalog.durability.maxProvisionalUnits,
+	}
 end
 
 -- Permanent title for a lifetime genuine archive count. Counts above the last

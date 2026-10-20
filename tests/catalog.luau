@@ -57,6 +57,19 @@ for _, row in expected do
 	assert(t.price == row[3] and t.rate == row[4], row[2])
 end
 assert(defs.economy.intelPerProcessedUnit == 1)
+assert(defs.simulation.lineBufferUnits == 50) -- E-017, experimental
+assert(defs.durability.maxProvisionalUnits == 600) -- D-017
+local limits = Catalog.productionLimits(defs)
+assert(
+	limits.maxEligiblePerSecond == 60
+		and limits.maxMaximumLines == 2
+		and limits.maximumLineRate == 30
+)
+assert(
+	limits.tickSeconds == 0.2
+		and limits.maxCatchUpSeconds == 2
+		and limits.maxProvisionalUnits == 600
+)
 assert(#defs.promotions == 1, "only the first promotion is approved for M1")
 local first = defs.promotions[1]
 assert(first.lifetimeProcessedUnits == 100000 and first.intelFee == 50000) -- D-014
@@ -235,6 +248,24 @@ local cases: { { message: string, mutate: (any) -> () } } = {
 		message = "intelFee",
 		mutate = function(c)
 			c.promotions[1].intelFee = -1
+		end,
+	},
+	{
+		message = "lineBufferUnits must be",
+		mutate = function(c)
+			c.simulation.lineBufferUnits = 0
+		end,
+	},
+	{
+		message = "rate exceeds lineBufferUnits * tickHz",
+		mutate = function(c)
+			c.simulation.lineBufferUnits = 5
+		end,
+	},
+	{
+		message = "maxProvisionalUnits",
+		mutate = function(c)
+			c.durability.maxProvisionalUnits = 0.5
 		end,
 	},
 	{

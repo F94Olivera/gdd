@@ -99,9 +99,22 @@ tasas y tiempo. Studio/multiplayer/touch no ejecutados: aritmética fuera de Roj
 valores aprobados con su decisión (D-011, D-012, D-014, D-016, D-018, D-022),
 inmutabilidad en todos los niveles, fronteras de rango 0/1/4/5/14/15/39/40/99/100 y
 un millón, rechazo de conteos inválidos (negativo, fracción, NaN, infinito, string)
-y 22 definiciones rotas que `Catalog.validate` debe rechazar con un mensaje concreto.
+y 25 definiciones rotas que `Catalog.validate` debe rechazar con un mensaje concreto.
 El smoke comprueba que el módulo llega como `ModuleScript` a `ReplicatedStorage.Shared`.
 Es aritmética pura: no prueba que Studio cargue el módulo (pendiente hasta instalarlo).
+
+## Ledger de producción M1-02 (2026-10-20)
+
+`lune run tests/productionLedger.luau` (incluido en el check) prueba
+`src/server/ProductionLedger.luau`: paridad exacta con `Production.step` de M0 en
+2000 casos pseudoaleatorios; dos líneas de referencia 30/50/40 a 5 Hz con buffers de
+50 sostienen 60/s exactos, también con updates de catch-up de 2 s; frames irregulares
+de 5 a 410 ms dan el mismo caudal; prioridad estable por ID bajo el tope compartido;
+rechazo de una tercera línea máxima; el clearing manual comparte el tope; sin
+acumulación tras un atasco; fracciones que sobreviven entre updates; tope de 600
+provisionales con confirmación solo hacia adelante; y entradas inválidas. En cada
+update verifica IDs contiguos sin repetición, conservación y capacidades.
+Aritmética pura: no prueba el reloj ni la carga en Studio.
 
 ## Harness de balance autorizado
 

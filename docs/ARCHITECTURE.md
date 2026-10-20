@@ -53,6 +53,8 @@ assets/                                 # source assets and exports as defined b
 
 **M1-01 (2026-10-20):** the versioned definitions live in a single module, `src/shared/Catalog.luau` (types, frozen data, `validate`, `rankFor`), instead of separate `config/` and `types/` folders. It has no `require` dependencies, so the same file loads in Lune and as a Roblox `ModuleScript`. Split it only when a second consumer needs part of it.
 
+**M1-02 (2026-10-20):** `src/server/ProductionLedger.luau` is the pure authoritative step: lines sorted by ID consume a fresh `60 × dt` budget each 0.2 s tick (no banking), elapsed time beyond 2 s is discarded and reported, whole eligible unit IDs come from `floor(accepted + 1e-8)` over one global cursor, and clearing stops once accepted-but-unconfirmed work reaches 600 (D-017). Its per-line step repeats the M0 `Production.step` formula and a test keeps both identical, because runtime modules cannot require `scripts/`. It takes its limits as data (`Catalog.productionLimits`) instead of requiring the catalog, so no runtime module depends on require-by-string.
+
 This is not an Express-style controller/service/repository mapping. **Services own authoritative domain behavior**, client controllers orchestrate UX, and `shared/simulation` holds engine-free domain calculations. Persistence adapters should live behind `PlayerDataService` (separate `repositories/` only if concrete duplication justifies it).
 
 ## Ownership of domain boundaries

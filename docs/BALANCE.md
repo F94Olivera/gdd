@@ -918,3 +918,21 @@ No se implementó gameplay, nuevas dependencias ni persistencia.
   `sensitivity.json` byte-idénticos. En los JSON solo cambian `dirty`, el hash de
   `economyScenarios.luau`, los parámetros de promoción **no usados** de los
   escenarios sin promoción y el nuevo formato de cuantiles con los mismos valores.
+
+## 15. Ledger de producción M1-02 a tick real (2026-10-20)
+
+Medición offline con `tests/productionLedger.luau` sobre el módulo de runtime, no
+sobre el harness. Parámetros: tick 0.2 s (5 Hz, default GDD), catch-up 2 s, buffers
+de 50 (experimental, E-017), tope 60/s y 600 provisionales (D-012/D-017).
+
+| Caso | Resultado |
+| --- | --- |
+| Dos líneas 30/50/40, 60 s tras 2 s de arranque, updates de 0.2 s | 3600 aceptadas y 3600 procesadas: 60/s exactos |
+| Igual, updates de catch-up de 2 s (10 sub-pasos) | 3600 / 3600: sin pérdida de caudal |
+| Una línea, frames irregulares 5–410 ms durante 120 s | aceptación 30/s exacta; procesado dentro de dos ticks de latencia |
+| Tres líneas 30 + 30 + 10 | 60/s; la línea de menor prioridad por ID recibe 0 |
+| Sin confirmar | el clearing se detiene en 600 unidades provisionales |
+
+El buffer mínimo que no limita el caudal a 5 Hz es tasa × 0.2 s: 10 para la cinta
+mejorada de 50/s. Con 50 sobra margen; el catálogo rechaza un buffer de 5 (25/s).
+No mide latencia real de guardado, ni rendimiento del servidor, ni Studio.

@@ -6,5 +6,5 @@ No agregar un init.luau a esta carpeta: cambiaría su representación en Rojo.
 
 - `Catalog.luau` (M1-01): definiciones públicas versionadas con ID estable para la
   línea starter, extractor/procesador/cinta, rangos y la primera promoción. Cada valor
-  cita su decisión. Se valida al cargarse y queda congelado. Sin bahías ni buffers
-  hasta que tengan números aprobados.
+  cita su decisión. Se valida al cargarse y queda congelado. Sin bahías hasta que tengan precio
+  aprobado; el buffer de 50 es experimental (E-017).
