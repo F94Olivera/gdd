@@ -23,7 +23,7 @@ These rules apply to **Codex, Claude, and other coding assistants** working in t
 
 ## 3. Scope gates
 
-**Current work is M0**, unless the producer explicitly authorizes an M1 slice. Preserve existing bootstraps and configs. Do not scaffold dozens of empty modules or fake working gameplay.
+**Current work is M1**, one authorized slice at a time (E-016 authorizes M1-01, and later slices only when they are small; see ROADMAP). M0 and M0.1 are closed. Preserve existing bootstraps and configs. Do not scaffold dozens of empty modules or fake working gameplay.
 
 Do **not** add Express, Node.js services, PostgreSQL, Docker, paid products, external analytics pipelines, gameplay packages or Roblox frameworks by default. Do not choose Knit or ProfileService by habit. When persistence becomes an M1 deliverable, review current maintenance/security of ProfileStore or an alternative and document the selection.
 

@@ -51,6 +51,8 @@ tests/                                  # seeded simulations and fixtures
 assets/                                 # source assets and exports as defined by pipeline
 ```
 
+**M1-01 (2026-10-20):** the versioned definitions live in a single module, `src/shared/Catalog.luau` (types, frozen data, `validate`, `rankFor`), instead of separate `config/` and `types/` folders. It has no `require` dependencies, so the same file loads in Lune and as a Roblox `ModuleScript`. Split it only when a second consumer needs part of it.
+
 This is not an Express-style controller/service/repository mapping. **Services own authoritative domain behavior**, client controllers orchestrate UX, and `shared/simulation` holds engine-free domain calculations. Persistence adapters should live behind `PlayerDataService` (separate `repositories/` only if concrete duplication justifies it).
 
 ## Ownership of domain boundaries

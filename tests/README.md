@@ -93,6 +93,16 @@ Todas las transiciones verifican inventario inicial, conservación, capacidades,
 tasas y tiempo. Studio/multiplayer/touch no ejecutados: aritmética fuera de Rojo.
 
 
+## Catálogo M1-01 (2026-10-20)
+
+`lune run tests/catalog.luau` (incluido en el check) prueba `src/shared/Catalog.luau`:
+valores aprobados con su decisión (D-011, D-012, D-014, D-016, D-018, D-022),
+inmutabilidad en todos los niveles, fronteras de rango 0/1/4/5/14/15/39/40/99/100 y
+un millón, rechazo de conteos inválidos (negativo, fracción, NaN, infinito, string)
+y 22 definiciones rotas que `Catalog.validate` debe rechazar con un mensaje concreto.
+El smoke comprueba que el módulo llega como `ModuleScript` a `ReplicatedStorage.Shared`.
+Es aritmética pura: no prueba que Studio cargue el módulo (pendiente hasta instalarlo).
+
 ## Harness de balance autorizado
 
 `lune run tests/balanceRunner.luau` prueba sesiones/reconexión sin catch-up,

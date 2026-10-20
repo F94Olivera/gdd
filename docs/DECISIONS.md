@@ -150,6 +150,14 @@ These are **GDD-approved direction**, not new user approvals during this documen
 - Integration check: al integrar, el productor valida solo el contrato técnico de OBJECTS.md (escala, pivotes, puertos `_Att`, presupuesto, colisión). Si algo no cumple, vuelve a Alan; el asistente no corrige la geometría.
 - Impact: ASSET_PIPELINE «Goals and ownership» y M0.1-06. Alan no necesita hacer el setup del repo. Las cuentas y permisos de Roblox siguen diferidos (E-013).
 
+### E-016 — Autorización de M1-01
+
+- Date: 2026-10-20
+- Status: Accepted (scope only)
+- Producer request: «podes empezar con M1-01 y en caso que sea chico podes agarrar mas tareas. despues instalamos roblox studio».
+- Impact: cierra M0.1 en lo que depende del repo y autoriza M1-01: catálogo versionado y tipos en `src/shared/Catalog.luau` con tests en Lune. Sin servicios, remotes, dependencias ni gameplay. Las tareas siguientes de M1 solo se encadenan si son chicas; una tarea que requiera un número sin aprobar (bahías, buffers) se detiene y pregunta.
+- Not done: Studio sigue sin instalarse, así que la carga del módulo en el motor no está verificada.
+
 ### E-013 — Identidades diferidas y contenido desde cero
 
 - Date: 2026-10-18

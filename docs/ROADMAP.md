@@ -1,6 +1,6 @@
 # Implementation roadmap — M0 to M4
 
-**Status:** M0 completed on 2026-10-18; M1 planned, not started or authorized. Milestones are **acceptance gates**, not fixed delivery dates or evidence that features already exist. The Master GDD v2.0 ([transcription](reference/MASTER_GDD_v2.0.md)) controls gameplay scope. Assign owners and realistic sprint estimates only after M0 blockers and the actual repo have been reviewed.
+**Status:** M0 completed on 2026-10-18; M0.1 exit gate passed on 2026-10-20 (Studio/art follow-ups M0.1-06/07/12 still open, non-blocking); M1 in progress, M1-01 done under E-016. Milestones are **acceptance gates**, not fixed delivery dates or evidence that features already exist. The Master GDD v2.0 ([transcription](reference/MASTER_GDD_v2.0.md)) controls gameplay scope. Assign owners and realistic sprint estimates only after M0 blockers and the actual repo have been reviewed.
 
 ## Definition of Done (all gameplay slices)
 
@@ -161,6 +161,12 @@ se corrigen aquí. M0.1 no reabre decisiones D-011–D-019 ni autoriza M1.
   **Hecho 2026-10-20:** los cuatro puntos y el comentario de «seven Lune tests»;
   resultados idénticos antes y después (detalle en BALANCE «Seguimiento de código M0.1-11»).
 
+**Auditoría del exit gate M0.1 — 2026-10-20:** versión canónica v2.0 confirmada
+(E-014); D-001–D-003 y D-005–D-009 trazan a v2.0, D-004/D-010 y GDD.md §8 a la
+decisión del productor D-021; Q-011–Q-013 cerradas (E-014, D-022). **Aprobado.**
+Quedan abiertos, sin bloquear: M0.1-06 (prueba de Gemini), M0.1-07 (plugins) y
+M0.1-12 (round trip en Studio), todos a la espera de instalar Studio.
+
 **Exit gate M0.1:** versión canónica confirmada, cada regla de `docs/GDD.md` y cada
 D-001–D-010 trazable a una sección del original o a una decisión explícita del
 productor, y Q-011–Q-013 cerradas. No requiere código ni Studio.
@@ -175,7 +181,7 @@ sources/exports; identities remain deferred per E-013. Preserve Git as code sour
 
 | ID | Small deliverable | Depends on | Acceptance / verification |
 | --- | --- | --- | --- |
-| M1-01 | Minimal versioned definition catalog + explicit domain types for one line, rank and first promotion | New producer authorization to begin M1 | Stable IDs, approved D-011–D-019 values traced, no second sector/promotion; validate invalid prices/rates/IDs and rank boundaries in Lune. Define candidate buffers/tick as engineering experiments; no remotes, services or dependencies. |
+| M1-01 ✅ 2026-10-20 | Minimal versioned definition catalog + explicit domain types for one line, rank and first promotion | New producer authorization to begin M1 | Stable IDs, approved D-011–D-019 values traced, no second sector/promotion; validate invalid prices/rates/IDs and rank boundaries in Lune. Define candidate buffers/tick as engineering experiments; no remotes, services or dependencies. |
 | M1-02 | Pure authoritative accepted-unit accounting and bounded production budget | M1-01 | Separate provisional/confirmed work; fresh global unit cursor/fractions; combined manual+auto <=60/s, max2 maximum lines, stable ordering, no banking; conservation and variable-step/stall tests. Confirm gameplay step/buffers preserve desired throughput; do not copy h from the offline harness by habit. |
 | M1-03 | Pure Ground graph and transactional edits | M1-02 | Straight/corner typed ports, 90deg rotation, bounds/overlap/cycle rejection; preserve old inventory and eligibility or reject atomically when bounded recovery cannot fit it. Lune invalid/edit/replay cases. |
 | M1-04 | Pure D-017 transaction/cursor/lease/outbox state machine with fake store | M1-01/M1-02 | Immutable CAS candidates, no RNG in callback, permanent idempotence despite history eviction; inject failures P-001–P-010. No Roblox DataStore access in this task. |
@@ -188,7 +194,9 @@ sources/exports; identities remain deferred per E-013. Preserve Git as code sour
 | M1-11 | Skippable/resumable tutorial, demo and genuine reveal inbox | M1-06/M1-10 | Server-confirmed steps; proposed demo timing is evaluated explicitly before locking it, demo never affects Intel/rank/counter/stats; genuine tutorial find counts normally. Reveal/replay/ack never grants again. |
 | M1-12 | End-to-end vertical-slice acceptance and recovery handoff | M1-05–M1-11 | New player clears/earns/automates/routes/finds/rejoins/promotes safely. T-001–T-015 and P-001–P-012 evidence as applicable; report exact engine/device/service runs and failures. Eight populated-plot performance remains M3, not claimed from M1. |
 
-**First next slice:** M1-01 only, after explicit authorization. Add the smallest
+**M1-01 delivered (2026-10-20, E-016):** `src/shared/Catalog.luau` and `tests/catalog.luau`. Bays and buffer sizes stay out until they have approved numbers; tick 5 Hz and catch-up 2 s are recorded as GDD v2.0 defaults to measure, not approvals. Engine loading is unverified until Studio is installed. Next: M1-02, which needs buffer sizes first.
+
+**First next slice (original note):** M1-01 only, after explicit authorization. Add the smallest
 catalog/types needed to represent the existing starter and upgrade definitions,
 plus meaningful validation/rank-boundary tests. Do not scaffold services, choose a
 framework, change Production/its contract or wire Roblox gameplay as part of that
