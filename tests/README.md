@@ -128,6 +128,20 @@ replays rechazados; mover/rotar conserva id, tier y precio. Con el ledger: quita
 cinta en pleno flujo desconecta la línea sin perder inventario, el clearing se
 detiene al llenarse el buffer y, al reconectar, los IDs siguen sin repetirse (T-005).
 
+## Protocolo de guardado M1-04 (2026-10-20)
+
+`lune run tests/profileProtocol.luau` (incluido en el check) prueba
+`src/server/ProfileProtocol.luau` contra un DataStore **falso** que inyecta
+`fail_before`, `fail_after` (respuesta perdida), carreras con re-ejecución del
+transform y lecturas fallidas. Cubre P-001–P-005 y P-007–P-010: ningún perfil en
+blanco ni sobrescritura de registros malformados o de esquema futuro; un solo dueño
+y fencing por token/época aunque el reloj del servidor viejo esté atrasado; transform
+determinista sin mutar su entrada; conflicto y regresión rechazados; un hallazgo da
+exactamente +1 aunque se pierda la respuesta; reingreso conserva cursor, fracción,
+fallos y conteo; outbox con ack idempotente y tope de 32 que pausa sin descartar;
+comandos repetidos rechazados por high-water. **No prueba DataStores reales**: P-011,
+P-012 y la repetición con servicios quedan para M1-05; P-006 (plan natural) es M1-06.
+
 ## Harness de balance autorizado
 
 `lune run tests/balanceRunner.luau` prueba sesiones/reconexión sin catch-up,

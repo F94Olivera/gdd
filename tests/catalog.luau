@@ -59,6 +59,8 @@ end
 assert(defs.economy.intelPerProcessedUnit == 1)
 assert(defs.simulation.lineBufferUnits == 50) -- E-017, experimental
 assert(defs.durability.maxProvisionalUnits == 600) -- D-017
+assert(defs.durability.checkpointSeconds == 5 and defs.durability.leaseSeconds == 120)
+assert(defs.durability.leaseRenewSeconds == 30 and defs.durability.outboxLimit == 32)
 local limits = Catalog.productionLimits(defs)
 assert(
 	limits.maxEligiblePerSecond == 60

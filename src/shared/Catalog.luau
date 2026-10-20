@@ -100,6 +100,10 @@ export type Catalog = {
 	},
 	durability: {
 		maxProvisionalUnits: number,
+		checkpointSeconds: number,
+		leaseSeconds: number,
+		leaseRenewSeconds: number,
+		outboxLimit: number,
 	},
 	economy: {
 		intelPerProcessedUnit: number,
@@ -139,9 +143,14 @@ local definitions: Catalog = {
 		maxCatchUpSeconds = 2,
 		lineBufferUnits = 50,
 	},
-	-- D-017: at most 600 accepted units awaiting a durable commit.
+	-- D-017 save protocol: at most 600 accepted units awaiting a durable commit,
+	-- 5 s checkpoint target, 120 s session lease renewed every 30 s, 32 unpresented awards.
 	durability = {
 		maxProvisionalUnits = 600,
+		checkpointSeconds = 5,
+		leaseSeconds = 120,
+		leaseRenewSeconds = 30,
+		outboxLimit = 32,
 	},
 	economy = {
 		intelPerProcessedUnit = 1,
@@ -326,11 +335,22 @@ function Catalog.validate(catalog: Catalog): { string }
 	then
 		fail("simulation.lineBufferUnits must be a positive integer")
 	end
-	if
-		not isCount(catalog.durability.maxProvisionalUnits)
-		or catalog.durability.maxProvisionalUnits < 1
-	then
-		fail("durability.maxProvisionalUnits must be a positive integer")
+	for _, field in
+		{
+			"maxProvisionalUnits",
+			"checkpointSeconds",
+			"leaseSeconds",
+			"leaseRenewSeconds",
+			"outboxLimit",
+		}
+	do
+		local value = (catalog.durability :: any)[field]
+		if not isCount(value) or value < 1 then
+			fail("durability." .. field .. " must be a positive integer")
+		end
+	end
+	if catalog.durability.leaseRenewSeconds >= catalog.durability.leaseSeconds then
+		fail("durability.leaseRenewSeconds must be shorter than leaseSeconds")
 	end
 	if not isPositive(catalog.economy.intelPerProcessedUnit) then
 		fail("economy.intelPerProcessedUnit must be positive")
