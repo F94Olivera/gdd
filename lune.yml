@@ -1,0 +1,15 @@
+# Selene standard library for offline Lune scripts and tests (scripts/, tests/).
+# Runtime code under src/ keeps the Roblox standard library from selene.toml.
+base: luau
+name: lune
+globals:
+  # Lune provides warn like Roblox.
+  warn:
+    args:
+      - type: "..."
+  # Offline test asserts may omit a message; the failing line identifies the check.
+  assert:
+    args:
+      - type: any
+      - required: false
+        type: string

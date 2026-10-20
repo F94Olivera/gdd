@@ -1,0 +1,2 @@
+# Lint configuration for offline Lune code; see lune.yml.
+std = "lune"

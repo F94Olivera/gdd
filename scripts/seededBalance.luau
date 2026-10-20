@@ -4,6 +4,7 @@ local serde = require("@lune/serde")
 local process = require("@lune/process")
 local D = require("./models/DiscoveryExperiment")
 local Runner = require("./models/BalanceRunner")
+local M = require("./models/BalanceMetrics")
 local Scenarios = require("./balanceScenarios")
 local COUNT = 100000
 local MASTER = 20261018
@@ -23,35 +24,6 @@ local function seedFor(scenario: number, run: number): number
 	return seed
 end
 
-local function quantiles(values: { number }): any
-	table.sort(values)
-	local out = {}
-	for _, q in { 0.5, 0.9, 0.99 } do
-		local index = math.ceil(#values * q)
-		out[tostring(q)] = if values[index] and values[index] < math.huge
-			then values[index]
-			else "not reached"
-	end
-	return out
-end
-
-local function timeAt(segments: { any }, unit: number): (number, number)
-	local lo, hi = 1, #segments
-	while lo <= hi do
-		local mid = math.floor((lo + hi) / 2)
-		local s = segments[mid]
-		if s.acceptedFinish < unit then
-			lo = mid + 1
-		else
-			hi = mid - 1
-		end
-	end
-	local s = segments[lo]
-	assert(s and s.rate > 0, "unmapped work unit")
-	local elapsed = (unit - s.acceptedStart) / s.rate
-	return s.start + elapsed, s.onlineStart + elapsed
-end
-
 fs.writeDir("build/balance/seeded")
 local revision = process.exec("git", { "rev-parse", "HEAD" }).stdout:gsub("%s+$", "")
 local dirty = process.exec("git", { "status", "--porcelain" }).stdout ~= ""
@@ -62,7 +34,7 @@ for scenarioIndex, s in Scenarios.all() do
 	end
 	local result = Runner.run(s)
 	local maxUnits = math.floor(result.totals.accepted + 1e-8)
-	local originCalendar, originOnline = timeAt(result.segments, 1)
+	local originCalendar, originOnline = M.timeAt(result.segments, 1)
 	local records =
 		{ "run,seed,policy,first_unit,calendar_seconds,online_seconds,censored,archives,failures" }
 	for _, guaranteed in { true, false } do
@@ -75,7 +47,7 @@ for scenarioIndex, s in Scenarios.all() do
 			local first = awards[1]
 			local calendar, online = math.huge, math.huge
 			if first then
-				calendar, online = timeAt(result.segments, first)
+				calendar, online = M.timeAt(result.segments, first)
 				calendar -= originCalendar
 				online -= originOnline
 			else
@@ -106,8 +78,8 @@ for scenarioIndex, s in Scenarios.all() do
 			horizon = s.horizon,
 			eligible = maxUnits,
 			censored = censored,
-			calendar = quantiles(calendars),
-			online = quantiles(onlines),
+			calendar = M.quantiles(calendars, #calendars),
+			online = M.quantiles(onlines, #onlines),
 		})
 	end
 	fs.writeFile(
@@ -156,7 +128,7 @@ for _, guaranteed in { true, false } do
 		policy = if guaranteed then "guaranteed" else "pure-control",
 		mean = sum / COUNT,
 		expected = expected,
-		quantiles = quantiles(values),
+		quantiles = M.quantiles(values, COUNT),
 		atGuarantee = capped,
 	})
 end

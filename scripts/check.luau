@@ -15,6 +15,7 @@ end
 
 run("stylua", { "--check", "src", "scripts", "tests" })
 run("selene", { "src" })
+run("selene", { "--config", "selene-lune.toml", "scripts", "tests" })
 if not fs.isDir("build") then
 	fs.writeDir("build")
 end

@@ -29,7 +29,8 @@
 
 **First code increment (2026-10-18):** isolated continuous-quantity production model
 in `scripts/models/Production.luau`, with explicit rates, two bounded buffers,
-backpressure and capped steps; seven Lune tests included in the project check.
+backpressure and capped steps; seven Lune tests included in the project check
+(at that increment; the suite now has 16 Production cases).
 No gameplay integration or approved balance. This is a foundation for the full
 seeded simulator below, not completion of that deliverable or a milestone gate.
 
@@ -149,7 +150,7 @@ se corrigen aquí. M0.1 no reabre decisiones D-011–D-019 ni autoriza M1.
   conectar el plugin a `localhost:34872`, repetir las tres comprobaciones y registrarlas
   con fecha. Responsable: productor/desarrollador (requiere cuenta Roblox en Studio).
 
-- [ ] **M0.1-11** Seguimientos de la revisión de código del 2026-10-19 (ver
+- [x] **M0.1-11** Seguimientos de la revisión de código del 2026-10-19 (ver
   [contraste §9](history/source-contrast-2026-10-19.md)); ninguno bloquea y ninguno
   cambia reglas: extender `selene` a `scripts/` y `tests/` con un std adecuado para
   Lune; mover el default de `economyScenarios.base()` a la promoción aprobada
@@ -157,6 +158,8 @@ se corrigen aquí. M0.1 no reabre decisiones D-011–D-019 ni autoriza M1.
   en `seededBalance.luau`; documentar que el coste de bahía no tiene número aprobado.
   Hacerlo solo tras M0.1-10, para poder correr `lune run scripts/check.luau` y las
   repeticiones byte a byte antes y después.
+  **Hecho 2026-10-20:** los cuatro puntos y el comentario de «seven Lune tests»;
+  resultados idénticos antes y después (detalle en BALANCE «Seguimiento de código M0.1-11»).
 
 **Exit gate M0.1:** versión canónica confirmada, cada regla de `docs/GDD.md` y cada
 D-001–D-010 trazable a una sección del original o a una decisión explícita del

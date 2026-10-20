@@ -38,6 +38,9 @@ assert(#noPurchase.transactions == 0 and noPurchase.nextPurchase.id == "extracto
 local promoted = S.base()
 promoted.horizon = 1600
 promoted.promote = true
+-- Low E6 thresholds so a promotion happens inside this short horizon.
+promoted.promotionUnits = 25000
+promoted.promotionFee = 10000
 local pr = E.run(promoted)
 assert(pr.firstPromotion and pr.clearance == 1 and pr.totals.lost > 0)
 local state = D.new(33)

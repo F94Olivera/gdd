@@ -44,8 +44,11 @@ rojo sourcemap default.project.json --output sourcemap.json
 stylua --check src scripts tests
 stylua src scripts tests
 selene src
+selene --config selene-lune.toml scripts tests
 lune run scripts/check.luau
 ```
+
+`selene.toml` lints runtime code under `src/` with the Roblox standard library; `selene-lune.toml` plus `lune.yml` lint the offline Lune code in `scripts/` and `tests/` (Luau base, Lune's `warn`, message-free test asserts allowed).
 
 The build directory must exist before invoking Rojo directly if the command does not create it; the project check is expected to prepare it. `build/`, downloaded packages, and generated sourcemaps are not committed. If an individual tool command differs from the checked-in scripts or project configuration, use the repository configuration and update this README in the same change.
 

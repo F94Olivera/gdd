@@ -15,8 +15,9 @@ function Scenarios.base(): Economy.Scenario
 		capacity = 50,
 		stalls = {},
 		promote = false,
-		promotionUnits = 25000,
-		promotionFee = 10000,
+		-- Approved first promotion (D-014). E6/E12 opt into the rejected 25k/10k alternative.
+		promotionUnits = 100000,
+		promotionFee = 50000,
 		rebuildGrant = 100,
 		multiplier = 1.25,
 	}
@@ -51,6 +52,8 @@ function Scenarios.all(): { Economy.Scenario }
 	local promotion = Scenarios.base()
 	promotion.id = "E6-promotion"
 	promotion.promote = true
+	promotion.promotionUnits = 25000
+	promotion.promotionFee = 10000
 	table.insert(all, promotion)
 	local limited = Scenarios.base()
 	limited.id = "E7-manual-10s-daily"
@@ -70,8 +73,6 @@ function Scenarios.all(): { Economy.Scenario }
 	local later = Scenarios.base()
 	later.id = "E10-later-promotion"
 	later.promote = true
-	later.promotionUnits = 100000
-	later.promotionFee = 50000
 	table.insert(all, later)
 
 	local insufficient = Scenarios.base()
@@ -86,13 +87,13 @@ function Scenarios.all(): { Economy.Scenario }
 	doubledEarly.id = "E12-prices-x2-early-promotion"
 	doubledEarly.priceScale = 2
 	doubledEarly.promote = true
+	doubledEarly.promotionUnits = 25000
+	doubledEarly.promotionFee = 10000
 	table.insert(all, doubledEarly)
 	local doubledLate = Scenarios.base()
 	doubledLate.id = "E13-prices-x2-later-promotion"
 	doubledLate.priceScale = 2
 	doubledLate.promote = true
-	doubledLate.promotionUnits = 100000
-	doubledLate.promotionFee = 50000
 	table.insert(all, doubledLate)
 
 	return all

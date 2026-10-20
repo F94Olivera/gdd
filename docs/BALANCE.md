@@ -693,6 +693,10 @@ Los pasos de evaluación/aprobación de producto, guardado y cierre M0 son poste
 - Segunda línea **hipotética** conectada por 95 Intel (30 extractor +60 procesador
   +5 segmento), inicialmente 1/10/10. Un segmento lógico por línea; no pretende
   medir distancia/coste del routing físico. No aprueba un paquete para runtime.
+  **Coste de bahía:** el GDD v2.0 §4 dice «purchase fixed production bays», pero
+  ningún documento ni decisión le asigna precio; el experimento no cobra bahía.
+  OBJECTS.md solo propone su tamaño físico (16 × 12 × 0.5, a confirmar). Se define
+  al programar M1 con una decisión explícita (M0.1-11, 2026-10-20).
 - Compra en primera frontera de paso asequible; demora de 5 segundos **online**
   entre decisiones. Sin costes de construcción/animación ni errores del jugador.
   Variantes de precio multiplican todos esos precios, sin alterar p/H ni capacidades.
@@ -898,3 +902,19 @@ p99 3.8118/8.9985/20.7844/47.3733h. Son los resultados de precios originales,
 no los de la alternativa ×2. Pasó el check local; validación de motor/dispositivos
 no ejecutada. Paso 2 publicado en `d98f601`, con CI remoto exitoso (enlace en ROADMAP).
 No se implementó gameplay, nuevas dependencias ni persistencia.
+
+### Seguimiento de código M0.1-11 (2026-10-20)
+
+- `economyScenarios.base()` usa ahora la promoción **aprobada** 100000/50000 (D-014);
+  E6 y E12 fijan explícitamente la alternativa no elegida 25000/10000. El test de
+  promoción corta de `tests/economyExperiment.luau` también la fija, para que haya
+  promoción dentro de su horizonte de 1600 s.
+- `seededBalance.luau` usa `BalanceMetrics.timeAt/quantiles` en lugar de copias
+  locales; el manifiesto sembrado ahora publica `value/lower/upper` (banda DKW 99 %)
+  por cuantil, igual que `steadyBalance` y `economyBalance`.
+- Selene analiza también `scripts/` y `tests/` con la std `lune` (`lune.yml`).
+- Repetición antes/después de todas las corridas (`balance`, `seededBalance`,
+  `steadyBalance`, `economyBalance`, `balanceSensitivity`): los 27 CSV y
+  `sensitivity.json` byte-idénticos. En los JSON solo cambian `dirty`, el hash de
+  `economyScenarios.luau`, los parámetros de promoción **no usados** de los
+  escenarios sin promoción y el nuevo formato de cuantiles con los mismos valores.
