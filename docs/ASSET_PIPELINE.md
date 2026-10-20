@@ -14,6 +14,11 @@ Before future asset publication, record actual creator/account/group, authorized
 publisher, destination and verified permissions. Nothing in M0 authorizes upload.
 
 
+**Named roles (E-015, 2026-10-20):** Alan is the art contributor (all 3D work in
+Blender and Adobe Substance, and he approves his own visual quality). The producer is
+the engineering contributor: code, integration into the repo and Studio, and the
+technical contract check from OBJECTS.md. Assistants do not judge visual quality.
+
 - Engineering: Roblox Studio integration, Rojo mappings, gameplay contracts, collision/performance testing, stable game IDs and asset manifest.
 - Art: Blender models and source scenes, Adobe Substance materials when justified, original textures, optimization and authored previews. ~~Higgsfield~~ Gemini Pro (NanoBanana) or other concept tools are optional and not runtime requirements (D-020, 2026-10-19).
 

@@ -12,7 +12,7 @@ These rules apply to **Codex, Claude, and other coding assistants** working in t
 ## 2. Product invariants (must not be violated)
 
 - One genuine **Confidential Archive** collectible class; every legitimate discovery increments `lifetimeArchives` by **exactly one**. No rarity tiers, variants, duplicate penalties, unique-file checklist or collectible consumption.
-- Rank titles derive **only** from lifetime genuine discoveries. Production/earnings leaderboards are separate competition categories.
+- Rank titles derive **only** from lifetime genuine discoveries. Production/earnings leaderboards are separate competition categories (producer decision D-021).
 - A newly accepted eligible paperwork unit gets **one** discovery opportunity **at clearing** (manual or authorized extractor), not when a scanner/processor completes. Scanner/processor is for ordinary income, not discovery eligibility.
 - An ordinary output unit remains payable through secure processing even when clearing also discovers an archive; rewards are additional.
 - Server-owned RNG, eligibility, counts, rewards, Intel, machine throughput, layout validation, queue occupancy and progress. No client-supplied luck or archive grants.
@@ -27,7 +27,7 @@ These rules apply to **Codex, Claude, and other coding assistants** working in t
 
 Do **not** add Express, Node.js services, PostgreSQL, Docker, paid products, external analytics pipelines, gameplay packages or Roblox frameworks by default. Do not choose Knit or ProfileService by habit. When persistence becomes an M1 deliverable, review current maintenance/security of ProfileStore or an alternative and document the selection.
 
-Resolve before production implementation: hard-guarantee vs pure-random policy, intended player-facing time-to-find targets, late-game throughput cap, rank thresholds, clearance fees, sector count and durable discovery grant protocol. Proposed numbers in `BALANCE.md` are **not approvals**.
+Resolve before production implementation: hard-guarantee vs pure-random policy, intended player-facing time-to-find targets, late-game throughput cap, rank thresholds, clearance fees, sector count and durable discovery grant protocol. All of these are resolved for M1 (D-011, D-012, D-014–D-017, D-022); anything not covered by a recorded decision still needs one. Proposed numbers in `BALANCE.md` are **not approvals**.
 
 ## 4. Engineering rules
 

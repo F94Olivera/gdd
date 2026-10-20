@@ -76,7 +76,9 @@ around a compact hub; each has a **16×16 build grid**, **4 studs per cell** (64
 buildable area). Fixed bays and typed ports, player-routed conveyors. **Ground only**
 for M1 and initial launch. Upper/Basement and the former24-stud floor-spacing concept
 are expansion proposals, outside launch. Validate fit/camera/touch using placeholders;
-no additional sector or throughput is unlocked by the first promotion in M1.
+no additional sector or throughput is unlocked by the first promotion in M1. D-022:
+M1 and initial launch have **one sector**; extra sectors arrive only with a separately
+approved expansion.
 
 - M1 supports straight and corner belts with 90-degree rotation, valid footprint preview, and explicit connection status; no splitters/merges.
 - Reject graph cycles, invalid ports, occupied grid positions, outside-plot placement, blocked lanes and unsafe removals.
@@ -99,8 +101,10 @@ must be versioned; this cap decision itself does not approve buffer sizes or add
 
 ## 6. Voluntary clearance promotion
 
-Promotions unlock approved sector/equipment eligibility based on **production +
-spendable Intel**, never a required rare find. D-014 approves the first promotion:
+Promotions advance the clearance level based on **production + spendable Intel**,
+never a required rare find. GDD v2.0 ties promotion to a new sector and machine
+eligibility; D-022 defers that to a future expansion, so the first promotion opens
+no sector. D-014 approves the first promotion:
 **100,000 lifetime ordinary processed units +50,000 spendable Intel + completed
 tutorial/equivalent**, voluntarily confirmed, with **1.25× total ordinary income**.
 The original 25k/10k candidate is not selected. Second promotion thresholds and
@@ -118,6 +122,9 @@ Profile design must account for session locking, schema and balance versions, mi
 A Lua in-memory update is **not** proof that a reward is durable. Define the exact commit boundary, handle pending rewards, and verify disconnect/retry recovery before introducing a production economy. Remote inputs must be checked on server for data type, finite numbers, size, permissions, ownership, distances, state, bounds, prerequisites and rate limits.
 
 ## 8. Global competition
+
+**Origin:** not in GDD v2.0, which says «Start with a server board; defer
+cross-server rankings». The producer ratified this section as written (D-021).
 
 Permanent **archive title** remains lifetime-count-only. Independently display leaderboards over **UTC daily, Monday-start weekly, calendar monthly and all-time** windows.
 

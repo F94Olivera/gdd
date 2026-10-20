@@ -35,7 +35,7 @@ seeded simulator below, not completion of that deliverable or a milestone gate.
 
 **M0 acceptance record:**
 
-- [x] Reconcile available reviewed starter details ~~and competition rules~~ in GDD §4 ~~/8~~ (E-011). Starter connection resolved by D-013; ~~competition presentation/rewards resolved by D-019~~ → la «omisión de competición» no existe en el GDD v2.0 entregado; D-019 sigue válida como decisión del productor, pero su premisa debe re-trazarse (M0.1-03).
+- [x] Reconcile available reviewed starter details ~~and competition rules~~ in GDD §4 ~~/8~~ (E-011). Starter connection resolved by D-013; ~~competition presentation/rewards resolved by D-019~~ → la «omisión de competición» no existe en el GDD v2.0 entregado; D-019 sigue válida como decisión del productor, pero su premisa debe re-trazarse (M0.1-03). **Re-trazado 2026-10-20:** D-021 ratifica la competición como decisión del productor.
 - [x] Prepare the reviewable simulator specification and proposed deterministic first slice in BALANCE §5; no implementation or balance approval.
 - [x] Resolve starter part of Q-010 via D-013 (replacement at 1/s).
 - [x] Resolve remaining Q-010 competition presentation/rewards via D-019.
@@ -95,16 +95,19 @@ se corrigen aquí. M0.1 no reabre decisiones D-011–D-019 ni autoriza M1.
   «keep the GDD … in the repository»; E-005 dijo «no requerido», no «prohibido» (Q-013).
   **Hecho 2026-10-20 (E-014):** transcripciones textuales y SHA-256 completos en
   [reference/](reference/README.md); los binarios quedan fuera del repo.
-- [ ] **M0.1-03** Re-trazar D-004, D-010, GDD.md §8 (competición global: categorías
+- [x] **M0.1-03** Re-trazar D-004, D-010, GDD.md §8 (competición global: categorías
   *documents cleared* / *Intel earned* / *fastest first*, periodos UTC, semana lunes,
   refresco 5 min) y la premisa de D-019 al archivo canónico. Si no están en el
   original, re-etiquetarlos como propuesta del asistente y pedir ratificación o
   rechazo explícito mediante una D-0xx; no cambiar su estado por inferencia.
-- [ ] **M0.1-04** Resolver «sector» vs «piso» y qué desbloquea la primera promoción.
+  **Hecho 2026-10-20:** D-021 los ratifica tal como están, con origen «productor».
+- [x] **M0.1-04** Resolver «sector» vs «piso» y qué desbloquea la primera promoción.
   GDD v2.0 §5: «Promotion opens a new sector and machine eligibility»; GDD.md §5 hoy:
   «no additional sector or throughput is unlocked by the first promotion in M1».
   D-018 resolvió pisos (Ground/Upper/Basement), no el conteo de sectores que AGENTS §3
   lista como bloqueante (Q-012).
+  **Hecho 2026-10-20 (D-022):** un sector al lanzamiento inicial; la primera promoción
+  da clearance 1 y 1.25× sin abrir sector; los sectores llegan con la expansión.
 - [ ] **M0.1-05** Incorporar a `docs/GDD.md` los detalles de v2.0 omitidos, sin cambiar
   reglas: vault counter y tres posiciones de exhibición cosmética; texto overhead con
   rango y total; banners con cooldown/agregación; serial/timestamp solo como
@@ -114,9 +117,13 @@ se corrigen aquí. M0.1 no reabre decisiones D-011–D-019 ni autoriza M1.
   Higgsfield queda descartado (D-020) y lo reemplaza Gemini Pro (NanoBanana); registrar
   estado de instalación de Blender y Substance; probar de forma supervisada el acceso
   del asistente a Gemini antes de afirmar que funciona (ver ASSET_PIPELINE).
+  **Avance 2026-10-20 (E-015):** el productor informa que Alan ya trabaja con Blender y
+  Substance en su máquina (no verificado por el asistente). Pendiente: prueba de Gemini.
 - [ ] **M0.1-07** Cerrar la lista de plugins de Roblox Studio y quién los instala
   (ver README «Roblox Studio plugins»); confirmar instalación en la máquina del
   desarrollador y en la del segundo contribuidor.
+  **Nota 2026-10-20 (E-015):** Alan no trabaja en el repo; basta con la máquina del
+  productor. Pendiente hasta instalar Studio.
 - [ ] **M0.1-08** Citar los IDs F01–F19 del backlog en GDD.md §9 / Q-008 para que todo
   pedido futuro de alcance sea trazable al registro de ideas.
 - [x] **M0.1-09** Tras cerrar M0.1-01, actualizar `AGENTS.md` §1 («Refer to the original
@@ -170,7 +177,7 @@ sources/exports; identities remain deferred per E-013. Preserve Git as code sour
 | M1-05 | Native storage adapter in isolated test experience/store | M1-04; actual test owner/destination/permissions confirmed | Fail-closed loads, session fencing, bounded budgets/retries, exact commit ack and recovery. Execute service P-001–P-012, including lost responses and two servers. No production stores; any Studio API enablement needs its explicit test-only authorization. |
 | M1-06 | Server natural-plan/discovery + atomic ordinary output/award/outbox | M1-02/M1-05 | Plan persisted before accepting units, p/H endpoints and distribution validated, one genuine +1, ordinary payment retained; no reveal before ack. Natural/guarantee crash/rejoin tests and demo exclusion. Do not declare durable grants from fake-store evidence alone. |
 | M1-07 | Ground plot ownership + validated server build/manual intents | M1-03/M1-05 | One owner per plot, read-only visitors, finite/type/shape/ID/state/distance/rate/operation validation and serialized edits. Studio Play then >=2-client rejection/isolation checks. No client grants or luck. |
-| M1-08 | Serialized Intel purchases/upgrades and one voluntary promotion | M1-06/M1-07 | Original incremental prices, physical belt segment count priced correctly; second-line bundle remains a harness shortcut. Full reset preview, first promotion D-014, one charge/advance on replay, permanent cursor/counter/count retained. Re-measure purchase/promotion pacing with actual routing and save latency. |
+| M1-08 | Serialized Intel purchases/upgrades and one voluntary promotion | M1-06/M1-07 | Original incremental prices, physical belt segment count priced correctly; second-line bundle remains a harness shortcut. Full reset preview (no new sector, D-022), first promotion D-014, one charge/advance on replay, permanent cursor/counter/count retained. Re-measure purchase/promotion pacing with actual routing and save latency. |
 | M1-09 | First placeholder handoff + canonical Studio-source restore | M1-01/M1-03; a real scene exists | Engineer specifies footprint/pivots/ports; artist retains originals/exports/provenance. ASSET_PIPELINE restore trial passes from clean workspace; source place versioned with narrow ignore/LFS changes only when needed. No polished art pack or upload by default. |
 | M1-10 | Minimal PC/touch input, placement/status and confirmed/pending UI | M1-07/M1-08/M1-09 | Free hold-to-clear, rotate/cancel, readable invalid/blocked/saving states, bounded representative papers, reduced motion; Studio PC and touch emulator checks recorded honestly, named physical device checks before launch. |
 | M1-11 | Skippable/resumable tutorial, demo and genuine reveal inbox | M1-06/M1-10 | Server-confirmed steps; proposed demo timing is evaluated explicitly before locking it, demo never affects Intel/rank/counter/stats; genuine tutorial find counts normally. Reveal/replay/ack never grants again. |

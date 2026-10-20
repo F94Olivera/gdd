@@ -38,6 +38,8 @@ arte. Nada de lo que propone contradice una regla de producto aprobada.
 1. **Confirmar o rechazar el reparto de roles** del punto 12 (Codex como ejecutor de
    arte con scripts; Claude y el segundo contribuidor en gameplay). Si se confirma, se
    registra en DECISIONS.md y se actualiza ASSET_PIPELINE.
+   **Cerrado 2026-10-20 (E-015):** rechazado. Alan hace el 3D y lo aprueba; el
+   productor hace el código y la integración. Codex no ejecuta arte.
 2. **Moodboard y paleta en hex**, decisión caja vs carpeta, y layout de parcela: siguen
    siendo las entradas que faltan para arte final (sección «Qué sigue faltando» de
    OBJECTS.md).

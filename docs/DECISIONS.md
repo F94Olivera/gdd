@@ -8,20 +8,20 @@ For each new decision record: `ID`, date, `Status` (`Accepted`, `Proposed`, `Ope
 
 ## Approved product baseline from Master GDD v2.0 (2026-10-15)
 
-These are **GDD-approved direction**, not new user approvals during this documentation pass. Until 2026-10-20 this table said «GDD v2.1»; the delivered and only GDD is v2.0 (E-014). D-004 and D-010 are not in v2.0 and are being re-traced under M0.1-03.
+These are **GDD-approved direction**, not new user approvals during this documentation pass. Until 2026-10-20 this table said «GDD v2.1»; the delivered and only GDD is v2.0 (E-014). D-004 and D-010 are not in v2.0; D-021 ratifies them as producer decisions.
 
 | ID | Status | Decision / scope |
 | --- | --- | --- |
 | D-001 | Accepted (GDD v2.0) | One genuine Confidential Archive class. Equal credit +1 per genuine find; count has no finite cap. |
 | D-002 | Accepted (GDD v2.0) | Discovery eligibility at **fresh clearing**, manual or automated, never gated by scanning/processing. |
 | D-003 | Accepted (GDD v2.0) | Intel is the sole production currency; no Research currency, dossier requirement, duplicate conversion or archive-consuming unlocks. |
-| D-004 | Accepted; not in GDD v2.0, re-trace pending (M0.1-03) | Lifetime archive count determines permanent title; independent production/earnings boards supplement competition. |
+| D-004 | Accepted (producer, D-021; not in GDD v2.0) | Lifetime archive count determines permanent title; independent production/earnings boards supplement competition. |
 | D-005 | Accepted (GDD v2.0) | Eight independent bounded plots; PC and touch launch targets; Ground-only in M1. |
 | D-006 | Accepted (GDD v2.0) | Bounded queues and backpressure; no re-rolling old material after editing, reconnect or promotion. |
 | D-007 | Accepted (GDD v2.0) | Interactive, skippable, resumable tutorial with unranked Demonstration Archive. Hold-to-clear free. |
 | D-008 | Accepted (GDD v2.0) | Voluntary promotions based on ordinary production + Intel; preserve archives and discovery counter. |
 | D-009 | Accepted (GDD v2.0) | No combat, pets, theft, trading, offline finds, paid archives or pay-to-luck in launch scope. |
-| D-010 | Accepted; not in GDD v2.0, re-trace pending (M0.1-03) | Core global boards: genuine archives, fresh papers cleared and production Intel earned, each over UTC daily/weekly/monthly/all-time; secondary boards gated separately. |
+| D-010 | Accepted (producer, D-021; not in GDD v2.0) | Core global boards: genuine archives, fresh papers cleared and production Intel earned, each over UTC daily/weekly/monthly/all-time; secondary boards gated separately. |
 
 ## Producer decisions — 2026-10-18
 
@@ -110,6 +110,7 @@ These are **GDD-approved direction**, not new user approvals during this documen
 - Date: 2026-10-18
 - Status: Accepted; resuelve resto de Q-010.
 - Producer approval: “Aprobar reglas actuales y sin premios por clasificación al lanzamiento.”
+- Premise note (2026-10-20): D-010 no venía del GDD; D-021 la ratifica como decisión del productor. Esta decisión no cambia.
 - Rule: mantener D-010 y GDD§8: títulos permanentes separados de standing por categoría/periodo, sin beneficio pagado. Sin premios materiales, pagos ni insignias de ganador por clasificación al lanzamiento. No inventar premios para recuperar texto del original.
 - Impact: globales siguen gate M3/M4; M1 solo counters/local UI. Sin tareas extra de premios, otra moneda o cambios en rango.
 
@@ -121,6 +122,33 @@ These are **GDD-approved direction**, not new user approvals during this documen
 - Rule: Higgsfield deja de figurar como herramienta opcional de concepto (GDD v2.0 §6 «Tool roles»). Gemini Pro (NanoBanana) ocupa ese rol para imagen/video de concepto. Sigue siendo herramienta de referencia, no dependencia de runtime ni fuente de assets finales sin revisión de procedencia/licencia (ASSET_PIPELINE «Content quality»).
 - Assistant status: el asistente dispone de automatización de navegador en esta sesión (Playwright y extensión de Chrome), pero **no ha probado** iniciar sesión en Gemini ni generar una imagen. No se afirma control de la herramienta hasta una prueba supervisada registrada (M0.1-06). Riesgos a revisar en esa prueba: 2FA/captcha de la cuenta Google, términos de uso de automatización, y derechos de uso comercial de las imágenes generadas dentro de Roblox.
 - Impact: ASSET_PIPELINE «Goals and ownership»; ROADMAP M0.1-06. Sin cambios de producto, balance ni código.
+
+### D-021 — Ratificación de la competición global como decisión del productor
+
+- Date: 2026-10-20
+- Status: Accepted; cierra M0.1-03. No cambia ninguna regla: corrige su origen.
+- Context: D-004, D-010, GDD.md §8 y el invariante de AGENTS §2 («Production/earnings leaderboards are separate competition categories») figuraban como «Accepted (GDD v2.1)». El GDD v2.0 no los contiene; dice «Start with a server board; defer cross-server rankings» (§2 *Ranks and displays*). D-019 ya había aprobado «reglas actuales», pero sobre la premisa equivocada de que venían del original.
+- Producer approval: a la pregunta de M0.1-03 respondió «Ratificar como están (Recomendado)», frente a volver al board de servidor de v2.0 o dejar solo un ranking global de archivos.
+- Rule: se mantienen D-004, D-010 y GDD.md §8 tal como están (archivos genuinos, documentos limpiados e Intel de producción; periodos UTC diario/semanal con inicio lunes/mensual/histórico; secundarios *documents processed* y *fastest first archive* con gate propio; sin premios por D-019). Su origen pasa a ser **decisión del productor D-021**, no el GDD. Supersede, solo para esta área, el «defer cross-server rankings» de v2.0.
+- Impact: tabla D-001–D-010, GDD.md §8, AGENTS §2. Los boards globales siguen siendo gate M3/M4; M1 solo registra contadores y estadísticas locales. Sin código.
+
+### D-022 — Un solo sector al lanzamiento inicial; la primera promoción no abre sector
+
+- Date: 2026-10-20
+- Status: Accepted; resuelve Q-012 y cierra M0.1-04.
+- Context: GDD v2.0 §5 dice «Promotion opens a new sector and machine eligibility», §4 «Later sectors may increase Intel value and equipment capacity» y el hito M3 «Up to three sectors and floors». D-018 dejó el lanzamiento inicial en Ground solamente, pero resolvía pisos, no sectores; AGENTS §3 listaba «sector count» como bloqueante.
+- Producer approval: «Diferir sectores (Recomendado)», frente a tratar sector como sinónimo de piso o dividir Ground en sectores dentro de M1.
+- Rule: M1 y el lanzamiento inicial tienen **un único sector** (la parcela Ground). La primera promoción D-014 otorga el nivel de clearance 1 y el multiplicador total 1.25× de Intel ordinario, con su reset; **no** abre un sector nuevo ni elegibilidad de máquinas nuevas. Sectores adicionales y su elegibilidad de máquinas llegan con la expansión (Upper/Basement de D-018, backlog F10) y requieren otra decisión con sus valores. La probabilidad de archivo nunca depende del sector (D-011).
+- Impact: GDD.md §§5–6, ROADMAP M1-08 (preview de promoción sin sector nuevo), AGENTS §3. El estado guardado conserva el nivel de clearance para que una expansión futura pueda mapearlo sin migración destructiva. Sin código ni balance nuevo.
+
+### E-015 — Reparto de roles: Alan en 3D, el productor en código e integración
+
+- Date: 2026-10-20
+- Status: Accepted; cierra el punto abierto 1 de [RESPONSE.md](RESPONSE.md).
+- Producer statement: «Alan se ocupa de los diseños y ya lo esta haciendo»; «Alan = 3d model creator, yo = coder»; «alan hace todo lo que tenga que ver con 3d y usar blender + adobe substance. el mismo lo aprueba, yo solo lo integro a este repo».
+- Rule: **Alan** es el contribuidor de arte. Hace todo el trabajo 3D en Blender y Adobe Substance y aprueba la calidad visual de sus propios assets. **El productor** escribe el código e integra los assets al repo y a Studio, con ayuda del asistente. La propuesta de Codex de ejecutar el arte con scripts no se adopta. Los asistentes no juzgan la calidad visual.
+- Integration check: al integrar, el productor valida solo el contrato técnico de OBJECTS.md (escala, pivotes, puertos `_Att`, presupuesto, colisión). Si algo no cumple, vuelve a Alan; el asistente no corrige la geometría.
+- Impact: ASSET_PIPELINE «Goals and ownership» y M0.1-06. Alan no necesita hacer el setup del repo. Las cuentas y permisos de Roblox siguen diferidos (E-013).
 
 ### E-013 — Identidades diferidas y contenido desde cero
 
@@ -236,12 +264,12 @@ These are **GDD-approved direction**, not new user approvals during this documen
 | Q-009 | **M0 resolved scope — E-013** | Functional responsibilities and source-preservation workflow; no existing scenes. Names/Roblox owner deferred by producer; verify before future publication. Final budgets after first placeholder handoff/measurements. | Reproducibility and two-person work |
 | Q-010 | **Resolved — D-013/D-019** | Starter replacement on free1/s lane; documented competition rules and no classification prizes at launch. | The prior review identifies omissions without preserving their full wording; do not invent prizes or additive throughput. |
 | Q-011 | **Resolved — E-014** (no existe v2.1) | ¿Cuál es el GDD canónico? El archivo entregado el 2026-10-19 es *Master GDD v2.0* (9 páginas, 8 secciones); el repo y el backlog citan «v2.1». ¿Existe v2.1? | Toda la trazabilidad de D-001–D-010 y de GDD.md depende de esto. Ver [contraste](history/source-contrast-2026-10-19.md). |
-| Q-012 | **Open — M0.1-04** | «Sector» vs «piso»: GDD v2.0 §5 dice que la promoción abre un nuevo sector y elegibilidad de máquinas; GDD.md §5 dice que la primera promoción en M1 no desbloquea sector ni caudal. ¿Cuántos sectores hay en lanzamiento y qué abre la primera promoción? | AGENTS §3 lista «sector count» como bloqueante; D-018 resolvió pisos, no sectores. Afecta M1-08 y preview de promoción. |
+| Q-012 | **Resolved — D-022** (un sector al lanzamiento; la promoción 1 no abre sector) | «Sector» vs «piso»: GDD v2.0 §5 dice que la promoción abre un nuevo sector y elegibilidad de máquinas; GDD.md §5 dice que la primera promoción en M1 no desbloquea sector ni caudal. ¿Cuántos sectores hay en lanzamiento y qué abre la primera promoción? | AGENTS §3 lista «sector count» como bloqueante; D-018 resolvió pisos, no sectores. Afecta M1-08 y preview de promoción. |
 | Q-013 | **Resolved — E-014** (transcripciones en `docs/reference/`) | ¿Entran los tres originales (o su texto) al repo bajo `docs/reference/` con hash? GDD §8 pide conservar el GDD en el repositorio; E-005 lo marcó como no requerido. | Sin el original en el repo, las revisiones futuras no pueden trazar reglas. |
 
 ## Remaining scope gates
 
-D-011–D-019/E-013 resolve the blocking M0 product/strategy choices. The completed
+D-011–D-022/E-013–E-015 resolve the blocking M0 and M0.1 product/strategy choices. The completed
 exit-gate audit and ordered M1 tasks are in ROADMAP; M1 has not been authorized. M1 still needs
 separate authorization and measured acceptance; later promotion/expansions/new
 mechanics remain unapproved. Roblox ownership/permissions and final art budgets are
