@@ -4,8 +4,55 @@ local Graph = require("../src/server/PlotGraph")
 local Ledger = require("../src/server/ProductionLedger")
 local Catalog = require("../src/shared/Catalog")
 local defs = Catalog.definitions
-local layout = defs.layout
 local rates = Catalog.beltRates(defs)
+
+-- Graph rules are tested on a fixed fixture (the original D-023 placeholder), so
+-- moving the catalog's pile or bays (D-024) is a data change, not a test rewrite.
+-- Section 8 checks the catalog's own layout.
+local layout = {
+	gridWidth = 16,
+	gridDepth = 16,
+	cellStuds = 4,
+	blockedCells = {},
+	pile = { x = 0, z = 6, width = 3, depth = 3 },
+	bays = {
+		{
+			id = "bay_1",
+			price = 0,
+			source = {
+				footprint = { x = 3, z = 3, width = 2, depth = 2 },
+				outPort = { x = 4, z = 3, direction = 1 },
+			},
+			processor = {
+				footprint = { x = 12, z = 3, width = 2, depth = 2 },
+				inPort = { x = 12, z = 3, direction = 1 },
+			},
+		},
+		{
+			id = "bay_2",
+			price = 0,
+			source = {
+				footprint = { x = 3, z = 11, width = 2, depth = 2 },
+				outPort = { x = 4, z = 11, direction = 1 },
+			},
+			processor = {
+				footprint = { x = 12, z = 11, width = 2, depth = 2 },
+				inPort = { x = 12, z = 11, direction = 1 },
+			},
+		},
+	},
+	starterBay = "bay_1",
+	starterBeltTier = defs.layout.starterBeltTier,
+	starterBelts = {
+		{ x = 5, z = 3, kind = "straight", rotation = 1 },
+		{ x = 6, z = 3, kind = "straight", rotation = 1 },
+		{ x = 7, z = 3, kind = "straight", rotation = 1 },
+		{ x = 8, z = 3, kind = "straight", rotation = 1 },
+		{ x = 9, z = 3, kind = "straight", rotation = 1 },
+		{ x = 10, z = 3, kind = "straight", rotation = 1 },
+		{ x = 11, z = 3, kind = "straight", rotation = 1 },
+	},
+}
 
 local function belt(
 	id: string,
@@ -190,6 +237,77 @@ do
 	assert(math.abs(resumed.accepted - resumed.processed - held(resumed)) < 1e-6)
 end
 
+-- 8. The catalog layout (D-024): a valid starter lane, a free second line that a
+-- straight run connects, and every source's back edge against the pile.
+do
+	local real = defs.layout
+	local fresh = Graph.new(real, rates)
+	local status = Graph.lines(real, fresh)
+	assert(status.bay_1.connected and #status.bay_1.belts == 7)
+	assert(Graph.transportRate(status.bay_1, fresh, rates) == 1)
+	assert(not status.bay_2.connected and status.bay_2.reason == "no_belt")
+	local DX = { [0] = 0, [1] = 1, [2] = 0, [3] = -1 }
+	local DZ = { [0] = -1, [1] = 0, [2] = 1, [3] = 0 }
+	local second = real.bays[2]
+	local out = second.source.outPort
+	local inPort = second.processor.inPort
+	local x, z = out.x + DX[out.direction], out.z + DZ[out.direction]
+	local filled = fresh
+	local placed = 0
+	while not (x == inPort.x and z == inPort.z) do
+		placed += 1
+		local success, result = Graph.apply(
+			real,
+			rates,
+			filled,
+			{ op = "place", belt = belt("run" .. placed, x, z, "straight", out.direction) }
+		)
+		assert(success, "catalog run rejected: " .. tostring(result))
+		filled = result
+		x, z = x + DX[out.direction], z + DZ[out.direction]
+	end
+	assert(placed == 7 and Graph.lines(real, filled).bay_2.connected)
+	local pile = real.pile
+	local function inPile(cx: number, cz: number): boolean
+		return cx >= pile.x
+			and cx < pile.x + pile.width
+			and cz >= pile.z
+			and cz < pile.z + pile.depth
+	end
+	for _, bay in real.bays do
+		local fp = bay.source.footprint
+		local back = (bay.source.outPort.direction + 2) % 4
+		for cx = fp.x, fp.x + fp.width - 1 do
+			for cz = fp.z, fp.z + fp.depth - 1 do
+				local nx, nz = cx + DX[back], cz + DZ[back]
+				local edge = not (
+					nx >= fp.x
+					and nx < fp.x + fp.width
+					and nz >= fp.z
+					and nz < fp.z + fp.depth
+				)
+				assert(not edge or inPile(nx, nz), bay.id .. " source back must face the pile")
+			end
+		end
+	end
+	-- Ports sit on lane A: the cell to the flow's left (local -X) is outside the machine.
+	local function outside(fp: any, cx: number, cz: number): boolean
+		return cx < fp.x or cx >= fp.x + fp.width or cz < fp.z or cz >= fp.z + fp.depth
+	end
+	for _, bay in real.bays do
+		local o, i = bay.source.outPort, bay.processor.inPort
+		local left = (o.direction + 3) % 4
+		assert(
+			outside(bay.source.footprint, o.x + DX[left], o.z + DZ[left]),
+			bay.id .. " outPort must be lane A"
+		)
+		assert(
+			outside(bay.processor.footprint, i.x + DX[left], i.z + DZ[left]),
+			bay.id .. " inPort must be lane A"
+		)
+	end
+end
+
 print(
-	"Plot graph: starter lane, routing, invalid edits, cycles, cross-bay, move/replay and inventory-safe edits passed"
+	"Plot graph: starter lane, routing, invalid edits, cycles, cross-bay, move/replay, inventory-safe edits and catalog layout passed"
 )

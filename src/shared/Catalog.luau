@@ -2,8 +2,9 @@
 -- Versioned public definitions for the first M1 line, permanent ranks and the
 -- first promotion. Everything here replicates to clients: public values only.
 -- Each value cites the producer decision (docs/DECISIONS.md) that approves it.
--- Bays and second-line bundles have no approved numbers yet; the buffer size is
--- an experimental starting value (E-017).
+-- M1 bay prices and positions are D-023/D-024; later bay prices and second-line
+-- bundles have no approved numbers yet; the buffer size is an experimental
+-- starting value (E-017).
 
 export type MachineKind = "extractor" | "processor" | "belt"
 
@@ -213,39 +214,44 @@ local definitions: Catalog = {
 			opensSector = false,
 		},
 	},
-	-- D-018 grid. Positions are an engineering placeholder for a flat floor (D-023):
-	-- they change as data when the authored plot exists, not as code.
-	-- Footprints follow docs/OBJECTS.md (pile 3x3, source and processor 2x2).
+	-- D-018 grid, D-024 layout. Cell (x, z) has its centre at (-30 + 4x, 0, -30 + 4z)
+	-- in plot studs (grid centred on the 100x100 envelope, entrance at -Z). The pile
+	-- fills the -X/+Z corner; bay 1 runs east along the +Z edge (row 14) and bay 2
+	-- runs north along the -X edge (column 0), so each source's back faces the pile
+	-- and rows 0-1 on the entrance side stay free. Footprints follow docs/OBJECTS.md
+	-- (pile 3x3, source and processor 2x2); ports sit on each machine's lane-A cell.
 	layout = {
 		gridWidth = 16,
 		gridDepth = 16,
 		cellStuds = 4,
 		blockedCells = {},
-		pile = { x = 0, z = 6, width = 3, depth = 3 },
+		pile = { x = 0, z = 13, width = 3, depth = 3 },
 		bays = {
+			-- Flows east along row 14; the source's back (west) faces the pile.
 			{
 				id = "bay_1",
 				price = 0,
 				source = {
-					footprint = { x = 3, z = 3, width = 2, depth = 2 },
-					outPort = { x = 4, z = 3, direction = 1 },
+					footprint = { x = 3, z = 14, width = 2, depth = 2 },
+					outPort = { x = 4, z = 14, direction = 1 },
 				},
 				processor = {
-					footprint = { x = 12, z = 3, width = 2, depth = 2 },
-					inPort = { x = 12, z = 3, direction = 1 },
+					footprint = { x = 12, z = 14, width = 2, depth = 2 },
+					inPort = { x = 12, z = 14, direction = 1 },
 				},
 			},
 			-- D-023: the second bay is free in M1, matching the approved E10 pacing.
+			-- Flows north along column 0; the source's back (south) faces the pile.
 			{
 				id = "bay_2",
 				price = 0,
 				source = {
-					footprint = { x = 3, z = 11, width = 2, depth = 2 },
-					outPort = { x = 4, z = 11, direction = 1 },
+					footprint = { x = 0, z = 11, width = 2, depth = 2 },
+					outPort = { x = 0, z = 11, direction = 0 },
 				},
 				processor = {
-					footprint = { x = 12, z = 11, width = 2, depth = 2 },
-					inPort = { x = 12, z = 11, direction = 1 },
+					footprint = { x = 0, z = 2, width = 2, depth = 2 },
+					inPort = { x = 0, z = 3, direction = 0 },
 				},
 			},
 		},
@@ -253,13 +259,13 @@ local definitions: Catalog = {
 		-- GDD v2.0 section 4: the starter bay includes its connection at 1 unit/s.
 		starterBeltTier = "belt_starter",
 		starterBelts = {
-			{ x = 5, z = 3, kind = "straight", rotation = 1 },
-			{ x = 6, z = 3, kind = "straight", rotation = 1 },
-			{ x = 7, z = 3, kind = "straight", rotation = 1 },
-			{ x = 8, z = 3, kind = "straight", rotation = 1 },
-			{ x = 9, z = 3, kind = "straight", rotation = 1 },
-			{ x = 10, z = 3, kind = "straight", rotation = 1 },
-			{ x = 11, z = 3, kind = "straight", rotation = 1 },
+			{ x = 5, z = 14, kind = "straight", rotation = 1 },
+			{ x = 6, z = 14, kind = "straight", rotation = 1 },
+			{ x = 7, z = 14, kind = "straight", rotation = 1 },
+			{ x = 8, z = 14, kind = "straight", rotation = 1 },
+			{ x = 9, z = 14, kind = "straight", rotation = 1 },
+			{ x = 10, z = 14, kind = "straight", rotation = 1 },
+			{ x = 11, z = 14, kind = "straight", rotation = 1 },
 		},
 	},
 }

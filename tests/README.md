@@ -119,14 +119,14 @@ Aritmética pura: no prueba el reloj ni la carga en Studio.
 ## Grafo de parcela M1-03 (2026-10-20)
 
 `lune run tests/plotGraph.luau` (incluido en el check) prueba
-`src/server/PlotGraph.luau` sobre el layout provisorio del catálogo: carril starter
+`src/server/PlotGraph.luau` sobre un fixture fijo (el layout provisorio de D-023): carril starter
 conectado a 1/s; ruteo con rectas y esquinas izquierda/derecha; la cinta más lenta fija
 la tasa; rechazo atómico con código (`out_of_bounds`, `occupied`, `blocked`,
 `invalid_port`, `invalid_tier`, `invalid_shape`, `invalid_id`, `duplicate_id`,
 `unknown_belt`, `cycle`, `cross_bay`, `invalid_edit`) sin tocar el estado anterior;
 replays rechazados; mover/rotar conserva id, tier y precio. Con el ledger: quitar una
 cinta en pleno flujo desconecta la línea sin perder inventario, el clearing se
-detiene al llenarse el buffer y, al reconectar, los IDs siguen sin repetirse (T-005).
+detiene al llenarse el buffer y, al reconectar, los IDs siguen sin repetirse (T-005). La sección 8 prueba el layout real de `Catalog.layout` (D-024): carril starter conectado, segunda línea conectable con 7 rectas, puertos en el carril A y la parte trasera de cada fuente contra la pila.
 
 ## Protocolo de guardado M1-04 (2026-10-20)
 

@@ -696,7 +696,7 @@ Los pasos de evaluación/aprobación de producto, guardado y cierre M0 son poste
   **Coste de bahía:** el GDD v2.0 §4 dice «purchase fixed production bays», pero
   ningún documento ni decisión le asigna precio; el experimento no cobra bahía.
   OBJECTS.md solo propone su tamaño físico (16 × 12 × 0.5, a confirmar). Se define
-  al programar M1 con una decisión explícita (M0.1-11, 2026-10-20).
+  al programar M1 con una decisión explícita (M0.1-11, 2026-10-20). **Actualización 2026-10-21:** D-023 fija precio 0 para la segunda bahía en M1 y D-024 fija `plot_bay_frame` en 8 × 44 × 0.05 (marco de piso); el precio de bahías posteriores sigue sin número. El experimento no cambia.
 - Compra en primera frontera de paso asequible; demora de 5 segundos **online**
   entre decisiones. Sin costes de construcción/animación ni errores del jugador.
   Variantes de precio multiplican todos esos precios, sin alterar p/H ni capacidades.
